@@ -9,8 +9,8 @@
 let HIT_BOXES = false;
 let DEBUG_TEXT = false;
 
- HIT_BOXES = true;
- DEBUG_TEXT = true;
+ //HIT_BOXES = true;
+ //DEBUG_TEXT = true;
 
 let DRAW_DEBUG_TEXT = false; 
 let DRAW_DEBUG_HITBOXES = false;

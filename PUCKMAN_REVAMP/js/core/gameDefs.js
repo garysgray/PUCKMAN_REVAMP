@@ -22,11 +22,12 @@ const GameDefs = Object.freeze({
     },
 
     spriteTypes: {
-        PLAYER:       { type: "player",   w: 20, h: 20, path: "assets/sprites/puckMen.png" },
+        PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/puckMen.png" },
         RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/red_brick.png" },
         BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/blue_brick.png" },
         GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/green_brick.png" },
         PURPLE_BRICK:    { type: "purple_brick",    w: 24, h: 24, path: "assets/sprites/purple_brick.png" },
+        YELLOW_BRICK:    { type: "yellow_brick",    w: 24, h: 24, path: "assets/sprites/yellow_brick.png" },
     },
 
     billBoardTypes: {
