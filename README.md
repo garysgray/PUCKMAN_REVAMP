@@ -1,4 +1,4 @@
-![game-splash](assets/sprites/billBoards/gameSplash.png)
+![](PUCKMAN_REVAMP/assets/sprites/billBoards/gameSplash.png)
 
 PUCKMAN (Revamped)
 
