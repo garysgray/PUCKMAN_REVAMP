@@ -1,3 +1,5 @@
+![game-splash](assets/sprites/billBoards/gameSplash.png)
+
 PUCKMAN (Revamped)
 
 A rebuilt version of my original HTML5 PUCKMAN game.

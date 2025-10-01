@@ -23,20 +23,20 @@ const GameDefs = Object.freeze({
 
     spriteTypes: {
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/puckMen.png" },
-        RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/red_brick.png" },
-        BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/blue_brick.png" },
-        GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/green_brick.png" },
-        PURPLE_BRICK:    { type: "purple_brick",    w: 24, h: 24, path: "assets/sprites/purple_brick.png" },
-        YELLOW_BRICK:    { type: "yellow_brick",    w: 24, h: 24, path: "assets/sprites/yellow_brick.png" },
+        RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/bricks/red_brick.png" },
+        BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/bricks/blue_brick.png" },
+        GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/bricks/green_brick.png" },
+        PURPLE_BRICK:    { type: "purple_brick",    w: 24, h: 24, path: "assets/sprites/bricks/purple_brick.png" },
+        YELLOW_BRICK:    { type: "yellow_brick",    w: 24, h: 24, path: "assets/sprites/bricks/yellow_brick.png" },
     },
 
     billBoardTypes: {
-        BACKGROUND: { type: "background", w: 600, h: 600, path: "assets/sprites/stars.png", isCenter: false },
-        HUD:        { type: "hud",        w: 850, h: 200, path: "assets/sprites/hud.png" , isCenter: false },
-        SPLASH:     { type: "splash",     w: 400, h: 100, path: "assets/sprites/splash.png" , isCenter: true },
-        PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/pause.png" , isCenter: true },
-        WIN:        { type: "win",        w: 400, h: 100, path: "assets/sprites/win.png" , isCenter: true },
-        LOSE:       { type: "lose",       w: 400, h: 100, path: "assets/sprites/lose.png" , isCenter: true },
+        BACKGROUND: { type: "background", w: 600, h: 600, path: "assets/sprites/billBoards/stars.png", isCenter: false },
+        HUD:        { type: "hud",        w: 850, h: 200, path: "assets/sprites/billBoards/hud.png" , isCenter: false },
+        SPLASH:     { type: "splash",     w: 400, h: 100, path: "assets/sprites/billBoards/gameSplash.png" , isCenter: true },
+        PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
+        WIN:        { type: "win",        w: 400, h: 100, path: "assets/sprites/billBoards/win.png" , isCenter: true },
+        LOSE:       { type: "lose",       w: 400, h: 100, path: "assets/sprites/billBoards/lose.png" , isCenter: true },
     },
 
     soundTypes: {
@@ -106,8 +106,8 @@ class GameConsts
 {
     // ---- Private fields ----
     //sizes
-    #SCREEN_WIDTH = 1800;
-    #SCREEN_HEIGHT = 800;
+    #SCREEN_WIDTH = 700;
+    #SCREEN_HEIGHT = 700;
 
     //times
     #FALLBACK_DELTA = 16; // fallback ~60fps
