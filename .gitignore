@@ -20,3 +20,4 @@ feedit.py
 temp_clips.js
 suggestions.md
 config.py
+__pycache__/
