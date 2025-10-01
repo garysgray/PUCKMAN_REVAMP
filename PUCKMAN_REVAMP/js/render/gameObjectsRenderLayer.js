@@ -6,7 +6,6 @@
 // Responsible only for drawing (no game logic here)
 // Uses game state to decide what to render
 // ============================================================================
-
 function renderGameObjectsLayer(device, game) {   
     try 
     {

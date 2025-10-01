@@ -1,5 +1,5 @@
-![](PUCKMAN_REVAMP/assets/sprites/billBoards/gameSplash.png)
-
+| ![Game Splash](PUCKMAN_REVAMP/assets/sprites/billBoards/gameSplash.png) |
+|:-----------------------------------------------------------------------:|
 PUCKMAN (Revamped)
 
 A rebuilt version of my original HTML5 PUCKMAN game.
