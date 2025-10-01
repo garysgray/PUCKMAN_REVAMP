@@ -81,6 +81,7 @@ function renderPlayer(device, game)
         const tempObj = game.player;
         
         const playerImage = device.images.getImage(GameDefs.spriteTypes.PLAYER.type);
+
         if (!playerImage) 
         {
             console.warn("Player image missing.");
@@ -102,6 +103,39 @@ function renderPlayer(device, game)
     catch (e)
     {
         console.error("Error in renderPlayer:", e);
+    }
+}
+
+//---------------------------------------------------------------
+// Render spriteObj (different clips based on playState)
+//---------------------------------------------------------------
+function renderStateSprite(device, sprite ) 
+{
+    try 
+    {
+        //console.log(spriteObj.name);
+       const spriteImage = device.images.getImage(sprite.name);
+
+        if (!spriteImage) 
+        {
+            console.warn("spriteObj image missing.");
+        }
+
+         //Always draw according to the internal state
+        device.renderClip(
+            spriteImage,
+            sprite.posX,
+            sprite.posY,
+            sprite.width,
+            sprite.height,
+            sprite.state,
+        );
+
+        if (DRAW_DEBUG_HITBOXES) drawHitBoxs(device, sprite);
+    } 
+    catch (e)
+    {
+        console.error("Error in renderStateSprite:", e);
     }
 }
 

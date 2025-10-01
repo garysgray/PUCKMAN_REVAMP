@@ -36,6 +36,7 @@ class Game
     #boarderVerticleBuffer;
 
     #randValue;
+    #gameEnemy;
 
     // #projectiles;
     #gameSprites;
@@ -89,6 +90,7 @@ class Game
         try 
         {
             this.#player = new Player(GameDefs.spriteTypes.PLAYER.w, GameDefs.spriteTypes.PLAYER.h, this.#canvasHalfW, this.#canvasHeight, this.#gameConsts.PLAYER_SPEED);
+           
         }
         catch (err) 
         {
@@ -121,6 +123,8 @@ class Game
     get boarderVerticleBuffer()  { return this.#boarderVerticleBuffer; } 
 
     get randValue()  { return this.#randValue; } 
+
+    get gameEnemy()  { return this.#gameEnemy; } 
     
     // -----------------------------
     // Mutators
@@ -132,6 +136,8 @@ class Game
     set boarderVerticleBuffer(v)        { this.#boarderVerticleBuffer = v; }
 
     set randValue(v)        { this.#randValue = v; }
+
+    set gameEnemy(v)        { this.#gameEnemy = v; }
 
     decreaseLives(a)    { this.#lives -= a; }
     increaseScore(a)    { this.#score += a; }
@@ -146,8 +152,8 @@ class Game
     {   
         try 
         {
-            //this.randValue = 1 + Math.floor(Math.random() *  Object.values(GameDefs.spriteTypes).length - 1);
-            this.randValue = 1 + Math.floor(Math.random() * (Object.values(GameDefs.spriteTypes).length - 1));
+            // fix need some value to have this skip or eventually have a diff def type which makes sense as im writing this
+            this.randValue = 6 + Math.floor(Math.random() * (Object.values(GameDefs.spriteTypes).length - 6));
 
             // Input
             device.keys.initKeys();
@@ -249,6 +255,16 @@ class Game
         {
             console.error("Error initializing game:", err);
         }
+
+        try 
+        {
+             this.#gameEnemy = new Enemy(GameDefs.spriteTypes.RED_GHOST.type, GameDefs.spriteTypes.RED_GHOST.w, GameDefs.spriteTypes.RED_GHOST.h, this.canvasHalfW,this.canvasHalfH, this.gameConsts.ENEMY_SPEED);
+        } 
+        catch (err) 
+        {
+            console.error("Failed to add gameEnemy:", err);
+        }
+        
     }
 
     // Reset values each time a game starts

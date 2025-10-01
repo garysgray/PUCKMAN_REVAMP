@@ -82,8 +82,9 @@ function gameLoop()
             texts= [
                //"debug text1 here, saying what up!!!!",
                //"player posX: " + myController.game.player.posX,
-               "player speed: " + myController.game.player.speed,
-               "Game State: " + myController.game.gameState,
+               "player speed: " + myController.game.player.posX,
+               "gameEnemy: " + myController.game.gameEnemy.state,
+                "gameEnemy: " + myController.game.gameEnemy.posX,
             ];
 
             renderDebugText(texts);  

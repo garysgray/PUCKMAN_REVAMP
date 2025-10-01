@@ -23,6 +23,12 @@ const GameDefs = Object.freeze({
 
     spriteTypes: {
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/puckMen.png" },
+        RED_GHOST:    { type: "red_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/red_ghosts.png" },
+        BLUE_GHOST:    { type: "blue_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/blue_ghosts.png" },
+        GREEN_GHOST:    { type: "green_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/green_ghosts.png" },
+        ORANGE_GHOST:    { type: "orange_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/orange_ghosts.png" },
+        PINK_GHOST:    { type: "pink_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/pink_ghosts.png" },
+
         RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/bricks/red_brick.png" },
         BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/bricks/blue_brick.png" },
         GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/bricks/green_brick.png" },
@@ -106,8 +112,8 @@ class GameConsts
 {
     // ---- Private fields ----
     //sizes
-    #SCREEN_WIDTH = 700;
-    #SCREEN_HEIGHT = 700;
+    #SCREEN_WIDTH = 1000;
+    #SCREEN_HEIGHT = 600;
 
     //times
     #FALLBACK_DELTA = 16; // fallback ~60fps
@@ -128,6 +134,7 @@ class GameConsts
 
     //speed
     #PLAYER_SPEED = 200;
+    #ENEMY_SPEED  = 150;
 
     // //times
     // #SHIELD_TIME = 3;
@@ -153,6 +160,7 @@ class GameConsts
     get POOLSIZE(){ return this.#POOLSIZE; }
     get VOLUME(){ return this.#VOLUME; }
     get PLAYER_SPEED(){ return this.#PLAYER_SPEED; }
+    get ENEMY_SPEED(){ return this.#ENEMY_SPEED; }
     
     // get SHIELD_TIME(){ return this.#SHIELD_TIME; }
     // get AMMO_AMOUNT(){ return this.#AMMO_AMOUNT; }

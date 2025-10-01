@@ -53,8 +53,8 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.PLAY:
                 try
                 {
-                    const pauseMsg = "PRESS  CTRL  TO  PAUSE  GAME";
-                    device.centerTextOnY(pauseMsg, ch * layout.pauseY);
+                    // const pauseMsg = "PRESS  CTRL  TO  PAUSE  GAME";
+                    // device.centerTextOnY(pauseMsg, ch * layout.pauseY);
                 }
                 catch (e) 
                 {

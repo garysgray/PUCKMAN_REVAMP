@@ -162,6 +162,62 @@ class GameObject
 }
 
 // --------------------------------------------
+// Enemy object
+// --------------------------------------------
+class Enemy extends GameObject 
+{
+    constructor(name, width, height, x, y, speed) 
+    {
+        super(name, width, height, x, y, speed);
+    }
+
+    // All it does now is follow player
+    update(delta, target) 
+    {
+        try 
+        {
+            if (!target || !target.alive) return;
+
+            // Calculate direction vector
+            let dx = target.posX - this.posX;
+            let dy = target.posY - this.posY;
+
+            // Normalize
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 0) 
+            {
+                dx /= dist;
+                dy /= dist;
+
+                // Move toward player
+                this.movePos(
+                    this.posX + dx * this.speed * delta,
+                    this.posY + dy * this.speed * delta
+                );
+
+                // --- Update direction state for sprite ---
+                if (Math.abs(dx) > Math.abs(dy)) 
+                {
+                    // Horizontal dominates
+                    if (dx > 0) this.state = GameDefs.playStates.RIGHT;
+                    else this.state = GameDefs.playStates.LEFT;
+                }
+                else
+                {
+                    // Vertical dominates
+                    if (dy > 0) this.state = GameDefs.playStates.DOWN;
+                    else this.state = GameDefs.playStates.UP;
+                }
+            }
+        } 
+        catch (e) 
+        {
+            console.error("Enemy update error:", e);
+        }
+    }
+}
+
+// --------------------------------------------
 // Projectile
 // --------------------------------------------
 // Fired by the player (or NPCs in the future)

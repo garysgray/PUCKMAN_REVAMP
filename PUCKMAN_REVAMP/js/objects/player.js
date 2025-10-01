@@ -194,7 +194,4 @@ class Player extends GameObject
     {
         device.setupMouse(this, device);
     } 
-    
-   
-
 }

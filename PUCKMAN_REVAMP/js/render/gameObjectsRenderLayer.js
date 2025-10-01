@@ -25,6 +25,7 @@ function renderGameObjectsLayer(device, game) {
                 {
                     renderBoarder(device, game);
                     renderPlayer(device, game);
+                    renderStateSprite(device, game.gameEnemy );
                 } 
                 catch (e) 
                 {
