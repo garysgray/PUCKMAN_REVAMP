@@ -80,7 +80,7 @@ function map(aScreenWidth,aScreenHeight,aCellWidth,aCellHeight,rows,colums)
 			for(j = 0;j< this.numGridY;j+= this.skip)
 			{
 				//dev.ctx.drawImage(this.sprite.image,this.offSet+(i*this.sprite.width),this.offSet+(j* this.sprite.height));
-				var aBrick = new sprite(aSprite.image.src,aSprite.width,aSprite.height,this.offSet+(i*aSprite.width),this.offSet+(j* aSprite.height));
+				var aBrick = new sprite(aSprite.image.src, aSprite.width, aSprite.height, this.offSet + (i * aSprite.width), this.offSet + (j * aSprite.height));
 				 aBrick.type = "brick";
 				spriteHldr.addSprite(aBrick);
 			}

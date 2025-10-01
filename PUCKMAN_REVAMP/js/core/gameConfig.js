@@ -23,6 +23,7 @@ class Game
     #gameConsts;
     #billBoards;
     #gameTimers;
+    #enemyHolder
     #canvasWidth;
     #canvasHeight;
     #canvasHalfW;
@@ -36,7 +37,7 @@ class Game
     #boarderVerticleBuffer;
 
     #randValue;
-    #gameEnemy;
+ 
 
     // #projectiles;
     #gameSprites;
@@ -54,6 +55,7 @@ class Game
             this.#gameConsts   = new GameConsts();
             this.#billBoards   = new ObjHolder();
             this.#gameTimers   = new ObjHolder();
+            this.#enemyHolder   = new ObjHolder();
 
             // this.#projectiles  = new ObjHolder();
             this.#gameSprites  = new ObjHolder();
@@ -104,6 +106,7 @@ class Game
     get gameConsts()   { return this.#gameConsts; }
     get billBoards()  { return this.#billBoards; }
     get gameTimers()  { return this.#gameTimers; }
+    get enemyHolder()  { return this.#enemyHolder; }
     get canvasWidth()  { return this.#canvasWidth; }
     get canvasHeight() { return this.#canvasHeight; }
     get canvasHalfW()  { return this.#canvasHalfW; }
@@ -123,8 +126,6 @@ class Game
     get boarderVerticleBuffer()  { return this.#boarderVerticleBuffer; } 
 
     get randValue()  { return this.#randValue; } 
-
-    get gameEnemy()  { return this.#gameEnemy; } 
     
     // -----------------------------
     // Mutators
@@ -136,8 +137,6 @@ class Game
     set boarderVerticleBuffer(v)        { this.#boarderVerticleBuffer = v; }
 
     set randValue(v)        { this.#randValue = v; }
-
-    set gameEnemy(v)        { this.#gameEnemy = v; }
 
     decreaseLives(a)    { this.#lives -= a; }
     increaseScore(a)    { this.#score += a; }
@@ -258,7 +257,12 @@ class Game
 
         try 
         {
-             this.#gameEnemy = new Enemy(GameDefs.spriteTypes.RED_GHOST.type, GameDefs.spriteTypes.RED_GHOST.w, GameDefs.spriteTypes.RED_GHOST.h, this.canvasHalfW,this.canvasHalfH, this.gameConsts.ENEMY_SPEED);
+             
+             this.enemyHolder.addObject(new Enemy(GameDefs.spriteTypes.BLUE_GHOST.type, GameDefs.spriteTypes.BLUE_GHOST.w, GameDefs.spriteTypes.BLUE_GHOST.h, this.canvasHalfW,this.canvasHalfH, 100));
+             this.enemyHolder.addObject(new Enemy(GameDefs.spriteTypes.GREEN_GHOST.type, GameDefs.spriteTypes.GREEN_GHOST.w, GameDefs.spriteTypes.GREEN_GHOST.h, this.canvasHalfW,this.canvasHalfH, 140));
+             this.enemyHolder.addObject(new Enemy(GameDefs.spriteTypes.ORANGE_GHOST.type, GameDefs.spriteTypes.ORANGE_GHOST.w, GameDefs.spriteTypes.ORANGE_GHOST.h, this.canvasHalfW,this.canvasHalfH, 75));
+             this.enemyHolder.addObject(new Enemy(GameDefs.spriteTypes.PINK_GHOST.type, GameDefs.spriteTypes.PINK_GHOST.w, GameDefs.spriteTypes.PINK_GHOST.h, this.canvasHalfW,this.canvasHalfH, 120));
+             this.enemyHolder.addObject(new Enemy(GameDefs.spriteTypes.RED_GHOST.type, GameDefs.spriteTypes.RED_GHOST.w, GameDefs.spriteTypes.RED_GHOST.h, this.canvasHalfW,this.canvasHalfH, this.gameConsts.ENEMY_SPEED));
         } 
         catch (err) 
         {

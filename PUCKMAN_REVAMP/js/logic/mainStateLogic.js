@@ -59,7 +59,13 @@ function updateGameStates(device, game, delta)
                     game.player.update(device, game, delta);
                     checkforPause(device, game);  
                     
-                    game.gameEnemy.update(delta, game.player);
+                    //game.gameEnemy.update(delta, game.player);
+
+                    game.enemyHolder.forEach(element => 
+                    {
+                         //update(device, element );
+                         element.update(delta, game.player);
+                    });
                 } 
                 catch (e) 
                 {

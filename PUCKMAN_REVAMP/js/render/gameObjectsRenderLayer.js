@@ -26,6 +26,13 @@ function renderGameObjectsLayer(device, game) {
                     renderBoarder(device, game);
                     renderPlayer(device, game);
                     renderStateSprite(device, game.gameEnemy );
+
+                    //for (let i = 0; i < game.enemyHolder.objects)
+                    //console.log(game.gameEnemy.name);
+                    game.enemyHolder.forEach(element => 
+                    {
+                         renderStateSprite(device, element );
+                    });
                 } 
                 catch (e) 
                 {

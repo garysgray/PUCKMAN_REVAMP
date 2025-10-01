@@ -21,8 +21,9 @@ const GameDefs = Object.freeze({
         UP: 3,
     },
 
+    // FIX use dif sprite holders for bricks, ghosts, fruit
     spriteTypes: {
-        PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/puckMen.png" },
+        PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
         RED_GHOST:    { type: "red_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/red_ghosts.png" },
         BLUE_GHOST:    { type: "blue_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/blue_ghosts.png" },
         GREEN_GHOST:    { type: "green_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/green_ghosts.png" },
