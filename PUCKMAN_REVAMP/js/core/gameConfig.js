@@ -23,7 +23,12 @@ class Game
     #gameConsts;
     #billBoards;
     #gameTimers;
-    #enemyHolder
+
+    #boarderHolder;
+    #goalsHolder;
+    #gridHolder;
+    #enemyHolder;
+
     #canvasWidth;
     #canvasHeight;
     #canvasHalfW;
@@ -55,7 +60,7 @@ class Game
             this.#gameConsts   = new GameConsts();
             this.#billBoards   = new ObjHolder();
             this.#gameTimers   = new ObjHolder();
-            this.#enemyHolder   = new ObjHolder();
+            this.#enemyHolder  = new ObjHolder();
 
             // this.#projectiles  = new ObjHolder();
             this.#gameSprites  = new ObjHolder();

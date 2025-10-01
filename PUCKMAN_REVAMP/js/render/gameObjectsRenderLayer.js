@@ -24,11 +24,10 @@ function renderGameObjectsLayer(device, game) {
                 try
                 {
                     renderBoarder(device, game);
-                    renderPlayer(device, game);
-                    renderStateSprite(device, game.gameEnemy );
 
-                    //for (let i = 0; i < game.enemyHolder.objects)
-                    //console.log(game.gameEnemy.name);
+                    renderPlayer(device, game);
+
+                    // Render each enemy
                     game.enemyHolder.forEach(element => 
                     {
                          renderStateSprite(device, element );

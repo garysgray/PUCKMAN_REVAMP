@@ -199,14 +199,14 @@ class Enemy extends GameObject
                 if (Math.abs(dx) > Math.abs(dy)) 
                 {
                     // Horizontal dominates
-                    if (dx > 0) this.state = GameDefs.playStates.RIGHT;
-                    else this.state = GameDefs.playStates.LEFT;
+                    if (dx > 0) this.state = GameDefs.enemyPlayStates.RIGHT;
+                    else this.state = GameDefs.enemyPlayStates.LEFT;
                 }
                 else
                 {
                     // Vertical dominates
-                    if (dy > 0) this.state = GameDefs.playStates.DOWN;
-                    else this.state = GameDefs.playStates.UP;
+                    if (dy > 0) this.state = GameDefs.enemyPlayStates.DOWN;
+                    else this.state = GameDefs.enemyPlayStates.UP;
                 }
             }
         } 

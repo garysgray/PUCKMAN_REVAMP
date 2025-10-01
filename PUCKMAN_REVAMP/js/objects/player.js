@@ -142,37 +142,71 @@ class Player extends GameObject
         return true;
     }
 
+    // checkForKeyBoardMoveInput(device, delta)
+    // {
+    //     let dx = 0;
+    //     let dy = 0;
+
+        
+    //     if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) {
+    //         dy += 1;
+    //         this.playerState = GameDefs.playStates.DOWN;
+    //     }
+       
+    //     if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) 
+    //     {
+    //         dx += 1;
+    //         this.playerState = GameDefs.playStates.RIGHT;
+    //     }
+
+    //     if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) 
+    //     {
+    //         dx -= 1;
+    //         this.playerState = GameDefs.playStates.LEFT;
+    //     }
+
+    //     if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W))
+    //     {
+    //         dy -= 1;
+    //         this.playerState = GameDefs.playStates.UP;
+    //     } 
+
+    //     // normalize diagonal movement
+    //     if (dx !== 0 || dy !== 0) 
+    //     {
+    //         const length = Math.sqrt(dx * dx + dy * dy);
+    //         dx /= length;
+    //         dy /= length;
+
+    //         this.movePos(
+    //             this.posX + dx * this.speed * delta,
+    //             this.posY + dy * this.speed * delta
+    //         );
+    //     }
+    // }
+
     checkForKeyBoardMoveInput(device, delta)
     {
         let dx = 0;
         let dy = 0;
-
         
-        if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) 
-        {
-            dy += 1;
-            this.playerState = GameDefs.playStates.DOWN;
-        }
-       
-        if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) 
-        {
-            dx += 1;
-            this.playerState = GameDefs.playStates.RIGHT;
-        }
+        if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) dy += 1;
+        if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W)) dy -= 1;
+        if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) dx += 1;
+        if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) dx -= 1;
 
-        if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) 
-        {
-            dx -= 1;
-            this.playerState = GameDefs.playStates.LEFT;
-        }
+        // set state BEFORE normalization
+        if (dx === 0 && dy < 0) this.playerState = GameDefs.playStates.UP;
+        else if (dx === 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN;
+        else if (dx > 0 && dy === 0) this.playerState = GameDefs.playStates.RIGHT;
+        else if (dx < 0 && dy === 0) this.playerState = GameDefs.playStates.LEFT;
+        else if (dx > 0 && dy < 0) this.playerState = GameDefs.playStates.UP_RIGHT;
+        else if (dx < 0 && dy < 0) this.playerState = GameDefs.playStates.UP_LEFT;
+        else if (dx > 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_RIGHT;
+        else if (dx < 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_LEFT;
 
-        if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W))
-        {
-            dy -= 1;
-            this.playerState = GameDefs.playStates.UP;
-        } 
 
-        // normalize diagonal movement
+            // normalize diagonal movement
         if (dx !== 0 || dy !== 0) 
         {
             const length = Math.sqrt(dx * dx + dy * dy);

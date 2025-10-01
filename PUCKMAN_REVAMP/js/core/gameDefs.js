@@ -14,11 +14,24 @@ const GameDefs = Object.freeze({
         LOSE: 4
     },
 
-    playStates: {
+    // These are to help enemy render the right clip for current direction
+    enemyPlayStates: {
         RIGHT: 0,
         DOWN: 1,
         LEFT: 2,
         UP: 3,
+    },
+
+    // These are to help the player render the right clip for current direction
+    playStates: {
+        UP: 0,
+        UP_RIGHT: 1,
+        RIGHT: 2,
+        DOWN_RIGHT: 3,
+        DOWN: 4,
+        DOWN_LEFT: 5,
+        LEFT: 6,
+        UP_LEFT: 7
     },
 
     // FIX use dif sprite holders for bricks, ghosts, fruit
@@ -170,6 +183,5 @@ class GameConsts
     // get NPC_SPEED_INCREASE_INTERVALS(){ return this.#NPC_SPEED_INCREASE_INTERVALS; }
     // get NPC_SPEED_INCREASE_AMOUNT(){ return this.#NPC_SPEED_INCREASE_AMOUNT; }
     // get BILLBOARDS_OFFSET_BUFF(){ return this.#BILLBOARDS_OFFSET_BUFF; }
-    
-    
+
 }
