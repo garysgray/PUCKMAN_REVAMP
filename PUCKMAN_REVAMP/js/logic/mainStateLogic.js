@@ -64,7 +64,7 @@ function updateGameStates(device, game, delta)
                     game.enemyHolder.forEach(element => 
                     {
                          //update(device, element );
-                         element.update(delta, game.player);
+                         element.update(delta, game, game.player);
                     });
                 } 
                 catch (e) 

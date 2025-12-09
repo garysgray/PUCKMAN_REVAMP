@@ -113,7 +113,6 @@ function renderStateSprite(device, sprite )
 {
     try 
     {
-        //console.log(spriteObj.name);
        const spriteImage = device.images.getImage(sprite.name);
 
         if (!spriteImage) 
@@ -162,11 +161,12 @@ function drawHitBoxs(device, tempObj)
 
 function renderBoarder(device, game)
 {
-    for (let i = 0; i < game.gameSprites.getSize(); i++)
+    // build cache if needed
+    if (!game.cachedBorderReady)
     {
-        const tempObj = game.gameSprites.getIndex(i);
-        const brick = device.images.getImage(tempObj.name);
-        device.renderImage(brick, tempObj.posX,tempObj.posY, tempObj.width, tempObj.height)
+        game.createBorderCache(device);
     }
-}
 
+    // draw the cached border as one image
+    device.ctx.drawImage(game.cachedBorder, 0, 0);
+}

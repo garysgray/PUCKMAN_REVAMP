@@ -34,6 +34,13 @@ const GameDefs = Object.freeze({
         UP_LEFT: 7
     },
 
+    behaveStates:{
+        ROAM: 0,
+        FOLLOW: 1,
+        RUN: 2,
+        STOP: 3,
+    },
+
     // FIX use dif sprite holders for bricks, ghosts, fruit
     spriteTypes: {
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
@@ -51,8 +58,6 @@ const GameDefs = Object.freeze({
     },
 
     billBoardTypes: {
-        BACKGROUND: { type: "background", w: 600, h: 600, path: "assets/sprites/billBoards/stars.png", isCenter: false },
-        HUD:        { type: "hud",        w: 850, h: 200, path: "assets/sprites/billBoards/hud.png" , isCenter: false },
         SPLASH:     { type: "splash",     w: 400, h: 100, path: "assets/sprites/billBoards/gameSplash.png" , isCenter: true },
         PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
         WIN:        { type: "win",        w: 400, h: 100, path: "assets/sprites/billBoards/win.png" , isCenter: true },
@@ -80,10 +85,10 @@ const GameDefs = Object.freeze({
     gameTexts: {
         INIT: {
             INSTRUCTIONS: [
-                "Some Init Text for show",
-                "the text allignment layout array ",
-                "is located in the:",
-                "textRenderLayer.js"
+                " ",
+                "PRESS SPACE-BAR TO START",
+                 " ",
+                "USE ARROW KEYS TO MOVE", 
             ]
         },
         HUD: {

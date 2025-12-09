@@ -85,43 +85,6 @@ class Player extends GameObject
         }
     }
 
-    enforceBoarderBounds(game, width, height) 
-    {
-        try 
-        {
-            const hudBuffer = game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER;
-            const leftSide = width + game.boarderHorizontalBuffer;
-            const rightSide = width + game.boarderHorizontalBuffer;
-            const topSide = height + game.boarderVerticleBuffer + hudBuffer
-            const bottomSide = height + game.boarderVerticleBuffer;
-
-            if (this.posX - this.halfWidth < leftSide) 
-            {
-                this.posX = leftSide + this.halfWidth;
-            }
-
-            if (this.posX + this.halfWidth > game.gameConsts.SCREEN_WIDTH - rightSide) 
-            {
-                this.posX = game.gameConsts.SCREEN_WIDTH - (this.halfWidth + rightSide);
-            }
-
-            if (this.posY - this.halfHeight < topSide)
-            {
-                 this.posY = this.halfHeight + topSide;
-            }
-
-            if (this.posY + this.halfHeight > game.gameConsts.SCREEN_HEIGHT - bottomSide) 
-            {
-                this.posY = (game.gameConsts.SCREEN_HEIGHT) - (this.halfHeight + bottomSide);
-            }
-        }  
-        catch (e) 
-        { 
-            console.error("Player enforceBounds error:", e);
-        }
-    }
-
-
     // Uses the coolDownTimer to make sure audio does not spam audio file when checking for user shoot input
     checkforShoot(device, game, delta )
     {

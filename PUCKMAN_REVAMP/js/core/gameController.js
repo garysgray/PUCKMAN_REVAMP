@@ -52,6 +52,7 @@ class Controller
     // ------------------------------------------------------------------------
     get device() { return this.#device; }
     get game() { return this.#game; }
+    get layers() { return this.#layers; }
 
     // ------------------------------------------------------------------------
     // Initialize game
@@ -60,7 +61,7 @@ class Controller
     {
         try 
         {
-            this.#game.initGame(this.#device);
+            this.game.initGame(this.device);
 
             // Layers have to be rendered in this order
             if (typeof billBoardsLayer !== 'undefined')  this.addLayer(billBoardsLayer);      // game backgrounds
@@ -84,7 +85,7 @@ class Controller
         try
         {
             if (!layer) throw new Error("Layer is undefined or null.");
-            this.#layers.push(layer);
+            this.layers.push(layer);
         } 
         catch (error)
         {
@@ -103,14 +104,14 @@ class Controller
         try
         {
             // Update game logic
-            updateGameStates(this.#device, this.#game, delta);
+            updateGameStates(this.device, this.game, delta);
 
             // Render each layer
-            for (const layer of this.#layers) 
+            for (const layer of this.layers) 
             {
                 try 
                 { 
-                    layer.render(this.#device, this.#game); 
+                    layer.render(this.device, this.game); 
                 } 
                 catch (renderError) 
                 { 
@@ -119,7 +120,7 @@ class Controller
             }
 
             // Clear per-frame input
-            this.#device.keys.clearFrameKeys();
+            this.device.keys.clearFrameKeys();
 
         } 
         catch (error)

@@ -159,6 +159,42 @@ class GameObject
     {
         return Math.max(this.#halfWidth, this.#halfHeight);
     }
+
+    enforceBoarderBounds(game, width, height) 
+    {
+        try 
+        {
+            const hudBuffer = game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER;
+            const leftSide = width + game.boarderHorizontalBuffer;
+            const rightSide = width + game.boarderHorizontalBuffer;
+            const topSide = height + game.boarderVerticleBuffer + hudBuffer
+            const bottomSide = height + game.boarderVerticleBuffer;
+
+            if (this.posX - this.halfWidth < leftSide) 
+            {
+                this.posX = leftSide + this.halfWidth;
+            }
+
+            if (this.posX + this.halfWidth > game.gameConsts.SCREEN_WIDTH - rightSide) 
+            {
+                this.posX = game.gameConsts.SCREEN_WIDTH - (this.halfWidth + rightSide);
+            }
+
+            if (this.posY - this.halfHeight < topSide)
+            {
+                 this.posY = this.halfHeight + topSide;
+            }
+
+            if (this.posY + this.halfHeight > game.gameConsts.SCREEN_HEIGHT - bottomSide) 
+            {
+                this.posY = (game.gameConsts.SCREEN_HEIGHT) - (this.halfHeight + bottomSide);
+            }
+        }  
+        catch (e) 
+        { 
+            console.error("gameobject enforceBounds error:", e);
+        }
+    }
 }
 
 // --------------------------------------------
@@ -166,53 +202,164 @@ class GameObject
 // --------------------------------------------
 class Enemy extends GameObject 
 {
+    #behaveState;
+
     constructor(name, width, height, x, y, speed) 
     {
         super(name, width, height, x, y, speed);
+
+        this.#behaveState = GameDefs.behaveStates.ROAM;
     }
 
+    get behaveState() { return this.#behaveState; }
+
+    set behaveState(v) { this.#behaveState = v; }
+
     // All it does now is follow player
-    update(delta, target) 
+    update(delta, game, target) 
     {
         try 
         {
-            if (!target || !target.alive) return;
-
-            // Calculate direction vector
-            let dx = target.posX - this.posX;
-            let dy = target.posY - this.posY;
-
-            // Normalize
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > 0) 
+            switch (this.behaveState) 
             {
-                dx /= dist;
-                dy /= dist;
+                case GameDefs.behaveStates.ROAM:
+                    this.roam(delta, target, 100); 
+                    break;
+                case GameDefs.behaveStates.FOLLOW:
+                    this.follow(delta, target, 200);
+                    break;
+                case GameDefs.behaveStates.RUN:
+                    break;
+                case GameDefs.behaveStates.STOP:
+                    this.stop(target, 1);
+                    break;
+            } 
 
-                // Move toward player
-                this.movePos(
-                    this.posX + dx * this.speed * delta,
-                    this.posY + dy * this.speed * delta
-                );
+            this.enforceBoarderBounds(game, GameDefs.spriteTypes.RED_BRICK.w, GameDefs.spriteTypes.RED_BRICK.h) 
 
-                // --- Update direction state for sprite ---
-                if (Math.abs(dx) > Math.abs(dy)) 
-                {
-                    // Horizontal dominates
-                    if (dx > 0) this.state = GameDefs.enemyPlayStates.RIGHT;
-                    else this.state = GameDefs.enemyPlayStates.LEFT;
-                }
-                else
-                {
-                    // Vertical dominates
-                    if (dy > 0) this.state = GameDefs.enemyPlayStates.DOWN;
-                    else this.state = GameDefs.enemyPlayStates.UP;
-                }
-            }
-        } 
+        }
         catch (e) 
         {
             console.error("Enemy update error:", e);
+        }
+    }
+
+    
+
+    follow(delta, target, stopFollowDistance = 300) 
+    {
+        if (!target || !target.alive) {
+            this.behaveState = GameDefs.behaveStates.ROAM;
+            return;
+        }
+
+        // Calculate direction vector
+        let dx = target.posX - this.posX;
+        let dy = target.posY - this.posY;
+
+        // Distance to target
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // If target is too far, go back to roam
+        if (dist > stopFollowDistance) {
+            this.behaveState = GameDefs.behaveStates.ROAM;
+            return;
+        }
+
+        if (dist < 1) {
+            this.behaveState = GameDefs.behaveStates.STOP;
+            return;
+        }
+
+        
+        // Normalize and move toward target
+        if (dist > 0) 
+        {
+            dx /= dist;
+            dy /= dist;
+
+            this.movePos(
+                this.posX + dx * this.speed * delta,
+                this.posY + dy * this.speed * delta
+            );
+
+            // --- Update sprite direction ---
+            if (Math.abs(dx) > Math.abs(dy)) 
+            {
+                this.state = dx > 0 ? GameDefs.enemyPlayStates.RIGHT : GameDefs.enemyPlayStates.LEFT;
+            }
+            else
+            {
+                this.state = dy > 0 ? GameDefs.enemyPlayStates.DOWN : GameDefs.enemyPlayStates.UP;
+            }
+        }
+    }
+
+
+    roam(delta, target, followDistance = 200) 
+    {
+        if (!target || !target.alive) target = null;
+
+        // --- Initialize roam timer and direction if not present ---
+        if (this.roamTimer === undefined || this.roamDirection === undefined) 
+        {
+            this.roamTimer = 0;
+            const angle = Math.random() * 2 * Math.PI;
+            this.roamDirection = { x: Math.cos(angle), y: Math.sin(angle) };
+        }
+
+        // --- Update timer ---
+        this.roamTimer -= delta;
+        if (this.roamTimer <= 0) 
+        {
+            // Pick a new random direction for 1–3 seconds
+            const angle = Math.random() * 2 * Math.PI;
+            this.roamDirection = { x: Math.cos(angle), y: Math.sin(angle) };
+            this.roamTimer = 1 + Math.random() * 2; // seconds
+        }
+
+        // --- Move enemy in current roam direction ---
+        this.movePos(
+            this.posX + this.roamDirection.x * this.speed * delta,
+            this.posY + this.roamDirection.y * this.speed * delta
+        );
+
+        // --- Update sprite direction ---
+        if (Math.abs(this.roamDirection.x) > Math.abs(this.roamDirection.y)) 
+        {
+            this.state = this.roamDirection.x > 0 ? GameDefs.enemyPlayStates.RIGHT : GameDefs.enemyPlayStates.LEFT;
+        } else 
+        {
+            this.state = this.roamDirection.y > 0 ? GameDefs.enemyPlayStates.DOWN : GameDefs.enemyPlayStates.UP;
+        }
+
+        // --- Check distance to target to switch to follow ---
+        if (target) 
+        {
+            const distX = target.posX - this.posX;
+            const distY = target.posY - this.posY;
+            const dist = Math.sqrt(distX * distX + distY * distY);
+            if (dist <= followDistance) 
+            {
+                this.behaveState = GameDefs.behaveStates.FOLLOW;
+            }
+        }
+    }
+
+    stop(target, aDist )
+    {
+        // Calculate direction vector
+        let dx = target.posX - this.posX;
+        let dy = target.posY - this.posY;
+
+        // Distance to target
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // If target is too far, go back to roam
+        if (dist > aDist) 
+        {
+            this.behaveState = GameDefs.behaveStates.FOLLOW;
+            return;
         }
     }
 }
