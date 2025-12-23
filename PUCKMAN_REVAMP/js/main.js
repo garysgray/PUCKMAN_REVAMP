@@ -5,15 +5,37 @@
 // =======================================================
 // DEBUG TOOLS
 // =======================================================
-let HIT_BOXES = false;
-let DEBUG_TEXT = false;
+const DEV_MODE = true; // false when shipping
+//const DEV_MODE = false; // false when shipping
 
-// Uncomment for debugging
-// HIT_BOXES = true;
-// DEBUG_TEXT = true;
+let HIT_BOXES = false;
+let DEBUG_TEXT = DEV_MODE;
 
 let DRAW_DEBUG_TEXT = DEBUG_TEXT;
 let DRAW_DEBUG_HITBOXES = HIT_BOXES;
+
+// Array to hold debug lines dynamically
+const debugLines = [];
+
+// Add a line dynamically
+function addDebugLine(line)
+{
+    debugLines.push(line);
+}
+
+// Clear all debug lines
+function clearDebugLines() 
+{
+    debugLines.length = 0;
+}
+
+// Write debug panel
+function writeDebugText() 
+{
+    const el = document.getElementById("debug-text");
+    if (!el) return;
+    el.textContent = debugLines.join("\n");
+}
 
 // =======================================================
 // GLOBALS
@@ -47,6 +69,10 @@ function initControllerAndGame()
     {
         myController.game.initGame(myController.device);
         myController.game.setGame(myController.device);
+
+        updateDebugPanelVisibility(); // DEBUG UI INIT
+        updateDebugPanelPosition();   // DEBUG UI INIT POSITION
+
         safeStartGame();
     } catch (e) 
     {
@@ -59,7 +85,6 @@ function initControllerAndGame()
 // =======================================================
 function safeStartGame() 
 {
-    // Start your normal game loop
     if (!readyToStart()) return setTimeout(startGameSafely, 100);
     if (!gameRunning) 
     {
@@ -79,21 +104,6 @@ function startLoop()
 {
     lastTime = performance.now();
     requestAnimationFrame(() => requestAnimationFrame(gameLoop));
-}
-
-// =======================================================
-// DEBUG RENDER
-// =======================================================
-function renderDebugText(texts) 
-{
-    const posX = myController.game.gameConsts.SCREEN_WIDTH * 0.07;
-    let posY = myController.game.gameConsts.SCREEN_HEIGHT * 0.2;
-    const buffY = myController.game.gameConsts.SCREEN_HEIGHT * 0.05;
-    texts.forEach(t => 
-    {
-        myController.device.debugText(t, posX, posY, myController.game.gameConsts.DEBUG_TEXT_COLOR);
-        posY += buffY;
-    });
 }
 
 // =======================================================
@@ -121,16 +131,76 @@ function gameLoop()
         accumulator -= fixedStep;
     }
 
+    // Clear old debug lines
+    clearDebugLines();
+
+    // Add default debug lines
     if (DRAW_DEBUG_TEXT)
-    { 
-        {
-            renderDebugText([
-                "HELLO",
-                myController.game.player.posX,
-                myController.game.player.posY,
-            ]);
-        }
+    {
+        addDebugLine("PUCKMAN DEBUG");
+        addDebugLine("----------------");
+        addDebugLine(`Player X: ${myController.game.player.posX.toFixed(1)}`);
+        addDebugLine(`Player Y: ${myController.game.player.posY.toFixed(1)}`);
+        addDebugLine(`Lives: ${myController.game.lives}`);
+        addDebugLine(`Score: ${myController.game.score}`);
+        addDebugLine(`Enemies: ${myController.game.enemyHolder.getSize()}`);
     }
+
+    // Render all debug lines
+    writeDebugText();
 
     rafId = requestAnimationFrame(gameLoop);
 }
+
+// =======================================================
+// DEV MODE STUFF
+// =======================================================
+function updateDebugPanelVisibility()
+{
+    const panel = document.getElementById("debug-panel");
+    if (!panel) return;
+
+    if (DRAW_DEBUG_TEXT)
+        panel.classList.remove("hidden");
+    else
+        panel.classList.add("hidden");
+}
+
+function updateDebugPanelPosition() 
+{
+    const panel = document.getElementById("debug-panel");
+    const canvas = document.getElementById("canvas");
+    if (!panel || !canvas) return;
+
+    const canvasRect = canvas.getBoundingClientRect();
+    panel.style.left = (canvasRect.left - panel.offsetWidth - 10) + "px"; // 10px gap
+    panel.style.top = (canvasRect.top + canvasRect.height / 2 - panel.offsetHeight / 2) + "px";
+}
+
+// Toggle debug panel and hitboxes
+window.addEventListener("keydown", e =>
+{
+    if (!DEV_MODE) return;
+
+    switch (e.code)
+    {
+        case "Backquote": // `
+            DRAW_DEBUG_TEXT = !DRAW_DEBUG_TEXT;
+            updateDebugPanelVisibility();
+            break;
+
+        case "KeyH": // H
+            DRAW_DEBUG_HITBOXES = !DRAW_DEBUG_HITBOXES;
+            console.log("Hitboxes:", DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
+            break;
+    }
+});
+
+document.getElementById("debug-panel")
+    ?.classList.toggle("hidden", !DRAW_DEBUG_TEXT);
+
+// =======================================================
+// WINDOW EVENTS
+// =======================================================
+window.addEventListener("load", updateDebugPanelPosition);
+window.addEventListener("resize", updateDebugPanelPosition);
