@@ -14,7 +14,7 @@ class Player extends GameObject
 
     constructor(width, height, x, y, speed) 
     {
-        super(GameDefs.spriteTypes.PLAYER, width, height, x, y, speed);
+        super(GameDefs.playerSpriteTypes.PLAYER, width, height, x, y, speed);
 
         this.#playerState = GameDefs.playStates.RIGHT;
         this.#savedPlayerState = GameDefs.playStates.RIGHT;
@@ -40,9 +40,7 @@ class Player extends GameObject
         try 
         {
             // Enforce screen bounds
-           //this.enforceScreenBounds(game);
-
-            this.enforceBoarderBounds(game, GameDefs.spriteTypes.RED_BRICK.w, GameDefs.spriteTypes.RED_BRICK.h) 
+            this.enforceBoarderBounds(game); 
 
             // See if player used shoot button 
             if(this.checkforShoot(device, game, delta)) 
@@ -51,7 +49,7 @@ class Player extends GameObject
                 device.audio.playSound(GameDefs.soundTypes.SHOOT.name);
             }
 
-            this.checkForKeyBoardMoveInput(device, delta);
+            this.checkForKeyBoardMoveInput(device, game, delta);
 
             // Sync player state with current playState
             if (this.state !== game.playState) 
@@ -62,26 +60,6 @@ class Player extends GameObject
         catch (e) 
         {
             console.error("Player update error:", e);
-        }
-    }
-
-    // Prevents player from leaving visible play area
-    enforceScreenBounds(game) 
-    {
-        try 
-        {
-            const hudBuffer = game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER;
-            if (this.posX - this.halfWidth < 0) this.posX = this.halfWidth;
-            if (this.posX + this.halfWidth > game.gameConsts.SCREEN_WIDTH) this.posX = game.gameConsts.SCREEN_WIDTH - this.halfWidth;
-            if (this.posY - this.halfHeight < 0 + hudBuffer) this.posY = this.halfHeight + hudBuffer;
-            if (this.posY + this.halfHeight > game.gameConsts.SCREEN_HEIGHT) 
-            {
-                this.posY = (game.gameConsts.SCREEN_HEIGHT) - this.halfHeight;
-            }
-        }  
-        catch (e) 
-        { 
-            console.error("Player enforceBounds error:", e);
         }
     }
 
@@ -105,50 +83,7 @@ class Player extends GameObject
         return true;
     }
 
-    // checkForKeyBoardMoveInput(device, delta)
-    // {
-    //     let dx = 0;
-    //     let dy = 0;
-
-        
-    //     if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) {
-    //         dy += 1;
-    //         this.playerState = GameDefs.playStates.DOWN;
-    //     }
-       
-    //     if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) 
-    //     {
-    //         dx += 1;
-    //         this.playerState = GameDefs.playStates.RIGHT;
-    //     }
-
-    //     if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) 
-    //     {
-    //         dx -= 1;
-    //         this.playerState = GameDefs.playStates.LEFT;
-    //     }
-
-    //     if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W))
-    //     {
-    //         dy -= 1;
-    //         this.playerState = GameDefs.playStates.UP;
-    //     } 
-
-    //     // normalize diagonal movement
-    //     if (dx !== 0 || dy !== 0) 
-    //     {
-    //         const length = Math.sqrt(dx * dx + dy * dy);
-    //         dx /= length;
-    //         dy /= length;
-
-    //         this.movePos(
-    //             this.posX + dx * this.speed * delta,
-    //             this.posY + dy * this.speed * delta
-    //         );
-    //     }
-    // }
-
-    checkForKeyBoardMoveInput(device, delta)
+    checkForKeyBoardMoveInput(device, game, delta)
     {
         let dx = 0;
         let dy = 0;
@@ -169,17 +104,15 @@ class Player extends GameObject
         else if (dx < 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_LEFT;
 
 
-            // normalize diagonal movement
+        // normalize diagonal movement
         if (dx !== 0 || dy !== 0) 
         {
             const length = Math.sqrt(dx * dx + dy * dy);
             dx /= length;
             dy /= length;
 
-            this.movePos(
-                this.posX + dx * this.speed * delta,
-                this.posY + dy * this.speed * delta
-            );
+            // >>> NEW COLLISION-AWARE MOVEMENT <<<
+            this.tryMoveWithCollision(game.mapHolder, dx * this.speed * delta, dy * this.speed * delta);
         }
     }
 

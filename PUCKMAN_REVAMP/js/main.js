@@ -126,7 +126,8 @@ function gameLoop()
         {
             renderDebugText([
                 "HELLO",
-                "how goes it"
+                myController.game.player.posX,
+                myController.game.player.posY,
             ]);
         }
     }

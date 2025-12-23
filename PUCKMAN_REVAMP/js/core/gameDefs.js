@@ -41,15 +41,19 @@ const GameDefs = Object.freeze({
         STOP: 3,
     },
 
-    // FIX use dif sprite holders for bricks, ghosts, fruit
-    spriteTypes: {
+    playerSpriteTypes: {
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
+    },
+
+    CharacterSpriteTypes: {
         RED_GHOST:    { type: "red_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/red_ghosts.png" },
         BLUE_GHOST:    { type: "blue_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/blue_ghosts.png" },
         GREEN_GHOST:    { type: "green_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/green_ghosts.png" },
         ORANGE_GHOST:    { type: "orange_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/orange_ghosts.png" },
         PINK_GHOST:    { type: "pink_ghost",     w: 24, h: 24, path: "assets/sprites/ghosts/pink_ghosts.png" },
+    },
 
+    mapSpriteTypes: {
         RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/bricks/red_brick.png" },
         BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/bricks/blue_brick.png" },
         GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/bricks/green_brick.png" },

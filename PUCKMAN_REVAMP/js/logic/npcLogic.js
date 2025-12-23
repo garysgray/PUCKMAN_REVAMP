@@ -112,27 +112,27 @@ function spawnNPC(device, game, type, width, height, speed, chance)
 
 // helper: does npc overlap any existing alive sprites
 // using gameObjects self getHitbox function to check for overlap
-function overlapsAny(npc, holder) 
-{
-    try 
-    {
-        const count = holder.getSize();
-        const npcBox = npc.getHitbox(1.0, 0); 
+// function overlapsAny(npc, holder) 
+// {
+//     try 
+//     {
+//         const count = holder.getSize();
+//         const npcBox = npc.getHitbox(1.0, 0); 
 
-        for (let i = 0; i < count; i++) 
-        {
-            const other = holder.getIndex(i);
-            const otherBox = other.getHitbox(1.0, 0);
+//         for (let i = 0; i < count; i++) 
+//         {
+//             const other = holder.getIndex(i);
+//             const otherBox = other.getHitbox(1.0, 0);
 
-            if (otherBox && rectsCollide(npcBox, otherBox)) return true;
-        }
-    } 
-    catch (e) 
-    {
-        console.error("overlapsAny error:", e);
-    }
-    return false;
-}
+//             if (otherBox && rectsCollide(npcBox, otherBox)) return true;
+//         }
+//     } 
+//     catch (e) 
+//     {
+//         console.error("overlapsAny error:", e);
+//     }
+//     return false;
+// }
 
 // -----------------------------------------------------------------------------
 // COLLISION

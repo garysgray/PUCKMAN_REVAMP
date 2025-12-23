@@ -9,7 +9,6 @@
 
 function updateGameStates(device, game, delta) 
 {
-    let firstGone = false
     try 
     {
         switch (game.gameState) 
@@ -20,13 +19,6 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.INIT:
                 try 
                 {
-                    if (firstGone != true)
-                    {
-                        // Set up all the game stuff up and then wait for player to hit "start/play" button
-                         game.setGame(device);
-                    }
-                    
-
                     if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY)) 
                     {
                         game.setGameState(GameDefs.gameStates.PLAY);

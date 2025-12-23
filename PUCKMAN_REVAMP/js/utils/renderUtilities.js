@@ -80,7 +80,7 @@ function renderPlayer(device, game)
     {
         const tempObj = game.player;
         
-        const playerImage = device.images.getImage(GameDefs.spriteTypes.PLAYER.type);
+        const playerImage = device.images.getImage(GameDefs.playerSpriteTypes.PLAYER.type);
 
         if (!playerImage) 
         {
@@ -169,4 +169,16 @@ function renderBoarder(device, game)
 
     // draw the cached border as one image
     device.ctx.drawImage(game.cachedBorder, 0, 0);
+}
+
+function renderMap(device, game)
+{
+    // build cache if needed
+    if (!game.cachedMapReady)
+    {
+        game.createMapCache(device);
+    }
+
+    // draw the cached border as one image
+    device.ctx.drawImage(game.cachedMap, 0, 0);
 }

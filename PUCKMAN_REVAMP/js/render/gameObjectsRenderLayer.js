@@ -23,6 +23,7 @@ function renderGameObjectsLayer(device, game) {
                 try
                 {
                     renderBoarder(device, game);
+                    renderMap(device, game);
 
                     renderPlayer(device, game);
 

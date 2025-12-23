@@ -1,4 +1,3 @@
-
 // ============================================================================
 // COLLISION UTILS 
 // -----------------------------------------------------------------------------
@@ -12,6 +11,28 @@ function rectsCollide(a, b) {
         a.bottom < b.top   ||
         a.top    > b.bottom
     );
+}
+
+function overlapsAny(npc, holder) 
+{
+    try 
+    {
+        const count = holder.getSize();
+        const npcBox = npc.getHitbox(1.0, 0); 
+
+        for (let i = 0; i < count; i++) 
+        {
+            const other = holder.getIndex(i);
+            const otherBox = other.getHitbox(1.0, 0);
+
+            if (otherBox && rectsCollide(npcBox, otherBox)) return true;
+        }
+    } 
+    catch (e) 
+    {
+        console.error("overlapsAny error:", e);
+    }
+    return false;
 }
 
 function roughNear(a, b, pad = 0) {
