@@ -49,6 +49,7 @@ function updateGameStates(device, game, delta)
                     }
 
                     game.player.update(device, game, delta);
+                    
                     checkforPause(device, game);  
                     
                     //game.gameEnemy.update(delta, game.player);

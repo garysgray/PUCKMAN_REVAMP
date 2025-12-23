@@ -74,19 +74,19 @@ class Game
         this.cachedMapReady = false;
 
         // FIXX give player a default start pos ---relocate code or get rid of redundent
-        try 
-        {
-            this.#player = new Player(
-                GameDefs.playerSpriteTypes.PLAYER.w,
-                GameDefs.playerSpriteTypes.PLAYER.h,
-                0,
-                0,
-                this.#gameConsts.PLAYER_SPEED
-            );
-        } catch (err) 
-        {
-            console.error("Failed to initialize player:", err);
-        }
+        // try 
+        // {
+        //     this.#player = new Player(
+        //         GameDefs.playerSpriteTypes.PLAYER.w,
+        //         GameDefs.playerSpriteTypes.PLAYER.h,
+        //         0,
+        //         0,
+        //         this.#gameConsts.PLAYER_SPEED
+        //     );
+        // } catch (err) 
+        // {
+        //     console.error("Failed to initialize player:", err);
+        // }
     }
 
 // =======================================================
@@ -156,62 +156,24 @@ class Game
         {
             device.keys.initKeys();
 
-            //fixx or document tht each sprite type is loaded iddfrently 
-            // Load sprites
-            Object.values(GameDefs.playerSpriteTypes).forEach(playerSpriteDef => 
+            //load and set images in holder type
+            this.setImagesForType(device, GameDefs.playerSpriteTypes);
+            this.setImagesForType(device, GameDefs.mapSpriteTypes);
+
+            this.setImagesForType(device, GameDefs.billBoardTypes, boardDef => 
             {
-                if (playerSpriteDef.path ) 
-                {
-                    const sprite = new Sprite(playerSpriteDef.path, playerSpriteDef.type);
-                    device.images.addObject(sprite);
-                }
+                // This runs for every sprite in billBoardTypes
+                const board = new BillBoard(boardDef.type, boardDef.w, boardDef.h, 0, 0, 0, boardDef.isCenter);
+                if (board.isCenter) board.centerObjectInWorld(this.canvasWidth, this.canvasHeight);
+                this.billBoards.addObject(board);
             });
 
-            Object.values(GameDefs.CharacterSpriteTypes)
-                .filter(def => def.path)
-                .forEach((spriteDef, index) =>
-                {
-                    const sprite = new Sprite(spriteDef.path, spriteDef.type);
-                    device.images.addObject(sprite); // FIXED
-
-                    const speedMap = 
-                    {
-                        red_ghost: this.gameConsts.ENEMY_SPEED,
-                        blue_ghost: 100,
-                        green_ghost: 140,
-                        orange_ghost: 75,
-                        pink_ghost: 120
-                    };
-
-                    const speed = speedMap[spriteDef.type] ?? this.gameConsts.ENEMY_SPEED;
-
-                    const spawnX = 930 + index * spriteDef.w;
-                    const spawnY = 530;
-
-                    this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, spawnX, spawnY, speed));
-                });
-
-
-            Object.values(GameDefs.mapSpriteTypes).forEach(mapSpriteDef => 
+            // FIXX magic nums
+            this.setImagesForType(device, GameDefs.CharacterSpriteTypes, spriteDef => 
             {
-                if (mapSpriteDef.path ) 
-                {
-                    const sprite = new Sprite(mapSpriteDef.path, mapSpriteDef.type);
-                    device.images.addObject(sprite);
-                }
-            });
-
-            Object.values(GameDefs.billBoardTypes).forEach(boardDef => 
-            {
-                if (boardDef.path ) 
-                {
-                    const boardSprite = new Sprite(boardDef.path, boardDef.type);
-                    device.images.addObject(boardSprite);
-
-                    const board = new BillBoard(boardDef.type, boardDef.w, boardDef.h, 0, 0, 0, boardDef.isCenter);
-                    if (board.isCenter) board.centerObjectInWorld(this.canvasWidth, this.canvasHeight);
-                    this.billBoards.addObject(board);
-                }
+                const spawnX = 930;
+                const spawnY = 530;
+                this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, spawnX, spawnY, spriteDef.s));
             });
 
              // Load sounds
@@ -237,10 +199,25 @@ class Game
         }
     }
 
-    setImagesForType()
+    setImagesForType(device, type, callback)
     {
+        Object.values(type).forEach(typeDef => 
+        {
+            if (typeDef.path) 
+            {
+                
+                const sprite = new Sprite(typeDef.path, typeDef.type);
+                device.images.addObject(sprite);
 
+                //Call the callback if provided
+                if (callback && typeof callback === "function") 
+                {
+                    callback(typeDef, sprite); // pass the type definition and the sprite
+                }
+            }
+        });
     }
+
     setGame(device) 
     {
         this.score = 0;
@@ -256,10 +233,26 @@ class Game
         randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
         randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
         this.buildMap(randSprite.w, randSprite.h);
+
+         // FIXX magic nums
+        try 
+        {
+            this.#player = new Player(
+                GameDefs.playerSpriteTypes.PLAYER.w,
+                GameDefs.playerSpriteTypes.PLAYER.h,
+                70,
+                95,
+                this.#gameConsts.PLAYER_SPEED
+            );
+        } catch (err) 
+        {
+            console.error("Failed to initialize player:", err);
+        }
     }
 
     buildMap(tileWidth, tileHeight) 
     {
+         // FIXX magic nums
         const tilesX = 36;
         const tilesY = 20;
 

@@ -5,8 +5,8 @@
 // =======================================================
 // DEBUG TOOLS
 // =======================================================
-const DEV_MODE = true; // false when shipping
-//const DEV_MODE = false; // false when shipping
+const DEV_MODE = false; // false when shipping
+//const DEV_MODE = true; // false when shipping
 
 let HIT_BOXES = false;
 let DEBUG_TEXT = DEV_MODE;
