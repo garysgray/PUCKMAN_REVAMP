@@ -169,11 +169,9 @@ class Game
             });
 
             // FIXX magic nums
-            this.setImagesForType(device, GameDefs.CharacterSpriteTypes, spriteDef => 
+            this.setImagesForType(device, GameDefs.characterSpriteTypes, spriteDef => 
             {
-                const spawnX = 930;
-                const spawnY = 530;
-                this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, spawnX, spawnY, spriteDef.s));
+                this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, this.canvasHalfW, this.canvasHalfH, spriteDef.s));
             });
 
              // Load sounds
@@ -240,7 +238,7 @@ class Game
             this.#player = new Player(
                 GameDefs.playerSpriteTypes.PLAYER.w,
                 GameDefs.playerSpriteTypes.PLAYER.h,
-                70,
+                this.canvasHalfW,
                 95,
                 this.#gameConsts.PLAYER_SPEED
             );
@@ -252,55 +250,38 @@ class Game
 
     buildMap(tileWidth, tileHeight) 
     {
-         // FIXX magic nums
+        // FIXX magic nums
         const tilesX = 36;
         const tilesY = 20;
 
         const bufferX = 70;
         const bufferY = 70;
 
-        const safeMargin = 3;        // 1 -3 less squares
-        const laneSpacing = 90;      // distance between structured walls   10 -18 no lines
-        const emptyChance = 0.65;    // randomness for wall placement .60-95 less islands
-        const spawnRadius = 2;       // small open area for player/enemies
+        const safeMargin = 3;
+        const laneSpacing = 90;
+        const emptyChance = 0.65;
+        const spawnRadius = 2;
 
-        const getRandomSprite = () => 
-        {
-            const keys = Object.values(GameDefs.mapSpriteTypes);
-            const randIndex = Math.floor(Math.random() * (keys.length));
-            return keys[randIndex];
-        };
+        const palette = Object.values(GameDefs.mapSpriteTypes);
 
-        // Generate empty grid
-        const grid = Array.from({ length: tilesX }, () => Array.from({ length: tilesY }, () => 0) ); // 0 = empty, 1 = wall
-
-
-        // Fill grid with structured lanes + random walls
         const centerX = Math.floor(tilesX / 2);
         const centerY = Math.floor(tilesY / 2);
 
+        const grid = Array.from({ length: tilesX }, () => Array.from({ length: tilesY }, () => 0));
+
+        // Fill grid with structured lanes + random walls
         for (let row = 0; row < tilesX; row++) 
         {
             for (let col = 0; col < tilesY; col++) 
             {
-
-                // Skip safe margins at edges
                 if (row < safeMargin || col < safeMargin || row >= tilesX - safeMargin || col >= tilesY - safeMargin)
                     continue;
 
-                // Small spawn area in the center
                 if (Math.abs(row - centerX) <= spawnRadius && Math.abs(col - centerY) <= spawnRadius)
                     continue;
 
-                // Structured lanes
-                if (row % laneSpacing === 0 || col % laneSpacing === 0) 
-                {
-                    grid[row][col] = 1; // wall
-                }
-                else if (Math.random() > emptyChance) 
-                {
-                    grid[row][col] = 1; // random wall
-                }
+                if (row % laneSpacing === 0 || col % laneSpacing === 0 || Math.random() > emptyChance)
+                    grid[row][col] = 1;
             }
         }
 
@@ -313,12 +294,29 @@ class Game
                 {
                     const screenX = bufferX + row * tileWidth;
                     const screenY = bufferY + col * tileHeight;
-                    const randSprite = getRandomSprite();
-                    this.mapHolder.addObject(new GameObject(randSprite.type, tileWidth, tileHeight, screenX, screenY));
+
+                    // Distance from center
+                    const distX = Math.abs(row - centerX);
+                    const distY = Math.abs(col - centerY);
+                    const dist = Math.sqrt(distX*distX + distY*distY);
+
+                    const maxDist = Math.sqrt(centerX*centerX + centerY*centerY);
+
+                    // Base random index for rainbow effect
+                    let randIndex = Math.floor(Math.random() * palette.length);
+
+                    // Shift the color based on distance
+                    const shift = Math.floor((dist / maxDist) * palette.length);
+                    const colorIndex = (randIndex + shift) % palette.length;
+
+                    const chosenTile = palette[colorIndex];
+
+                    this.mapHolder.addObject(new GameObject(chosenTile.type, tileWidth, tileHeight, screenX, screenY));
                 }
             }
         }
     }
+
 
     buildBoarder(name, width, height) 
     {

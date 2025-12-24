@@ -45,7 +45,7 @@ const GameDefs = Object.freeze({
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
     },
 
-    CharacterSpriteTypes: {
+    characterSpriteTypes: {
         RED_GHOST:    { type: "red_ghost",     w: 24, h: 24, s: 150, path: "assets/sprites/ghosts/red_ghosts.png" },
         BLUE_GHOST:    { type: "blue_ghost",     w: 24, h: 24, s: 140,  path: "assets/sprites/ghosts/blue_ghosts.png" },
         GREEN_GHOST:    { type: "green_ghost",     w: 24, h: 24, s: 130, path: "assets/sprites/ghosts/green_ghosts.png" },
