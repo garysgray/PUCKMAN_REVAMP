@@ -19,8 +19,11 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.INIT:
                 try 
                 {
+                    
                     if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY)) 
                     {
+                        game.initGame(device)
+                        game.setGame();
                         game.setGameState(GameDefs.gameStates.PLAY);
                     }
                 } 
@@ -48,7 +51,12 @@ function updateGameStates(device, game, delta)
                     // update player movement
                     game.player.update(device, game, delta);
 
+                    
                     checkPlayerGameObjCollisions(device, game, game.goalHolder, game.player);
+                    
+                    
+                    
+                    
                     
                     // update enemies movemnets
                     game.enemyHolder.forEach(element => 
@@ -56,9 +64,11 @@ function updateGameStates(device, game, delta)
                          element.update(delta, game, game.player);
                     });
 
-                    checkPlayerGameObjCollisions(device, game, game.enemyHolder, game.player);
+                    checkPlayerGameObjCollisions(device, game, game.enemyHolder, game.player)
                     
                     checkforPause(device, game); 
+
+                    // if goals holder is empty chage game state
                 } 
                 catch (e) 
                 {
@@ -177,15 +187,22 @@ function checkPlayerGameObjCollisions(device, game, holder, player)
                 // FIXX make a set value for points to get goals
                 game.increaseScore(1);
                 //console.log("Goal collected:", obj.name);
-                return;
+                //return;
+                if (holder.getSize() == 0)
+                {
+                        // fixx need a level up function
+
+                        //change game state 
+                        game.gameState = GameDefs.gameStates.INIT;
+                        return;
+                }
             }
 
             if (holder === game.enemyHolder) 
             {
-                //device.audio.playSound(GameDefs.soundTypes.HURT.name);
-                //change state of player and level should start over
-                game.decreaseLives(1);
-                console.log("Hit enemy:", obj.name);
+                //FIXX need a reset game level function
+                device.audio.playSound(GameDefs.soundTypes.HURT.name);
+                game.gameState = GameDefs.gameStates.INIT;
                 return;
             }
         }  

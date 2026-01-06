@@ -79,11 +79,11 @@ class Game
 
         this.#player = null;
 
-        this.#mapSafeMargin = 3;
+        this.#mapSafeMargin = 2;
         this.#mapLaneSpacing = 9;
 
-        this.#mapEmptyChance = .90;
-        this.#mapSpawnRadius = 1;
+        this.#mapEmptyChance = .99;
+        this.#mapSpawnRadius = 4;
     }
 
     // =======================================================
@@ -152,20 +152,19 @@ class Game
 
     initGame(device)
     {
-        // --- Clear all object holders to prevent duplicates ---
-        this.enemyHolder.clearObjects();
-        this.boarderHolder.clearObjects();
-        this.billBoards.clearObjects();
-        this.gameTimers.clearObjects();
-
-        this.goalHolder.clearObjects();
-
-        // Clear only the Sprite instances in device.images, keep the preloaded images intact
-        device.images.clearObjects();
-        
         try 
         {
             device.keys.initKeys();
+
+            // --- Clear all object holders to prevent duplicates ---
+            device.images.clearObjects();
+            this.enemyHolder.clearObjects();
+            this.boarderHolder.clearObjects();
+            this.billBoards.clearObjects();
+            this.gameTimers.clearObjects();
+
+            this.goalHolder.clearObjects();
+            
 
             //load and set images in holder type
             this.setImagesForType(device, GameDefs.playerSpriteTypes);
@@ -203,11 +202,31 @@ class Game
             const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes.COUNTUP);
             this.gameTimers.addObject(timer);
 
+            let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
+            let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
+            this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
+
+            this.buildMap();
+            this.buildPlayer();
+
         } 
         catch (err) 
         {
             console.error("Error initializing game:", err);
         }
+    }
+
+    
+
+    setGame() 
+    {
+        this.score = 0;
+        this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
+
+        //this.enemyHolder.clearObjects();
+
+        const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
+        if (gameClock) gameClock.start();
     }
 
     setImagesForType(device, type, callback)
@@ -227,22 +246,6 @@ class Game
                 }
             }
         });
-    }
-
-    setGame() 
-    {
-        this.score = 0;
-        this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
-
-        const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
-        if (gameClock) gameClock.start();
-
-        let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
-        let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
-        this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
-
-        this.buildMap();
-        this.buildPlayer();
     }
 
     buildPlayer()
@@ -334,13 +337,13 @@ class Game
 
             //  Place goals safely
             //  FIXX magic nums
-            const GOAL_COUNT = 30 + Math.floor(Math.random() * 41); // 10–20
+            const GOAL_COUNT = 30 + Math.floor(Math.random() * 51); // 10–20
 
             for (let g = 0; g < GOAL_COUNT; g++) 
             {
                 let placed = false;
 
-                for (let attempt = 0; attempt < 5000 && !placed; attempt++) 
+                for (let attempt = 0; attempt < 50 && !placed; attempt++) 
                 {
                     const x = Math.floor(Math.random() * tilesX);
                     const y = Math.floor(Math.random() * tilesY);
@@ -385,6 +388,8 @@ class Game
 
                 if (!placed) console.warn("Failed to place a goal:", g);
             }
+            // tell renderer to rebuild cached border
+            this.cachedMapReady = false;
         }
         catch (err) 
         {

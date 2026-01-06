@@ -67,8 +67,8 @@ function initControllerAndGame()
 
     try 
     {
-        myController.game.initGame(myController.device);
-        myController.game.setGame();
+        //myController.game.initGame(myController.device);
+        //myController.game.setGame();
 
         updateDebugPanelVisibility(); // DEBUG UI INIT
         updateDebugPanelPosition();   // DEBUG UI INIT POSITION
