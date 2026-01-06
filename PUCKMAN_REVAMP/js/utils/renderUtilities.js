@@ -164,7 +164,7 @@ function renderBoarder(device, game)
     // build cache if needed
     if (!game.cachedBorderReady)
     {
-        game.createBorderCache(device);
+        game.createCache(device, game.boarderHolder, "cachedBorder", "cachedBorderReady");
     }
 
     // draw the cached border as one image
@@ -176,7 +176,7 @@ function renderMap(device, game)
     // build cache if needed
     if (!game.cachedMapReady)
     {
-        game.createMapCache(device);
+        game.createCache(device, game.mapHolder, "cachedMap", "cachedMapReady");
     }
 
     // draw the cached border as one image

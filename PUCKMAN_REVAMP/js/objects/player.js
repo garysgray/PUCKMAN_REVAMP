@@ -42,13 +42,6 @@ class Player extends GameObject
             // Enforce screen bounds
             this.enforceBoarderBounds(game); 
 
-            // See if player used shoot button 
-            if(this.checkforShoot(device, game, delta)) 
-            {
-                // Play the correct audio file for player shooting
-                device.audio.playSound(GameDefs.soundTypes.SHOOT.name);
-            }
-
             this.checkForKeyBoardMoveInput(device, game, delta);
 
             // Sync player state with current playState

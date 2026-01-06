@@ -36,11 +36,8 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.PLAY:
                 try 
                 {
-                    // GAme clock that helps update when NPC's speed should incread and give player points
+                    // Game clock that helps update when NPC's speed should incread and give player points
                     const gameClock = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
-
-                    //const board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.BACKGROUND.type);
-                    //board.update(delta, game)
 
                     if (gameClock.active)
                     {
@@ -48,17 +45,20 @@ function updateGameStates(device, game, delta)
                         gameClock.update(delta);
                     }
 
+                    // update player movement
                     game.player.update(device, game, delta);
-                    
-                    checkforPause(device, game);  
-                    
-                    //game.gameEnemy.update(delta, game.player);
 
+                    checkPlayerGameObjCollisions(device, game, game.goalHolder, game.player);
+                    
+                    // update enemies movemnets
                     game.enemyHolder.forEach(element => 
                     {
-                         //update(device, element );
                          element.update(delta, game, game.player);
                     });
+
+                    checkPlayerGameObjCollisions(device, game, game.enemyHolder, game.player);
+                    
+                    checkforPause(device, game); 
                 } 
                 catch (e) 
                 {
@@ -161,3 +161,35 @@ function checkforPause(device, game)
         console.error("checkforPause error:", e);
     }
 }  
+
+function checkPlayerGameObjCollisions(device, game, holder, player) 
+{
+    for (let i = holder.getSize() - 1; i >= 0; i--) 
+    {
+        const obj = holder.getIndex(i);
+
+        if (roughNear(player, obj) && rectsCollide(player.getHitbox(), obj.getHitbox())) 
+        {
+            if (holder === game.goalHolder) 
+            {
+                device.audio.playSound(GameDefs.soundTypes.GET.name);
+                holder.subObject(i);
+                // FIXX make a set value for points to get goals
+                game.increaseScore(1);
+                //console.log("Goal collected:", obj.name);
+                return;
+            }
+
+            if (holder === game.enemyHolder) 
+            {
+                //device.audio.playSound(GameDefs.soundTypes.HURT.name);
+                //change state of player and level should start over
+                game.decreaseLives(1);
+                console.log("Hit enemy:", obj.name);
+                return;
+            }
+        }  
+    }
+}
+
+

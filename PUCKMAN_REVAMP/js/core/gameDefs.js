@@ -61,6 +61,14 @@ const GameDefs = Object.freeze({
         YELLOW_BRICK:    { type: "yellow_brick",    w: 24, h: 24, path: "assets/sprites/bricks/yellow_brick.png" },
     },
 
+    goalsSpriteTypes: {
+        APPLE:     { type: "apple",    w: 24, h: 24, path: "assets/sprites/fruits/apple.png" },
+        BANNANA:   { type: "bannana",  w: 24, h: 24,  path: "assets/sprites/fruits/bannana.png" },
+        CHERRIES:  { type: "cherries", w: 24, h: 24, path: "assets/sprites/fruits/cherries.png" },
+        LEMON:     { type: "lemon",    w: 24, h: 24, path: "assets/sprites/fruits/lemon.png" },
+        ORANGE:    { type: "orange",   w: 24, h: 24, path: "assets/sprites/fruits/orange.png" },
+    },
+
     billBoardTypes: {
         SPLASH:     { type: "splash",     w: 400, h: 100, path: "assets/sprites/billBoards/gameSplash.png" , isCenter: true },
         PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
@@ -70,6 +78,8 @@ const GameDefs = Object.freeze({
 
     soundTypes: {
         SHOOT:   { name: "shoot",   path: "assets/sounds/shoot.wav" },
+        GET:     { name: "get",     path: "assets/sounds/get.wav" },
+        HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav" },
     },
 
     keyTypes: {
@@ -159,6 +169,18 @@ class GameConsts
     #PLAYER_SPEED = 200;
     #ENEMY_SPEED  = 150;
 
+    #MAP_BUFFER_X = 60;
+    #MAP_BUFFER_Y = 70;
+
+    #NUM_MAP_X_TILES = 36;
+    #NUM_MAP_Y_TILES = 20;
+
+    #MAP_TILE_WIDTH = 24;
+    #MAP_TILE_HEIGHT = 24;
+
+    
+
+
     // //times
     // #SHIELD_TIME = 3;
     // #NPC_SPEED_INCREASE_INTERVALS = 10;
@@ -184,6 +206,19 @@ class GameConsts
     get VOLUME(){ return this.#VOLUME; }
     get PLAYER_SPEED(){ return this.#PLAYER_SPEED; }
     get ENEMY_SPEED(){ return this.#ENEMY_SPEED; }
+
+    get MAP_BUFFER_X(){ return this.#MAP_BUFFER_X; }
+    get MAP_BUFFER_Y(){ return this.#MAP_BUFFER_Y; }
+
+    get NUM_MAP_X_TILES(){ return this.#NUM_MAP_X_TILES; }
+    get NUM_MAP_Y_TILES(){ return this.#NUM_MAP_Y_TILES; }
+
+    get MAP_TILE_WIDTH(){ return this.#MAP_TILE_WIDTH; }
+    get MAP_TILE_HEIGHT(){ return this.#MAP_TILE_HEIGHT; }
+
+    
+
+    
     
     // get SHIELD_TIME(){ return this.#SHIELD_TIME; }
     // get AMMO_AMOUNT(){ return this.#AMMO_AMOUNT; }
@@ -194,3 +229,16 @@ class GameConsts
     // get BILLBOARDS_OFFSET_BUFF(){ return this.#BILLBOARDS_OFFSET_BUFF; }
 
 }
+
+
+
+//   const tilesX = 36;
+//         const tilesY = 20;
+
+//         const bufferX = 70;
+//         const bufferY = 70;
+
+//         const safeMargin = 3;
+//         const laneSpacing = 90;
+//         const emptyChance = 0.65;
+//         const spawnRadius = 2;

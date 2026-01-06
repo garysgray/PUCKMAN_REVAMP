@@ -5,8 +5,8 @@
 // =======================================================
 // DEBUG TOOLS
 // =======================================================
-const DEV_MODE = false; // false when shipping
-//const DEV_MODE = true; // false when shipping
+//const DEV_MODE = false; // false when shipping
+const DEV_MODE = true; // false when shipping
 
 let HIT_BOXES = false;
 let DEBUG_TEXT = DEV_MODE;
@@ -68,7 +68,7 @@ function initControllerAndGame()
     try 
     {
         myController.game.initGame(myController.device);
-        myController.game.setGame(myController.device);
+        myController.game.setGame();
 
         updateDebugPanelVisibility(); // DEBUG UI INIT
         updateDebugPanelPosition();   // DEBUG UI INIT POSITION
@@ -141,9 +141,10 @@ function gameLoop()
         addDebugLine("----------------");
         addDebugLine(`Player X: ${myController.game.player.posX.toFixed(1)}`);
         addDebugLine(`Player Y: ${myController.game.player.posY.toFixed(1)}`);
-        addDebugLine(`Lives: ${myController.game.lives}`);
-        addDebugLine(`Score: ${myController.game.score}`);
-        addDebugLine(`Enemies: ${myController.game.enemyHolder.getSize()}`);
+        addDebugLine(`SafeMargin: ${myController.game.mapSafeMargin}`);
+        addDebugLine(`LaneSpacing: ${myController.game.mapLaneSpacing}`);
+        addDebugLine(`EmptyChance: ${myController.game.mapEmptyChance}`);
+        addDebugLine(`SpawnRadius: ${myController.game.mapSpawnRadius}`);
     }
 
     // Render all debug lines

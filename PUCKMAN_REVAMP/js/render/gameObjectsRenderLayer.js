@@ -25,6 +25,11 @@ function renderGameObjectsLayer(device, game) {
                     renderBoarder(device, game);
                     renderMap(device, game);
 
+                    game.goalHolder.forEach(element => 
+                    {
+                         renderStateSprite(device, element );
+                    });
+
                     renderPlayer(device, game);
 
                     // Render each enemy
@@ -32,6 +37,7 @@ function renderGameObjectsLayer(device, game) {
                     {
                          renderStateSprite(device, element );
                     });
+
                 } 
                 catch (e) 
                 {

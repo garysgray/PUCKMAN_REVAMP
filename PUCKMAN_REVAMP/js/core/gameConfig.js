@@ -10,12 +10,10 @@ class Game
     #billBoards;
     #gameTimers;
     
-    #gameSprites;
-
     #enemyHolder;
     #boarderHolder;
     #mapHolder;
-    #fruitHolder;
+    #goalHolder;
 
     #canvasWidth;
     #canvasHeight;
@@ -30,13 +28,17 @@ class Game
     #boarderHorizontalBuffer;
     #boarderVerticleBuffer;
 
-
     #cachedBorder;
     #cachedBorderReady;
 
     #cachedMap;
     #cachedMapReady;
-    
+
+    #mapSafeMargin;
+    #mapLaneSpacing;
+
+    #mapEmptyChance;
+    #mapSpawnRadius;
 
     constructor() 
     {
@@ -46,12 +48,14 @@ class Game
             this.#billBoards = new ObjHolder();
             this.#gameTimers = new ObjHolder();
             this.#enemyHolder = new ObjHolder();
-            this.#gameSprites = new ObjHolder();
+
+            this.#goalHolder = new ObjHolder();
 
             this.#boarderHolder = new ObjHolder();
             this.#mapHolder = new ObjHolder();
 
-        } catch (err) 
+        } 
+        catch (err) 
         {
             console.error("Failed to initialize object holders:", err);
         }
@@ -67,32 +71,24 @@ class Game
         this.#boarderHorizontalBuffer = 0;
         this.#boarderVerticleBuffer = 0;
 
-        this.cachedBorder = null;
-        this.cachedBorderReady = false;
+        this.#cachedBorder = null;
+        this.#cachedBorderReady = false;
 
-        this.cachedMap = null;
-        this.cachedMapReady = false;
+        this.#cachedMap = null;
+        this.#cachedMapReady = false;
 
-        // FIXX give player a default start pos ---relocate code or get rid of redundent
-        // try 
-        // {
-        //     this.#player = new Player(
-        //         GameDefs.playerSpriteTypes.PLAYER.w,
-        //         GameDefs.playerSpriteTypes.PLAYER.h,
-        //         0,
-        //         0,
-        //         this.#gameConsts.PLAYER_SPEED
-        //     );
-        // } catch (err) 
-        // {
-        //     console.error("Failed to initialize player:", err);
-        // }
+        this.#player = null;
+
+        this.#mapSafeMargin = 3;
+        this.#mapLaneSpacing = 9;
+
+        this.#mapEmptyChance = .90;
+        this.#mapSpawnRadius = 1;
     }
 
-// =======================================================
-// GETTERS and SETTERS
-// =======================================================
-
+    // =======================================================
+    // GETTERS and SETTERS
+    // =======================================================
     get gameConsts() { return this.#gameConsts; }
     get billBoards() { return this.#billBoards; }
     get gameTimers() { return this.#gameTimers; }
@@ -103,8 +99,8 @@ class Game
     get canvasHalfH() { return this.#canvasHalfH; }
     get gameState() { return this.#gameState; }
     get score() { return this.#score; }
+    get lives() { return this.#lives; }
     get player() { return this.#player; }
-    get gameSprites() { return this.#gameSprites; }
     get boarderHolder() { return this.#boarderHolder; }
     get mapHolder() { return this.#mapHolder; }
     
@@ -117,10 +113,18 @@ class Game
     get cachedMap () { return this.#cachedMap ; }
     get cachedMapReady () { return this.#cachedMapReady ; }
 
-    /// SETS
+    get mapSafeMargin(){ return this.#mapSafeMargin; }
+    get mapLaneSpacing(){ return this.#mapLaneSpacing; }
 
+    get mapEmptyChance(){ return this.#mapEmptyChance; }
+    get mapSpawnRadius(){ return this.#mapSpawnRadius; }
+
+    get goalHolder() { return this.#goalHolder; }
+
+    /// SETS
     set gameState(v) { this.#gameState = v; }
     set score(v) { this.#score = v; }
+    set lives(v) { this.#lives = v; }
     set boarderHorizontalBuffer(v) { this.#boarderHorizontalBuffer = v; }
     set boarderVerticleBuffer(v) { this.#boarderVerticleBuffer = v; }
 
@@ -130,17 +134,22 @@ class Game
     set cachedMap (v) { this.#cachedMap  = v; }
     set cachedMapReady (v) { this.#cachedMapReady  = v; }
 
+    set player (v) { this.#player  = v; }
 
-// =======================================================
-// FUNCTIONS
-// =======================================================
+    set mapSafeMargin (v) { this.#mapSafeMargin  = v; }
+    set mapLaneSpacing (v) { this.#mapLaneSpacing  = v; }
+
+    set mapEmptyChance (v) { this.#mapEmptyChance  = v; }
+    set mapSpawnRadius (v) { this.#mapSpawnRadius  = v; }
+
+    // =======================================================
+    // FUNCTIONS
+    // =======================================================
 
     decreaseLives(a) { this.lives -= a; }
     increaseScore(a) { this.score += a; }
     setGameState(state) { this.gameState = state; }
 
-    
-    //initGame(device, preloadedImages = {}, preloadedAudio = {})
     initGame(device)
     {
         // --- Clear all object holders to prevent duplicates ---
@@ -148,6 +157,8 @@ class Game
         this.boarderHolder.clearObjects();
         this.billBoards.clearObjects();
         this.gameTimers.clearObjects();
+
+        this.goalHolder.clearObjects();
 
         // Clear only the Sprite instances in device.images, keep the preloaded images intact
         device.images.clearObjects();
@@ -159,6 +170,7 @@ class Game
             //load and set images in holder type
             this.setImagesForType(device, GameDefs.playerSpriteTypes);
             this.setImagesForType(device, GameDefs.mapSpriteTypes);
+            this.setImagesForType(device, GameDefs.goalsSpriteTypes);
 
             this.setImagesForType(device, GameDefs.billBoardTypes, boardDef => 
             {
@@ -168,12 +180,11 @@ class Game
                 this.billBoards.addObject(board);
             });
 
-            // FIXX magic nums
             this.setImagesForType(device, GameDefs.characterSpriteTypes, spriteDef => 
             {
                 this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, this.canvasHalfW, this.canvasHalfH, spriteDef.s));
             });
-
+            
              // Load sounds
             Object.values(GameDefs.soundTypes).forEach(sndDef => 
             {
@@ -192,7 +203,9 @@ class Game
             const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes.COUNTUP);
             this.gameTimers.addObject(timer);
 
-        } catch (err) {
+        } 
+        catch (err) 
+        {
             console.error("Error initializing game:", err);
         }
     }
@@ -216,10 +229,11 @@ class Game
         });
     }
 
-    setGame(device) 
+    setGame() 
     {
         this.score = 0;
         this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
+
         const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
         if (gameClock) gameClock.start();
 
@@ -227,174 +241,220 @@ class Game
         let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
         this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
 
-        //FIXX dont need this probbaly
-        randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
-        randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
-        this.buildMap(randSprite.w, randSprite.h);
+        this.buildMap();
+        this.buildPlayer();
+    }
 
-         // FIXX magic nums
+    buildPlayer()
+    {
         try 
         {
-            this.#player = new Player(
+            this.player = new Player(
                 GameDefs.playerSpriteTypes.PLAYER.w,
                 GameDefs.playerSpriteTypes.PLAYER.h,
                 this.canvasHalfW,
-                95,
-                this.#gameConsts.PLAYER_SPEED
+                this.boarderVerticleBuffer + this.gameConsts.MAP_BUFFER_Y,
+                this.gameConsts.PLAYER_SPEED
             );
-        } catch (err) 
+        } 
+        catch (err) 
         {
             console.error("Failed to initialize player:", err);
         }
     }
 
-    buildMap(tileWidth, tileHeight) 
+    buildMap() 
     {
-        // FIXX magic nums
-        const tilesX = 36;
-        const tilesY = 20;
-
-        const bufferX = 70;
-        const bufferY = 70;
-
-        const safeMargin = 3;
-        const laneSpacing = 90;
-        const emptyChance = 0.65;
-        const spawnRadius = 2;
-
-        const palette = Object.values(GameDefs.mapSpriteTypes);
-
-        const centerX = Math.floor(tilesX / 2);
-        const centerY = Math.floor(tilesY / 2);
-
-        const grid = Array.from({ length: tilesX }, () => Array.from({ length: tilesY }, () => 0));
-
-        // Fill grid with structured lanes + random walls
-        for (let row = 0; row < tilesX; row++) 
+        try 
         {
-            for (let col = 0; col < tilesY; col++) 
+            const tilesX = this.gameConsts.NUM_MAP_X_TILES;
+            const tilesY = this.gameConsts.NUM_MAP_Y_TILES;
+            const centerX = Math.floor(tilesX / 2);
+            const centerY = Math.floor(tilesY / 2);
+
+            const palette = Object.values(GameDefs.mapSpriteTypes);
+            const goalsPalette = Object.values(GameDefs.goalsSpriteTypes);
+
+            // 0 = walkable, 1 = wall
+            const grid = Array.from({ length: tilesY }, () => Array(tilesX).fill(0));
+
+            // --------------------------
+
+            // Build wall grid
+            for (let y = 0; y < tilesY; y++) 
             {
-                if (row < safeMargin || col < safeMargin || row >= tilesX - safeMargin || col >= tilesY - safeMargin)
-                    continue;
-
-                if (Math.abs(row - centerX) <= spawnRadius && Math.abs(col - centerY) <= spawnRadius)
-                    continue;
-
-                if (row % laneSpacing === 0 || col % laneSpacing === 0 || Math.random() > emptyChance)
-                    grid[row][col] = 1;
-            }
-        }
-
-        // Place objects based on grid
-        for (let row = 0; row < tilesX; row++) 
-        {
-            for (let col = 0; col < tilesY; col++) 
-            {
-                if (grid[row][col] === 1) 
+                for (let x = 0; x < tilesX; x++) 
                 {
-                    const screenX = bufferX + row * tileWidth;
-                    const screenY = bufferY + col * tileHeight;
+                    // border exclusion & spawn safe zone
+                    if (x < this.mapSafeMargin ||
+                        y < this.mapSafeMargin ||
+                        x >= tilesX - this.mapSafeMargin ||
+                        y >= tilesY - this.mapSafeMargin ||
+                        (Math.abs(x - centerX) <= this.mapSpawnRadius &&
+                        Math.abs(y - centerY) <= this.mapSpawnRadius))
+                        continue;
 
-                    // Distance from center
-                    const distX = Math.abs(row - centerX);
-                    const distY = Math.abs(col - centerY);
-                    const dist = Math.sqrt(distX*distX + distY*distY);
+                    if (x % this.mapLaneSpacing === 0 ||
+                        y % this.mapLaneSpacing === 0 ||
+                        Math.random() > this.mapEmptyChance)
+                        grid[y][x] = 1;
+                }
+            }
 
+            // Place wall tiles
+            for (let y = 0; y < tilesY; y++) 
+            {
+                for (let x = 0; x < tilesX; x++) 
+                {
+                    if (grid[y][x] !== 1) continue;
+
+                    const screenX = this.gameConsts.MAP_BUFFER_X + x * this.gameConsts.MAP_TILE_WIDTH;
+                    const screenY = this.gameConsts.MAP_BUFFER_Y + y * this.gameConsts.MAP_TILE_HEIGHT;
+
+                    // rainbow effect
+                    const dx = Math.abs(x - centerX);
+                    const dy = Math.abs(y - centerY);
+                    const dist = Math.sqrt(dx*dx + dy*dy);
                     const maxDist = Math.sqrt(centerX*centerX + centerY*centerY);
-
-                    // Base random index for rainbow effect
-                    let randIndex = Math.floor(Math.random() * palette.length);
-
-                    // Shift the color based on distance
+                    const randIndex = Math.floor(Math.random() * palette.length);
                     const shift = Math.floor((dist / maxDist) * palette.length);
                     const colorIndex = (randIndex + shift) % palette.length;
 
-                    const chosenTile = palette[colorIndex];
+                    const tileDef = palette[colorIndex];
 
-                    this.mapHolder.addObject(new GameObject(chosenTile.type, tileWidth, tileHeight, screenX, screenY));
+                    this.mapHolder.addObject(new GameObject(
+                        tileDef.type,
+                        this.gameConsts.MAP_TILE_WIDTH,
+                        this.gameConsts.MAP_TILE_HEIGHT,
+                        screenX,
+                        screenY
+                    ));
                 }
             }
-        }
-    }
 
+            //  Place goals safely
+            //  FIXX magic nums
+            const GOAL_COUNT = 30 + Math.floor(Math.random() * 41); // 10–20
+
+            for (let g = 0; g < GOAL_COUNT; g++) 
+            {
+                let placed = false;
+
+                for (let attempt = 0; attempt < 5000 && !placed; attempt++) 
+                {
+                    const x = Math.floor(Math.random() * tilesX);
+                    const y = Math.floor(Math.random() * tilesY);
+
+                    // grid walkable + border + spawn zone
+                    if (grid[y][x] !== 0 ||
+                        x < this.mapSafeMargin ||
+                        y < this.mapSafeMargin ||
+                        x >= tilesX - this.mapSafeMargin ||
+                        y >= tilesY - this.mapSafeMargin ||
+                        (Math.abs(x - centerX) <= this.mapSpawnRadius &&
+                        Math.abs(y - centerY) <= this.mapSpawnRadius))
+                        continue;
+
+                    const screenX = this.gameConsts.MAP_BUFFER_X + x * this.gameConsts.MAP_TILE_WIDTH;
+                    const screenY = this.gameConsts.MAP_BUFFER_Y + y * this.gameConsts.MAP_TILE_HEIGHT;
+
+                    const goalDef = goalsPalette[Math.floor(Math.random() * goalsPalette.length)];
+
+                    const tempGoal = new GameObject(
+                        goalDef.type,
+                        this.gameConsts.MAP_TILE_WIDTH,
+                        this.gameConsts.MAP_TILE_HEIGHT,
+                        screenX,
+                        screenY
+                    );
+
+                    // world-space collision
+                    if (overlapsAny(tempGoal, this.mapHolder))  continue;
+                    if (overlapsAny(tempGoal, this.goalHolder)) continue;
+                    if (overlapsAny(tempGoal, this.enemyHolder)) continue;
+
+                    if (this.player) 
+                    {
+                        const playerHolder = { getSize: () => 1, getIndex: () => this.player };
+                        if (overlapsAny(tempGoal, playerHolder)) continue;
+                    }
+
+                    this.goalHolder.addObject(tempGoal);
+                    placed = true;
+                }
+
+                if (!placed) console.warn("Failed to place a goal:", g);
+            }
+        }
+        catch (err) 
+        {
+            console.error("Failed to build map:", err);
+        }    
+    }
 
     buildBoarder(name, width, height) 
     {
-        let maxWidth = Math.floor(this.canvasWidth / width);
-        let maxHeight = Math.floor((this.canvasHeight - this.canvasHeight * this.gameConsts.HUD_BUFFER) / height);
-
-        if (maxWidth % 2 !== 0) maxWidth--;
-        if (maxHeight % 2 !== 0) maxHeight--;
-
-        this.boarderHorizontalBuffer = (this.canvasWidth - maxWidth * width) * 0.5;
-        this.boarderVerticleBuffer = (this.canvasHeight - (this.canvasHeight * this.gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
-
-        // Top & Bottom
-        for (let i = 0; i < maxWidth; i++) 
+        try 
         {
-            this.boarderHolder.addObject(
-                new GameObject(name, width, height, i * width + this.boarderHorizontalBuffer, this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
-            );
-            this.boarderHolder.addObject(
-                new GameObject(name, width, height, i * width + this.#boarderHorizontalBuffer, this.canvasHeight - (this.boarderVerticleBuffer + height))
-            );
-        }
+            let maxWidth = Math.floor(this.canvasWidth / width);
+            let maxHeight = Math.floor((this.canvasHeight - this.canvasHeight * this.gameConsts.HUD_BUFFER) / height);
 
-        // Left & Right
-        for (let i = 0; i < maxHeight; i++) 
+            if (maxWidth % 2 !== 0) maxWidth--;
+            if (maxHeight % 2 !== 0) maxHeight--;
+
+            this.boarderHorizontalBuffer = (this.canvasWidth - maxWidth * width) * 0.5;
+            this.boarderVerticleBuffer = (this.canvasHeight - (this.canvasHeight * this.gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
+
+            // Top & Bottom
+            for (let i = 0; i < maxWidth; i++) 
+            {
+                this.boarderHolder.addObject(
+                    new GameObject(name, width, height, i * width + this.boarderHorizontalBuffer, this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                );
+                this.boarderHolder.addObject(
+                    new GameObject(name, width, height, i * width + this.#boarderHorizontalBuffer, this.canvasHeight - (this.boarderVerticleBuffer + height))
+                );
+            }
+
+            // Left & Right
+            for (let i = 0; i < maxHeight; i++) 
+            {
+                this.boarderHolder.addObject(
+                    new GameObject(name, width, height, this.boarderHorizontalBuffer, i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                );
+                this.boarderHolder.addObject(
+                    new GameObject(name, width, height, this.canvasWidth - (this.boarderHorizontalBuffer + width), i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                );
+            }
+
+            // tell renderer to rebuild cached border
+            this.cachedBorderReady = false;
+        }
+        catch (err) 
         {
-            this.boarderHolder.addObject(
-                new GameObject(name, width, height, this.boarderHorizontalBuffer, i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
-            );
-            this.boarderHolder.addObject(
-                new GameObject(name, width, height, this.canvasWidth - (this.boarderHorizontalBuffer + width), i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
-            );
-        }
-
-        // tell renderer to rebuild cached border
-        this.cachedBorderReady = false;
+            console.error("Failed to build boarder:", err);
+        }    
     }
 
-    createBorderCache(device) 
+    createCache(device, holder, cacheKey, readyKey) 
     {
-        const boarderCanvas = document.createElement("canvas");
-        boarderCanvas.width = this.canvasWidth;
-        boarderCanvas.height = this.canvasHeight;
-        const ctx = boarderCanvas.getContext("2d");
+        const canvas = document.createElement("canvas");
+        canvas.width = this.canvasWidth;
+        canvas.height = this.canvasHeight;
+        const ctx = canvas.getContext("2d");
 
-        // Draw all border sprites once
-        for (let i = 0; i < this.boarderHolder.getSize(); i++) 
+        // Draw all sprites from the holder
+        for (let i = 0; i < holder.getSize(); i++) 
         {
-            const obj = this.boarderHolder.getIndex(i);
-            const brick_img = device.images.getImage(obj.name);
-            if (!brick_img) continue;
+            const obj = holder.getIndex(i);
+            const img = device.images.getImage(obj.name);
+            if (!img) continue;
 
-            ctx.drawImage(brick_img, obj.posX, obj.posY, obj.width, obj.height);
+            ctx.drawImage(img, obj.posX, obj.posY, obj.width, obj.height);
         }
 
-        this.cachedBorder = boarderCanvas;
-        this.cachedBorderReady = true;
+        // Dynamically set the class members
+        this[cacheKey] = canvas;
+        this[readyKey] = true;
     }
-
-    createMapCache(device) 
-    {
-        const mapCanvas = document.createElement("canvas");
-        mapCanvas.width = this.canvasWidth;
-        mapCanvas.height = this.canvasHeight;
-        const ctx = mapCanvas.getContext("2d");
-
-        // Draw all border sprites once
-        for (let i = 0; i < this.mapHolder.getSize(); i++) 
-        {
-            const obj = this.mapHolder.getIndex(i);
-            const brick_img = device.images.getImage(obj.name);
-            if (!brick_img) continue;
-
-            ctx.drawImage(brick_img, obj.posX, obj.posY, obj.width, obj.height);
-        }
-
-        this.cachedMap = mapCanvas;
-        this.cachedMapReady = true;
-    }
-
 }
