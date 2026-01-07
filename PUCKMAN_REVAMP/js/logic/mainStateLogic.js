@@ -39,6 +39,7 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.PLAY:
                 try 
                 {
+                     
                     // Game clock that helps update when NPC's speed should incread and give player points
                     const gameClock = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
 
@@ -51,24 +52,35 @@ function updateGameStates(device, game, delta)
                     // update player movement
                     game.player.update(device, game, delta);
 
-                    
-                    checkPlayerGameObjCollisions(device, game, game.goalHolder, game.player);
-                    
-                    
-                    
-                    
-                    
                     // update enemies movemnets
                     game.enemyHolder.forEach(element => 
                     {
                          element.update(delta, game, game.player);
                     });
 
-                    checkPlayerGameObjCollisions(device, game, game.enemyHolder, game.player)
-                    
-                    checkforPause(device, game); 
+                    // check player enemy collision
+                    if (checkPlayerGameObjCollisions(game.enemyHolder, game.player) !== false)
+                    {
+                        device.audio.playSound(GameDefs.soundTypes.HURT.name);
+                        game.gameState = GameDefs.gameStates.INIT;
+                    }
 
-                    // if goals holder is empty chage game state
+                    // check player goals/fruit collision
+                    //FIXX need a level up function
+                    if(game.goalHolder.getSize() != 0)
+                    {
+                        const tempValue = checkPlayerGameObjCollisions( game.goalHolder, game.player);           
+                        if (tempValue !== false)
+                        {
+                            game.goalHolder.subObject(tempValue);
+                            device.audio.playSound(GameDefs.soundTypes.GET.name);
+                            // FIXX need fix magic num
+                            game.increaseScore(1); 
+                        }
+                    }
+                    else { game.gameState = GameDefs.gameStates.INIT; }
+ 
+                    checkforPause(device, game); 
                 } 
                 catch (e) 
                 {
@@ -147,66 +159,6 @@ function updateGameStates(device, game, delta)
     }
 }
 
-// Used during play state wating for player to hit pause button
-function checkforPause(device, game)  
-{     
-    try 
-    {
-        if (device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L)) 
-        {
-            if (game.gameState === GameDefs.gameStates.PLAY )   
-            {
-                // Switch to pause mode
-                game.setGameState(GameDefs.gameStates.PAUSE);
-            }
-            else if (game.gameState === GameDefs.gameStates.PAUSE) 
-            {
-                // Resume play mode
-                game.setGameState(GameDefs.gameStates.PLAY);
-            }
-        }
-    } 
-    catch (e) 
-    {
-        console.error("checkforPause error:", e);
-    }
-}  
-
-function checkPlayerGameObjCollisions(device, game, holder, player) 
-{
-    for (let i = holder.getSize() - 1; i >= 0; i--) 
-    {
-        const obj = holder.getIndex(i);
-
-        if (roughNear(player, obj) && rectsCollide(player.getHitbox(), obj.getHitbox())) 
-        {
-            if (holder === game.goalHolder) 
-            {
-                device.audio.playSound(GameDefs.soundTypes.GET.name);
-                holder.subObject(i);
-                // FIXX make a set value for points to get goals
-                game.increaseScore(1);
-                //console.log("Goal collected:", obj.name);
-                //return;
-                if (holder.getSize() == 0)
-                {
-                        // fixx need a level up function
-
-                        //change game state 
-                        game.gameState = GameDefs.gameStates.INIT;
-                        return;
-                }
-            }
-
-            if (holder === game.enemyHolder) 
-            {
-                //FIXX need a reset game level function
-                device.audio.playSound(GameDefs.soundTypes.HURT.name);
-                game.gameState = GameDefs.gameStates.INIT;
-                return;
-            }
-        }  
-    }
-}
+ 
 
 

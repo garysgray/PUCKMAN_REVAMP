@@ -50,3 +50,18 @@ function roughNear(a, b, pad = 0) {
         return false;
     }
 }
+
+function checkPlayerGameObjCollisions( holder, player) 
+{
+    for (let i = holder.getSize() - 1; i >= 0; i--) 
+    {
+        const obj = holder.getIndex(i);
+
+        if (roughNear(player, obj) && rectsCollide(player.getHitbox(), obj.getHitbox())) 
+        {
+            return i
+        }  
+    }
+    return false;
+}
+

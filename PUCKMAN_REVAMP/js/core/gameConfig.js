@@ -183,7 +183,7 @@ class Game
             {
                 this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, this.canvasHalfW, this.canvasHalfH, spriteDef.s));
             });
-            
+
              // Load sounds
             Object.values(GameDefs.soundTypes).forEach(sndDef => 
             {
@@ -202,10 +202,10 @@ class Game
             const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes.COUNTUP);
             this.gameTimers.addObject(timer);
 
+            // Build the boarders and map
             let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
             let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
             this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
-
             this.buildMap();
             this.buildPlayer();
 
@@ -215,8 +215,6 @@ class Game
             console.error("Error initializing game:", err);
         }
     }
-
-    
 
     setGame() 
     {
@@ -338,12 +336,11 @@ class Game
             //  Place goals safely
             //  FIXX magic nums
             const GOAL_COUNT = 30 + Math.floor(Math.random() * 51); // 10–20
-
             for (let g = 0; g < GOAL_COUNT; g++) 
             {
                 let placed = false;
 
-                for (let attempt = 0; attempt < 50 && !placed; attempt++) 
+                for (let attempt = 0; attempt < 10 && !placed; attempt++) 
                 {
                     const x = Math.floor(Math.random() * tilesX);
                     const y = Math.floor(Math.random() * tilesY);

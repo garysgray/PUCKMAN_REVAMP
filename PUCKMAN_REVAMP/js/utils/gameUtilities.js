@@ -601,3 +601,28 @@ function drawHitbox(device, obj, options = {})
         console.warn("drawHitbox failed:", err.message); 
     }
 }
+
+// Used during play state wating for player to hit pause button
+function checkforPause(device, game)  
+{     
+    try 
+    {
+        if (device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L)) 
+        {
+            if (game.gameState === GameDefs.gameStates.PLAY )   
+            {
+                // Switch to pause mode
+                game.setGameState(GameDefs.gameStates.PAUSE);
+            }
+            else if (game.gameState === GameDefs.gameStates.PAUSE) 
+            {
+                // Resume play mode
+                game.setGameState(GameDefs.gameStates.PLAY);
+            }
+        }
+    } 
+    catch (e) 
+    {
+        console.error("checkforPause error:", e);
+    }
+} 
