@@ -22,9 +22,12 @@ function updateGameStates(device, game, delta)
                     
                     if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY)) 
                     {
-                        game.initGame(device)
-                        game.setGame();
+                            game.setGame();     
+                       // }
+                        
+                       
                         game.setGameState(GameDefs.gameStates.PLAY);
+                        //game.initByControl = false;
                     }
                 } 
                 catch (e) 
@@ -49,6 +52,12 @@ function updateGameStates(device, game, delta)
                         gameClock.update(delta);
                     }
 
+                    if (gameClock.timeLeft == 0)
+                    {
+                        game.setGameState(GameDefs.gameStates.LOSE);
+                        break;
+                    }
+
                     // update player movement
                     game.player.update(device, game, delta);
 
@@ -61,8 +70,9 @@ function updateGameStates(device, game, delta)
                     // check player enemy collision
                     if (checkPlayerGameObjCollisions(game.enemyHolder, game.player) !== false)
                     {
-                        device.audio.playSound(GameDefs.soundTypes.HURT.name);
-                        game.gameState = GameDefs.gameStates.INIT;
+                         device.audio.playSound(GameDefs.soundTypes.HURT.name);
+                         game.setGameState(GameDefs.gameStates.LOSE);
+                         break;
                     }
 
                     // check player goals/fruit collision
@@ -77,10 +87,22 @@ function updateGameStates(device, game, delta)
                             // FIXX need fix magic num
                             game.increaseScore(1); 
                         }
+
+                        if (game.goalHolder.getSize() === 0)
+                        {
+                            //should go to next level FIXX function?
+                            game.setGameState(GameDefs.gameStates.WIN); 
+                            game.increaseGameLevel(1); 
+                            break;
+                        }
                     }
-                    else { game.gameState = GameDefs.gameStates.INIT; }
- 
+
+                    
+
                     checkforPause(device, game); 
+
+
+
                 } 
                 catch (e) 
                 {
@@ -122,7 +144,9 @@ function updateGameStates(device, game, delta)
                     // Check for game restart and Init game if it happens  
                     if (device.keys.isKeyDown(GameDefs.keyTypes.RESET_KEY)) 
                     {
-                        game.setGameState(GameDefs.gameStates.INIT);
+                        //game.setGameState(GameDefs.gameStates.INIT);
+                        game.setGame();  
+                        game.setGameState(GameDefs.gameStates.PLAY);
                     }
                 } 
                 catch (e) 
@@ -139,7 +163,14 @@ function updateGameStates(device, game, delta)
                 {
                     if (device.keys.isKeyDown(GameDefs.keyTypes.RESET_KEY)) 
                     {
-                        game.setGameState(GameDefs.gameStates.INIT);
+                        if(game.lives != 0)
+                        {
+                            game.lives--;
+                            game.setGame() 
+                            game.setGameState(GameDefs.gameStates.PLAY);
+                            break
+                        }
+                        else{ game.setGameState(GameDefs.gameStates.INIT);}
                     }
                 } 
                 catch (e) 

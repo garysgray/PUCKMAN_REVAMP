@@ -18,14 +18,14 @@ function renderTextLayer(device, game)
         const layout = 
         {
             initTextY: [0.57, 0.62, 0.67, 0.72],   // Intro screen text lines
-            pauseY: 0.57,                          // Pause message placement
-            winLoseY: 0.57,                        // Win/Lose screen placement             
+            pauseY: 0.62,                          // Pause message placement
+            winLoseY: 0.62,                        // Win/Lose screen placement             
         };
 
         // Set default font and color
         device.setFont(game.gameConsts.FONT_SETTINGS);
         device.colorText(game.gameConsts.FONT_COLOR);
-        
+         
         switch (game.gameState) 
         {
             // ==============================

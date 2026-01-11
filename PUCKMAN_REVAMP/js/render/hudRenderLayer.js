@@ -17,8 +17,10 @@ function renderHUDLayer(device, game)
         // Define layout positions as percentages of canvas height/width
         const layout = 
         {
-            hudAmmoX: 0.20,                        // Left-side HUD text (Ammo)
-            hudLivesX: 0.70,                       // Right-side HUD text (Lives)
+            hudScoreX: 0.10,                        // Left-side HUD text (Ammo)
+            hudLivesX: 0.30,                       // Right-side HUD text (Lives)
+            hudClockX: 0.60,                       // Right-side HUD text (Lives)
+            hudLevelX: 0.80,                       // Right-side HUD text (Lives)
             hudY: .05,                             // HUD vertical placement 1   score, lives
             //hudY2: .095,                           // HUD vertical placement 2   score
            // hudY3: .05,                            // HUD vertical placement 3   clock               
@@ -49,31 +51,18 @@ function renderHUDLayer(device, game)
             case GameDefs.gameStates.PLAY:
                 try
                 {
-                    // board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.HUD.type);
-                    // const hudImg = device.images.getImage(GameDefs.billBoardTypes.HUD.type);
-
-                    // if (board && hudImg) 
-                    // {
-                    //     try {
-                    //         device.renderImage(hudImg, board.posX, board.posY, game.gameConsts.SCREEN_WIDTH, game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER);
-                    //     } 
-                    //     catch (e) 
-                    //     {
-                    //         console.error("Failed to render HUDImg:", e);
-                    //     }
-                    // }
-
                     const scoreText = GameDefs.gameTexts.HUD.SCORE + game.score;
                     const livesText = GameDefs.gameTexts.HUD.LIVES + game.lives;
+                    const levelText = GameDefs.gameTexts.HUD.LEVEL + game.gameLevel;
                     const timer = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
-                    // const ammoText = GameDefs.gameTexts.HUD.AMMO + game.ammo;
 
-                    device.colorText("red");
-                    device.putText(scoreText, cw * layout.hudAmmoX, ch * layout.hudY);
+                    device.colorText("orange");
+                    device.putText(scoreText, cw * layout.hudScoreX, ch * layout.hudY);
                     device.putText(livesText, cw * layout.hudLivesX, ch * layout.hudY);
-                    // device.centerTextOnY(scoreText, ch * layout.hudY2);
-                    // device.putText(ammoText, cw * layout.hudAmmoX, ch * layout.hudY);
-                    device.centerTextOnY(`Clock: ${timer.formatted}`, (ch * layout.hudY) );  
+
+                    device.putText(`Time: ${timer.formatted}`, cw * layout.hudClockX, (ch * layout.hudY) );  
+                    device.putText(levelText, cw * layout.hudLevelX, ch * layout.hudY);
+  
                 }
                 catch (e) 
                 {

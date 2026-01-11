@@ -24,6 +24,7 @@ class Game
     #score;
     #lives;
     #player;
+    #gameLevel;
 
     #boarderHorizontalBuffer;
     #boarderVerticleBuffer;
@@ -39,6 +40,8 @@ class Game
 
     #mapEmptyChance;
     #mapSpawnRadius;
+    #goalCount;
+
 
     constructor() 
     {
@@ -48,12 +51,9 @@ class Game
             this.#billBoards = new ObjHolder();
             this.#gameTimers = new ObjHolder();
             this.#enemyHolder = new ObjHolder();
-
             this.#goalHolder = new ObjHolder();
-
             this.#boarderHolder = new ObjHolder();
             this.#mapHolder = new ObjHolder();
-
         } 
         catch (err) 
         {
@@ -68,6 +68,9 @@ class Game
         this.#gameState = GameDefs.gameStates.INIT;
         this.#score = 0;
         this.#lives = 0;
+        this.#gameLevel = 1;
+        this.#player = null;
+
         this.#boarderHorizontalBuffer = 0;
         this.#boarderVerticleBuffer = 0;
 
@@ -77,33 +80,38 @@ class Game
         this.#cachedMap = null;
         this.#cachedMapReady = false;
 
-        this.#player = null;
+        this.#mapSafeMargin = 0;
+        this.#mapLaneSpacing = 0;
 
-        this.#mapSafeMargin = 2;
-        this.#mapLaneSpacing = 9;
+        this.#mapEmptyChance = 0;
+        this.#mapSpawnRadius = 0;
 
-        this.#mapEmptyChance = .99;
-        this.#mapSpawnRadius = 4;
+        this.#goalCount = 0;
     }
 
     // =======================================================
     // GETTERS and SETTERS
     // =======================================================
     get gameConsts() { return this.#gameConsts; }
+
     get billBoards() { return this.#billBoards; }
     get gameTimers() { return this.#gameTimers; }
     get enemyHolder() { return this.#enemyHolder; }
+    get player() { return this.#player; }
+    get boarderHolder() { return this.#boarderHolder; }
+    get mapHolder() { return this.#mapHolder; }
+    get goalHolder() { return this.#goalHolder; }
+
     get canvasWidth() { return this.#canvasWidth; }
     get canvasHeight() { return this.#canvasHeight; }
     get canvasHalfW() { return this.#canvasHalfW; }
     get canvasHalfH() { return this.#canvasHalfH; }
+
     get gameState() { return this.#gameState; }
     get score() { return this.#score; }
     get lives() { return this.#lives; }
-    get player() { return this.#player; }
-    get boarderHolder() { return this.#boarderHolder; }
-    get mapHolder() { return this.#mapHolder; }
-    
+    get gameLevel() { return this.#gameLevel; }
+
     get boarderHorizontalBuffer() { return this.#boarderHorizontalBuffer; }
     get boarderVerticleBuffer() { return this.#boarderVerticleBuffer; }
 
@@ -119,12 +127,13 @@ class Game
     get mapEmptyChance(){ return this.#mapEmptyChance; }
     get mapSpawnRadius(){ return this.#mapSpawnRadius; }
 
-    get goalHolder() { return this.#goalHolder; }
+    get goalCount(){ return this.#goalCount; }
 
     /// SETS
     set gameState(v) { this.#gameState = v; }
     set score(v) { this.#score = v; }
     set lives(v) { this.#lives = v; }
+    set gameLevel(v) { this.#gameLevel = v; }
     set boarderHorizontalBuffer(v) { this.#boarderHorizontalBuffer = v; }
     set boarderVerticleBuffer(v) { this.#boarderVerticleBuffer = v; }
 
@@ -142,6 +151,9 @@ class Game
     set mapEmptyChance (v) { this.#mapEmptyChance  = v; }
     set mapSpawnRadius (v) { this.#mapSpawnRadius  = v; }
 
+     set goalCount (v) { this.#goalCount  = v; }
+
+
     // =======================================================
     // FUNCTIONS
     // =======================================================
@@ -149,6 +161,7 @@ class Game
     decreaseLives(a) { this.lives -= a; }
     increaseScore(a) { this.score += a; }
     setGameState(state) { this.gameState = state; }
+    increaseGameLevel(a) { this.#gameLevel += a; }
 
     initGame(device)
     {
@@ -156,20 +169,11 @@ class Game
         {
             device.keys.initKeys();
 
-            // --- Clear all object holders to prevent duplicates ---
-            device.images.clearObjects();
-            this.enemyHolder.clearObjects();
-            this.boarderHolder.clearObjects();
-            this.billBoards.clearObjects();
-            this.gameTimers.clearObjects();
-
-            this.goalHolder.clearObjects();
-            
-
             //load and set images in holder type
             this.setImagesForType(device, GameDefs.playerSpriteTypes);
             this.setImagesForType(device, GameDefs.mapSpriteTypes);
             this.setImagesForType(device, GameDefs.goalsSpriteTypes);
+            this.setImagesForType(device, GameDefs.characterSpriteTypes);
 
             this.setImagesForType(device, GameDefs.billBoardTypes, boardDef => 
             {
@@ -179,36 +183,30 @@ class Game
                 this.billBoards.addObject(board);
             });
 
-            this.setImagesForType(device, GameDefs.characterSpriteTypes, spriteDef => 
-            {
-                this.enemyHolder.addObject( new Enemy(spriteDef.type, spriteDef.w, spriteDef.h, this.canvasHalfW, this.canvasHalfH, spriteDef.s));
-            });
-
              // Load sounds
             Object.values(GameDefs.soundTypes).forEach(sndDef => 
             {
                 if (sndDef.path) 
                 {
-                    device.audio.addSound(
-                        sndDef.name,
-                        sndDef.path,
-                        this.gameConsts.POOLSIZE,
-                        this.gameConsts.VOLUME,
+                    device.audio.addSound(sndDef.name, sndDef.path, this.gameConsts.POOLSIZE, this.gameConsts.VOLUME,
                     );
                 }
             });
 
-            // Timer
-            const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes.COUNTUP);
+            // // Timer
+            // const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes);
+            // this.gameTimers.addObject(timer);
+
+           // const GAME_TIME_SECONDS = 5;
+
+            const timer = new Timer(
+                GameDefs.timerTypes.GAME_CLOCK,
+                this.gameConsts.LEVEL_MAX_TIME,
+                GameDefs.timerModes.COUNTDOWN,
+                false // no looping
+            );
+
             this.gameTimers.addObject(timer);
-
-            // Build the boarders and map
-            let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
-            let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
-            this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
-            this.buildMap();
-            this.buildPlayer();
-
         } 
         catch (err) 
         {
@@ -217,14 +215,56 @@ class Game
     }
 
     setGame() 
-    {
-        this.score = 0;
-        this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
+    { 
+        if (this.gameState != GameDefs.gameStates.LOSE && this.gameState != GameDefs.gameStates.WIN)
+        {
+           this.gameLevel = 1;
+           this.score = 0;
+           this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
+        }
 
-        //this.enemyHolder.clearObjects();
+        // Need to reset level even if player wins level
+        // Clear out these holders
+        this.enemyHolder.clearObjects();
+        this.goalHolder.clearObjects();
+        this.boarderHolder.clearObjects();
+        this.mapHolder.clearObjects();
 
+        // Build the boarders and map
+        this.setMapValues();
+        let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
+        let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
+        this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
+        this.buildMap();
+        this.buildPlayer();
+
+        // Reset Enemies
+        // fixx maybe need an enemyResetFunction()
+        Object.values(GameDefs.characterSpriteTypes).forEach(spriteDef =>
+        {
+            const enemy = new Enemy(
+                spriteDef.type,
+                spriteDef.w,
+                spriteDef.h,        
+                this.canvasHalfW,
+                this.canvasHalfH,
+                spriteDef.s
+            );
+
+            this.enemyHolder.addObject(enemy);
+        });
+
+        // reset gameclock
+        // FIX make game clock a timer instead
         const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
-        if (gameClock) gameClock.start();
+        if (gameClock)
+        {
+            gameClock.reset(
+                this.gameConsts.LEVEL_MAX_TIME,
+                GameDefs.timerModes.COUNTDOWN,
+                false
+            );
+        }
     }
 
     setImagesForType(device, type, callback)
@@ -326,7 +366,7 @@ class Game
                     this.mapHolder.addObject(new GameObject(
                         tileDef.type,
                         this.gameConsts.MAP_TILE_WIDTH,
-                        this.gameConsts.MAP_TILE_HEIGHT,
+                        this.gameConsts.MAP_TILE_HEIGHT, 
                         screenX,
                         screenY
                     ));
@@ -335,12 +375,12 @@ class Game
 
             //  Place goals safely
             //  FIXX magic nums
-            const GOAL_COUNT = 30 + Math.floor(Math.random() * 51); // 10–20
-            for (let g = 0; g < GOAL_COUNT; g++) 
+            //const GOAL_COUNT = 5; // 10–20
+            for (let g = 0; g < this.goalCount; g++) 
             {
                 let placed = false;
 
-                for (let attempt = 0; attempt < 10 && !placed; attempt++) 
+                for (let attempt = 0; attempt < 500 && !placed; attempt++) 
                 {
                     const x = Math.floor(Math.random() * tilesX);
                     const y = Math.floor(Math.random() * tilesY);
@@ -459,4 +499,88 @@ class Game
         this[cacheKey] = canvas;
         this[readyKey] = true;
     }
+
+    setMapValues() 
+    {
+        // =======================================================
+        // 1) LEVEL CONTROL
+        // =======================================================
+        // Player can level forever, but difficulty stops scaling.
+        const MAX_DIFFICULTY_LEVEL = 50;
+        const level = Math.min(this.gameLevel, MAX_DIFFICULTY_LEVEL);
+
+        // Every 5 levels = new difficulty tier
+        const tier = Math.floor((level - 1) / 5);
+
+        // =======================================================
+        // 2) BASE VALUES (LEVEL 1 FEEL)
+        // =======================================================
+        const BASE_SAFE_MARGIN   = 4;
+        const BASE_LANE_SPACING  = 9;
+        const BASE_EMPTY_CHANCE  = 0.99; // easiest maps
+        const BASE_SPAWN_RADIUS  = 4;
+        const BASE_GOALS         = 2;    // start with 2 goals
+
+        this.mapSafeMargin   = BASE_SAFE_MARGIN;
+        this.mapLaneSpacing  = BASE_LANE_SPACING;
+        this.mapEmptyChance  = BASE_EMPTY_CHANCE;
+        this.mapSpawnRadius  = BASE_SPAWN_RADIUS;
+        this.goalCount       = BASE_GOALS;
+
+        // =======================================================
+        // 3) DIFFICULTY PER TIER (BIG STEPS)
+        // =======================================================
+        const SAFE_MARGIN_STEP   = 1;
+        const LANE_SPACING_STEP  = 1;
+        const EMPTY_CHANCE_STEP  = 0.05;
+        const SPAWN_RADIUS_STEP  = 1;
+        const GOALS_STEP         = 2;   // +2 goals per tier
+
+        this.mapSafeMargin  -= tier * SAFE_MARGIN_STEP;
+        this.mapLaneSpacing -= tier * LANE_SPACING_STEP;
+        this.mapEmptyChance -= tier * EMPTY_CHANCE_STEP;
+        this.mapSpawnRadius -= tier * SPAWN_RADIUS_STEP;
+        this.goalCount      += tier * GOALS_STEP;
+
+        // =======================================================
+        // 4) SMALL PER-LEVEL VARIATION (FLAVOR)
+        // =======================================================
+        if (level % 2 === 0)
+        {
+            this.mapEmptyChance += 0.02; // tiny random tweak
+            this.goalCount += 1;          // occasional extra goal
+        }
+
+        // =======================================================
+        // 5) HARD LIMITS (DESIGN SAFETY NET)
+        // =======================================================
+        const MIN_SAFE_MARGIN   = 2;
+        const MIN_LANE_SPACING  = 9;
+        const MIN_SPAWN_RADIUS  = 2;
+        const MIN_EMPTY_CHANCE  = 0.75;
+        const MAX_EMPTY_CHANCE  = 0.99;
+        const MAX_GOALS         = 15;
+        const MIN_GOALS         = 2;
+
+        this.mapSafeMargin  = Math.max(MIN_SAFE_MARGIN,  this.mapSafeMargin);
+        this.mapLaneSpacing = Math.max(MIN_LANE_SPACING, this.mapLaneSpacing);
+        this.mapSpawnRadius = Math.max(MIN_SPAWN_RADIUS, this.mapSpawnRadius);
+        this.mapEmptyChance = Math.max(MIN_EMPTY_CHANCE, Math.min(MAX_EMPTY_CHANCE, this.mapEmptyChance));
+        this.goalCount      = Math.max(MIN_GOALS, Math.min(MAX_GOALS, this.goalCount));
+
+        // =======================================================
+        // 6) DEBUG
+        // =======================================================
+        // console.log(
+        //     `LEVEL: ${this.gameLevel} | TIER: ${tier}`,
+        //     {
+        //         safeMargin: this.mapSafeMargin,
+        //         laneSpacing: this.mapLaneSpacing,
+        //         emptyChance: this.mapEmptyChance.toFixed(2),
+        //         spawnRadius: this.mapSpawnRadius,
+        //         goalCount: this.goalCount
+        //     }
+        // );
+    }
+
 }

@@ -62,6 +62,7 @@ class Controller
         try 
         {
             this.game.initGame(this.device);
+            this.game.initByControl = true;
 
             // Layers have to be rendered in this order
             if (typeof billBoardsLayer !== 'undefined')  this.addLayer(billBoardsLayer);      // game backgrounds

@@ -25,8 +25,9 @@ function renderBillBoardsLayer(device, game) {
                 const splashImg = device.images.getImage(GameDefs.billBoardTypes.SPLASH.type);
                 if (board && splashImg) 
                 {
-                    try {
-                        //device.renderImage(splashImg, board.posX, board.posY - yBuff);
+                    try 
+                    {
+
                         board.render(device, splashImg, yBuff)
                     } 
                     catch (e) 
@@ -45,13 +46,11 @@ function renderBillBoardsLayer(device, game) {
             case GameDefs.gameStates.PAUSE:
             {
                 board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.PAUSE.type);
-                const pauseImg = device.images.getImage(GameDefs.billBoardTypes.PAUSE.type);
-                
+                const pauseImg = device.images.getImage(GameDefs.billBoardTypes.PAUSE.type);           
                 if (board && pauseImg) 
                 {
                     try 
                     {
-                        //device.renderImage(pauseImg, board.posX, board.posY - yBuff);
                         board.render(device, pauseImg, yBuff)
                     } 
                     catch (e) 
@@ -65,25 +64,55 @@ function renderBillBoardsLayer(device, game) {
             case GameDefs.gameStates.WIN: 
             {
                 // Reserved for future win state content
+                board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.WIN.type);
+                const splashImg = device.images.getImage(GameDefs.billBoardTypes.WIN.type);
+                if (board && splashImg) 
+                {
+                    try {
+                        board.render(device, splashImg, yBuff)
+                    } 
+                    catch (e) 
+                    {
+                        console.error("Failed to render win image:", e);
+                    }
+                }
             } 
             break;
 
             case GameDefs.gameStates.LOSE: 
             { 
-                board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.DIE.type);
-                const dieImg = device.images.getImage(GameDefs.billBoardTypes.DIE.type);
-                if (board && dieImg) 
+                if (game.lives == 0)
                 {
-                    try 
+                    board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.LOSE.type);
+                    const dieImg = device.images.getImage(GameDefs.billBoardTypes.LOSE.type);
+                    if (board && dieImg) 
                     {
-                        //device.renderImage(dieImg, board.posX, board.posY- yBuff); 
-                        board.render(device, dieImg, yBuff)     
-                    } 
-                    catch (e) 
-                    {
-                        console.error("Failed to render die screen:", e);
+                        try 
+                        {
+                            board.render(device, dieImg, yBuff)     
+                        } 
+                        catch (e) 
+                        {
+                            console.error("Failed to render lose screen:", e);
+                        }
                     }
                 }
+                else
+                {
+                    board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.FAIL.type);
+                    const dieImg = device.images.getImage(GameDefs.billBoardTypes.FAIL.type);
+                    if (board && dieImg) 
+                    {
+                        try 
+                        {
+                            board.render(device, dieImg, yBuff)     
+                        } 
+                        catch (e) 
+                        {
+                            console.error("Failed to render fail screen:", e);
+                        }
+                    }
+                }                
             } 
             break;
 

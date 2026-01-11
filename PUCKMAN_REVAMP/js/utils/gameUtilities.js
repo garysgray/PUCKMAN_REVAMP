@@ -557,7 +557,7 @@ class Timer
     // Formatted MM:SS
     get formatted() 
     {
-        const total = Math.floor(this.elapsedTime);
+        const total = Math.floor(this.#timeLeft);
         const minutes = Math.floor(total / 60);
         const seconds = total % 60;
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;

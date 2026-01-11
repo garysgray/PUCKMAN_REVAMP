@@ -137,14 +137,22 @@ function gameLoop()
     // Add default debug lines
     if (DRAW_DEBUG_TEXT)
     {
-        addDebugLine("PUCKMAN DEBUG");
-        addDebugLine("----------------");
-        addDebugLine(`Player X: ${myController.game.player.posX.toFixed(1)}`);
-        addDebugLine(`Player Y: ${myController.game.player.posY.toFixed(1)}`);
-        addDebugLine(`SafeMargin: ${myController.game.mapSafeMargin}`);
-        addDebugLine(`LaneSpacing: ${myController.game.mapLaneSpacing}`);
-        addDebugLine(`EmptyChance: ${myController.game.mapEmptyChance}`);
-        addDebugLine(`SpawnRadius: ${myController.game.mapSpawnRadius}`);
+         try 
+        {
+            addDebugLine("PUCKMAN DEBUG");
+            addDebugLine("----------------");
+            //addDebugLine(`Player X: ${myController.game.player.posX.toFixed(1)}`);
+            //addDebugLine(`Player Y: ${myController.game.player.posY.toFixed(1)}`);
+            addDebugLine(`SafeMargin: ${myController.game.mapSafeMargin}`);
+            addDebugLine(`LaneSpacing: ${myController.game.mapLaneSpacing}`);
+            addDebugLine(`EmptyChance: ${myController.game.mapEmptyChance}`);
+            addDebugLine(`SpawnRadius: ${myController.game.mapSpawnRadius}`);
+            addDebugLine(`GoalCount: ${myController.game.goalCount}`);
+        } catch (e) 
+        {
+            console.error("shit not loaded yet:", e);
+        }
+        
     }
 
     // Render all debug lines

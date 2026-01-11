@@ -6,7 +6,7 @@
     /* Colors */
     --color-white: #a244a5;
     --color-black: #000000;
-    --color-red: #FF0000;
+    --color-orange: hsla(49, 100%, 50%, 0.965);
 
     /* Fonts */
     --font-format: bold 20px Calibri;
@@ -56,7 +56,7 @@ canvas
 
 a 
 {
-    color: var(--color-red);
+    color: var(--color-orange);
     text-decoration: none;
     transition: color var(--transition-speed) ease;
 }
@@ -100,7 +100,7 @@ p
 #top_menu a:hover 
 {
     color: var(--color-white);
-    background: var(--color-red);
+    background: var(--color-orange);
     border: var(--border);
 }
 
@@ -113,7 +113,7 @@ p
     align-items: center;     /* center vertically */
     background: var(--glass-bg);
     font: var(--font-format);
-    color: var(--color-red);
+    color: var(--color-orange);
     padding: var(--message-padding-y) var(--message-padding-x);
     margin: 1rem auto;
     text-align: center;
@@ -142,7 +142,7 @@ p
 
 #debug-text {
     margin: 0;
-    color: var(--color-red);
+    color: var(--color-orange);
     font: 14px Consolas, monospace;
     line-height: 1.35;
     white-space: pre-wrap;

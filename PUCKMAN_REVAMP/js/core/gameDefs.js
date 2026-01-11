@@ -74,6 +74,7 @@ const GameDefs = Object.freeze({
         PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
         WIN:        { type: "win",        w: 400, h: 100, path: "assets/sprites/billBoards/win.png" , isCenter: true },
         LOSE:       { type: "lose",       w: 400, h: 100, path: "assets/sprites/billBoards/lose.png" , isCenter: true },
+        FAIL:       { type: "fail",       w: 400, h: 100, path: "assets/sprites/billBoards/fail.png" , isCenter: true },
     },
 
     soundTypes: {
@@ -107,17 +108,18 @@ const GameDefs = Object.freeze({
         },
         HUD: {
             SCORE: "Score: ",
-            LIVES: "Lives: "
+            LIVES: "Lives: ",
+            LEVEL: "Level: ",
         },
         PAUSE: {
             MESSAGE: "PRESS  CTRL  TO  RESUME  GAME"
         },
         WIN: {
-            MESSAGE: "PRESS  ENTER  TO  PLAY  AGAIN"
+            MESSAGE: "PRESS  SPACE-BAR  TO  CONTINUE"
         },
         LOSE: {
             LOSE_MESSAGE: "YOU  LOST,  SPACE-BAR  TO  RETRY",
-            DIE_MESSAGE: "YOU  DIED,  SPACE-BAR  TO  REVIVE"
+            DIE_MESSAGE: "YOU  DIED,  SPACE-BAR  TO  REVIVE  "
         }
     },
 
@@ -158,8 +160,8 @@ class GameConsts
 
     //settings
     #DEBUG_TEXT_COLOR = "yellow";
-    #FONT_COLOR = 'white'
-    #FONT_SETTINGS = `bold 17pt Century Gothic`
+    #FONT_COLOR = 'hsla(49, 100%, 50%, 0.965'
+    #FONT_SETTINGS = `bold 25pt VT323`
 
     //sound 
     #POOLSIZE = 5;
@@ -178,20 +180,9 @@ class GameConsts
     #MAP_TILE_WIDTH = 24;
     #MAP_TILE_HEIGHT = 24;
 
-    
+    #LEVEL_MAX_TIME = 60;
 
 
-    // //times
-    // #SHIELD_TIME = 3;
-    // #NPC_SPEED_INCREASE_INTERVALS = 10;
-    // #NPC_SPEED_INCREASE_AMOUNT = 0.2;
-    // //amounts
-    // #AMMO_AMOUNT = 3; 
-    // #SCORE_INCREASE = 10;
-    // #SPAWN_ATTEMPTS = 5;
-    // //settings
-    // #BILLBOARDS_OFFSET_BUFF = 0;
-    
     // ---- Getters (expose constants safely) ----
     get SCREEN_WIDTH(){ return this.#SCREEN_WIDTH; }
     get SCREEN_HEIGHT(){ return this.#SCREEN_HEIGHT; }
@@ -216,29 +207,6 @@ class GameConsts
     get MAP_TILE_WIDTH(){ return this.#MAP_TILE_WIDTH; }
     get MAP_TILE_HEIGHT(){ return this.#MAP_TILE_HEIGHT; }
 
-    
-
-    
-    
-    // get SHIELD_TIME(){ return this.#SHIELD_TIME; }
-    // get AMMO_AMOUNT(){ return this.#AMMO_AMOUNT; }
-    // get SCORE_INCREASE(){ return this.#SCORE_INCREASE; }
-    // get SPAWN_ATTEMPTS(){ return this.#SPAWN_ATTEMPTS; }   
-    // get NPC_SPEED_INCREASE_INTERVALS(){ return this.#NPC_SPEED_INCREASE_INTERVALS; }
-    // get NPC_SPEED_INCREASE_AMOUNT(){ return this.#NPC_SPEED_INCREASE_AMOUNT; }
-    // get BILLBOARDS_OFFSET_BUFF(){ return this.#BILLBOARDS_OFFSET_BUFF; }
+    get LEVEL_MAX_TIME(){ return this.#LEVEL_MAX_TIME; }
 
 }
-
-
-
-//   const tilesX = 36;
-//         const tilesY = 20;
-
-//         const bufferX = 70;
-//         const bufferY = 70;
-
-//         const safeMargin = 3;
-//         const laneSpacing = 90;
-//         const emptyChance = 0.65;
-//         const spawnRadius = 2;
