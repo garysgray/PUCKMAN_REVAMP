@@ -56,7 +56,7 @@ function renderHUDLayer(device, game)
                     const levelText = GameDefs.gameTexts.HUD.LEVEL + game.gameLevel;
                     const timer = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
 
-                    device.colorText("orange");
+                    device.colorText(game.gameConsts.FONT_COLOR);
                     device.putText(scoreText, cw * layout.hudScoreX, ch * layout.hudY);
                     device.putText(livesText, cw * layout.hudLivesX, ch * layout.hudY);
 
@@ -76,7 +76,7 @@ function renderHUDLayer(device, game)
             case GameDefs.gameStates.PAUSE:
                 try 
                 {
-                } 
+                }  
                 catch (e) 
                 {
                     console.error("Error rendering pause HUD: ", e);
