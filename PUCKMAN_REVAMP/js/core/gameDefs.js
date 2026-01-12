@@ -100,12 +100,10 @@ const GameDefs = Object.freeze({
     gameTexts: {
         INIT: {
             INSTRUCTIONS: [
-                " ",
-                "PRESS SPACE-BAR TO START",
-                 " ",
+                 "GET ALL THE FRUIT ",
+                  "DON'T RUN OUT OF TIME",
                 "USE ARROW KEYS TO MOVE", 
-      
-                "DON'T RUN OUT OF TIME",
+                 "PRESS SPACE-BAR TO START",
             ]
         },
         HUD: {
@@ -163,7 +161,7 @@ class GameConsts
     //settings
     #DEBUG_TEXT_COLOR = "yellow";
     #FONT_COLOR = 'hsla(49, 100%, 50%, 0.965'
-    #FONT_SETTINGS = `bold 25pt VT323`
+    #FONT_SETTINGS = `bold 20pt VT323`
 
     //sound 
     #POOLSIZE = 5;
