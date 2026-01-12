@@ -104,6 +104,8 @@ const GameDefs = Object.freeze({
                 "PRESS SPACE-BAR TO START",
                  " ",
                 "USE ARROW KEYS TO MOVE", 
+      
+                "DON'T RUN OUT OF TIME",
             ]
         },
         HUD: {

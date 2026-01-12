@@ -17,7 +17,7 @@ function renderTextLayer(device, game)
         // Define layout positions as percentages of canvas height/width
         const layout = 
         {
-            initTextY: [0.57, 0.62, 0.67, 0.72],   // Intro screen text lines
+            initTextY: [0.57, 0.62, 0.67, 0.72 , 0.82],   // Intro screen text lines
             pauseY: 0.62,                          // Pause message placement
             winLoseY: 0.62,                        // Win/Lose screen placement             
         };
