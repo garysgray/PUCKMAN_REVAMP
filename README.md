@@ -132,7 +132,6 @@ Each state controls its own update and transition rules.
 - Sound effects for:
   - Goal collection
   - Player damage
-  - Shooting actions
 - Audio pooling to avoid playback stutter.
 - Designed for future expansion.
 
@@ -168,7 +167,6 @@ This project prioritizes:
 - Power-ups and modifiers
 - Boss encounters
 - Persistent high scores
-- Mobile-friendly controls
 - Additional visual polish
 
 ---
