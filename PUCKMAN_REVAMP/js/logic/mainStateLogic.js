@@ -29,7 +29,6 @@ function updateGameStates(device, game, delta)
                         if (toggleOnce(device.keys.isKeyPressed(GameDefs.keyTypes.Q), { value: device.keys.wasQPressed })) 
                         {
                             game.gamePadEnabled = !game.gamePadEnabled;
-                            //("gamePadEnabled is now", game.gamePadEnabled);
                         }
                     }
                     else
@@ -38,13 +37,23 @@ function updateGameStates(device, game, delta)
                     }
                     
 
-                    setTimeout(() => 
+                    if( game.gamePadEnabled ) //need a little time or gamepad button press gets recorded to soon
+                    {
+                        setTimeout(() => 
+                        {
+                            if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))) 
+                            {       
+                                game.setGameState(GameDefs.gameStates.PLAY);
+                            }
+                        }, 500);
+                    }
+                    else
                     {
                         if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))) 
-                        {       
-                            game.setGameState(GameDefs.gameStates.PLAY);
-                        }
-                    }, 500);
+                            {       
+                                game.setGameState(GameDefs.gameStates.PLAY);
+                            }
+                    }
                     
                 } 
                 catch (e) 
