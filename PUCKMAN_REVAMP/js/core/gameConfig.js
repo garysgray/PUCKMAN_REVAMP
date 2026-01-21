@@ -41,6 +41,10 @@ class Game
     #mapEmptyChance;
     #mapSpawnRadius;
     #goalCount;
+    
+    #gamePadConnected;
+    #gamePadEnabled;
+    #gameIsPaused;
 
 
     constructor() 
@@ -87,6 +91,10 @@ class Game
         this.#mapSpawnRadius = 0;
 
         this.#goalCount = 0;
+
+        this.#gamePadConnected = false;
+        this.#gamePadEnabled = false;
+        this.#gameIsPaused = false;
     }
 
     // =======================================================
@@ -129,6 +137,10 @@ class Game
 
     get goalCount(){ return this.#goalCount; }
 
+    get gamePadConnected(){ return this.#gamePadConnected; }
+    get gamePadEnabled(){ return this.#gamePadEnabled; }
+    get gameIsPaused(){ return this.#gameIsPaused; }
+
     /// SETS
     set gameState(v) { this.#gameState = v; }
     set score(v) { this.#score = v; }
@@ -151,8 +163,11 @@ class Game
     set mapEmptyChance (v) { this.#mapEmptyChance  = v; }
     set mapSpawnRadius (v) { this.#mapSpawnRadius  = v; }
 
-     set goalCount (v) { this.#goalCount  = v; }
+    set goalCount (v) { this.#goalCount  = v; }
 
+    set gamePadConnected (v) { this.#gamePadConnected  = v; }
+    set gamePadEnabled (v) { this.#gamePadEnabled  = v; }
+    set gameIsPaused (v) { this.#gameIsPaused  = v; }
 
     // =======================================================
     // FUNCTIONS
@@ -168,6 +183,27 @@ class Game
         try 
         {
             device.keys.initKeys();
+
+            device.keys.wasPausePressed = false;
+
+            device.keys.isGamepadButtonPressed = function(buttonIndex) 
+            {
+                const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+                const gp = gamepads[0]; // first controller only
+                return gp ? gp.buttons[buttonIndex]?.pressed : false;
+            };
+
+            window.addEventListener("gamepadconnected", (event) => 
+            {
+                this.gamePadConnected = true;
+                //console.log("Gamepad connected:", event.gamepad);
+            });
+
+            window.addEventListener("gamepaddisconnected", (event) => 
+            {
+                 this.gamePadConnected = false;
+                //console.log("Gamepad disconnected:", event.gamepad);
+            });
 
             //load and set images in holder type
             this.setImagesForType(device, GameDefs.playerSpriteTypes);
@@ -192,12 +228,6 @@ class Game
                     );
                 }
             });
-
-            // // Timer
-            // const timer = new Timer(GameDefs.timerTypes.GAME_CLOCK, 0, GameDefs.timerModes);
-            // this.gameTimers.addObject(timer);
-
-           // const GAME_TIME_SECONDS = 5;
 
             const timer = new Timer(
                 GameDefs.timerTypes.GAME_CLOCK,

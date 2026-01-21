@@ -41,6 +41,11 @@ const GameDefs = Object.freeze({
         STOP: 3,
     },
 
+    gamepadButtons: {
+        START: 9,  // Start button
+        PAUSE: 8   // Select / Back button
+},
+
     playerSpriteTypes: {
         PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
     },
@@ -94,7 +99,8 @@ const GameDefs = Object.freeze({
         W: "KeyW",
         S: "KeyS",
         A: "KeyA",
-        D: "KeyD"
+        D: "KeyD",
+        Q: "KeyQ",
     },
 
     gameTexts: {
@@ -104,7 +110,16 @@ const GameDefs = Object.freeze({
                   "DON'T RUN OUT OF TIME",
                 "USE ARROW KEYS TO MOVE", 
                  "PRESS SPACE-BAR TO START",
-            ]
+                 "PRESS CTRL TO PAUSE",
+            ],
+            GAMEPAD_INSTRUCTIONS: [
+                 "GET ALL THE FRUIT ",
+                 "DON'T RUN OUT OF TIME",
+                 "USE LEFT ANALOG TO MOVE", 
+                 "PRESS START BUTTON TO BEGIN",
+                 "PRESS SELECT BUTTON TO PAUSE",
+            ],
+            HTML_DEFAULT_INSTRUCTIONS:"PRESS Q TO ENABLE/DISABLE GAMEPAD",
         },
         HUD: {
             SCORE: "Score: ",
@@ -112,14 +127,18 @@ const GameDefs = Object.freeze({
             LEVEL: "Level: ",
         },
         PAUSE: {
-            MESSAGE: "PRESS  CTRL  TO  RESUME  GAME"
+            MESSAGE: "PRESS  CTRL  TO  RESUME  GAME",
+            GAMEPAD_MESSAGE: "PRESS  SELECT  BUTTON TO  RESUME  GAME"
         },
         WIN: {
-            MESSAGE: "PRESS  SPACE-BAR  TO  CONTINUE"
+            MESSAGE: "PRESS  SPACE-BAR  TO  CONTINUE",
+            GAMEPAD_MESSAGE: "PRESS  SELECT BUTTON  TO  CONTINUE"
         },
         LOSE: {
             LOSE_MESSAGE: "YOU  LOST,  SPACE-BAR  TO  RETRY",
-            DIE_MESSAGE: "YOU  DIED,  SPACE-BAR  TO  REVIVE  "
+            DIE_MESSAGE: "YOU  DIED,  SPACE-BAR  TO  REVIVE  ",
+            GAMEPAD_LOSE_MESSAGE: "YOU  LOST,  SELECT BUTTON TO GO BACK TO START",
+            GAMEPAD_DIE_MESSAGE: "YOU  DIED,  START BUTTON  TO  REVIVE  "
         }
     },
 

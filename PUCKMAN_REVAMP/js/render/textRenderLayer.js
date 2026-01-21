@@ -34,9 +34,18 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.INIT:
                 try
                 {
+                    let instructions = null;
                     layout.initTextY.forEach((pct, idx) => 
                     {
-                        const instructions = GameDefs.gameTexts.INIT.INSTRUCTIONS[idx];
+                        if (game.gamePadEnabled)
+                        {
+                             instructions = GameDefs.gameTexts.INIT.GAMEPAD_INSTRUCTIONS[idx];
+                        }
+                        else
+                        {
+                             instructions = GameDefs.gameTexts.INIT.INSTRUCTIONS[idx];
+                        }
+                        
                         
                         device.centerTextOnY(instructions, ch * pct);
                     });
@@ -68,7 +77,17 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.PAUSE:
                 try 
                 {
-                    const pauseMsg = GameDefs.gameTexts.PAUSE.MESSAGE;
+                    let pauseMsg = null;
+
+                    if (game.gamePadEnabled)
+                    {
+                        pauseMsg = GameDefs.gameTexts.PAUSE.GAMEPAD_MESSAGE;
+                    }
+                    else
+                    {
+                        pauseMsg = GameDefs.gameTexts.PAUSE.MESSAGE;
+                    }
+                    
 
                     device.colorText("white");
                     device.centerTextOnY(pauseMsg, ch * layout.pauseY);
@@ -86,7 +105,16 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.WIN:
                 try 
                 {
-                    const winMsg = GameDefs.gameTexts.WIN.MESSAGE;
+                    let winMsg = null;
+
+                    if (game.gamePadEnabled)
+                    {
+                        winMsg = GameDefs.gameTexts.WIN.GAMEPAD_MESSAGE;
+                    }
+                    else
+                    {
+                        winMsg = GameDefs.gameTexts.WIN.MESSAGE;
+                    }
 
                     device.centerTextOnY(winMsg, ch * layout.winLoseY);
                     
@@ -103,19 +131,35 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.LOSE:
                 try 
                 {
+                    let loseMsg = null;
+
                     if (game.lives <= 0) 
                     {
-                        const loseMsg = GameDefs.gameTexts.LOSE.LOSE_MESSAGE;
 
-                        device.centerTextOnY(loseMsg, ch * layout.winLoseY);
-                        
+                        if (game.gamePadEnabled)
+                        {
+                            loseMsg = GameDefs.gameTexts.LOSE.GAMEPAD_LOSE_MESSAGE;
+                        }
+                        else
+                        {
+                            loseMsg =  GameDefs.gameTexts.LOSE.LOSE_MESSAGE;
+                        }
+
+                        device.centerTextOnY(loseMsg, ch * layout.winLoseY);    
                     }
                     else 
                     {
-                        const dieMsg = GameDefs.gameTexts.LOSE.DIE_MESSAGE;
+                        let dieMsg = null; 
+                        if (game.gamePadEnabled)
+                        {
+                            dieMsg = GameDefs.gameTexts.LOSE.GAMEPAD_DIE_MESSAGE;
+                        }
+                        else
+                        {
+                            dieMsg =  GameDefs.gameTexts.LOSE.DIE_MESSAGE;
+                        }
 
-                        device.centerTextOnY(dieMsg, ch * layout.winLoseY);
-                        
+                        device.centerTextOnY(dieMsg, ch * layout.winLoseY);    
                     }
                 } 
                 catch (e) 

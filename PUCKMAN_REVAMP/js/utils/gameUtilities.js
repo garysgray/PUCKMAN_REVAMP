@@ -603,26 +603,75 @@ function drawHitbox(device, obj, options = {})
 }
 
 // Used during play state wating for player to hit pause button
-function checkforPause(device, game)  
-{     
+function checkForPause(device, game) 
+{
     try 
     {
-        if (device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L)) 
+        const pausePressed = device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.PAUSE));
+
+        // Use the persistent flag
+        if (toggleOnce(pausePressed, device.keys)) 
         {
-            if (game.gameState === GameDefs.gameStates.PLAY )   
+            // toggle game state
+            if (game.gameState === GameDefs.gameStates.PLAY) 
             {
-                // Switch to pause mode
                 game.setGameState(GameDefs.gameStates.PAUSE);
-            }
+            } 
             else if (game.gameState === GameDefs.gameStates.PAUSE) 
             {
-                // Resume play mode
                 game.setGameState(GameDefs.gameStates.PLAY);
             }
         }
     } 
     catch (e) 
     {
-        console.error("checkforPause error:", e);
+        console.error("checkForPause error:", e);
     }
-} 
+}
+
+function toggleOnce(isPressed, state) 
+{
+    if (isPressed && !state.value) 
+    {
+        state.value = true;
+        return true;
+    }
+
+    if (!isPressed) 
+    {
+        state.value = false;
+    }
+
+    return false;
+}
+
+
+function updateHTMLMessage(game) 
+{
+    const msg = document.getElementById("message");
+    if (!msg) return;
+
+    if (game.gameState != GameDefs.gameStates.INIT) 
+    {
+        if (game.gamePadEnabled) 
+        {
+            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]+"</p>";     
+        } 
+        else 
+        {
+            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
+        }
+    }
+    else
+    {
+        if(game.gamePadConnected)
+        {
+            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS+"</p>";   
+        }
+        else 
+        {
+            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
+        }
+        
+    }
+}

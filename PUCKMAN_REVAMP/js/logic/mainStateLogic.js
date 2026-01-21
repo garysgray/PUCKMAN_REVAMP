@@ -11,6 +11,9 @@ function updateGameStates(device, game, delta)
 {
     try 
     {
+        // Updates the message at bottom of screen 
+        updateHTMLMessage(game); 
+        
         switch (game.gameState) 
         {
             // -------------------------------------------------------
@@ -19,16 +22,30 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.INIT:
                 try 
                 {
-                    
-                    if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY)) 
+                    game.setGame();
+
+                    if ( game.gamePadConnected)
                     {
-                            game.setGame();     
-                       // }
-                        
-                       
-                        game.setGameState(GameDefs.gameStates.PLAY);
-                        //game.initByControl = false;
+                        if (toggleOnce(device.keys.isKeyPressed(GameDefs.keyTypes.Q), { value: device.keys.wasQPressed })) 
+                        {
+                            game.gamePadEnabled = !game.gamePadEnabled;
+                            //("gamePadEnabled is now", game.gamePadEnabled);
+                        }
                     }
+                    else
+                    {
+                        game.gamePadEnabled = false;
+                    }
+                    
+
+                    setTimeout(() => 
+                    {
+                        if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))) 
+                        {       
+                            game.setGameState(GameDefs.gameStates.PLAY);
+                        }
+                    }, 500);
+                    
                 } 
                 catch (e) 
                 {
@@ -97,11 +114,7 @@ function updateGameStates(device, game, delta)
                         }
                     }
 
-                    
-
-                    checkforPause(device, game); 
-
-
+                    checkForPause(device, game); 
 
                 } 
                 catch (e) 
@@ -116,18 +129,9 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.PAUSE:
                 try 
                 {
-                    // while in pause mode if player un-pauses
-                    if (device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L)) 
-                    {
-                        // Update states
-                        game.setGameState(GameDefs.gameStates.PLAY);
-
-                    }
-                    // Dev hack if you want to restart game quickly
-                    if (device.keys.isKeyDown(GameDefs.keyTypes.RESET_KEY)) 
-                    {
-                        game.setGameState(GameDefs.gameStates.INIT);
-                    }
+                
+                    checkForPause(device, game); 
+                    
                 }
                 catch (e) 
                 {
@@ -142,7 +146,8 @@ function updateGameStates(device, game, delta)
                 try 
                 {
                     // Check for game restart and Init game if it happens  
-                    if (device.keys.isKeyDown(GameDefs.keyTypes.RESET_KEY)) 
+                    if (device.keys.isKeyPressed(GameDefs.keyTypes.RESET_KEY) ||
+                    device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))
                     {
                         //game.setGameState(GameDefs.gameStates.INIT);
                         game.setGame();  
@@ -161,7 +166,8 @@ function updateGameStates(device, game, delta)
             case GameDefs.gameStates.LOSE:
                 try 
                 {
-                    if (device.keys.isKeyDown(GameDefs.keyTypes.RESET_KEY)) 
+                    if (device.keys.isKeyPressed(GameDefs.keyTypes.RESET_KEY) ||
+                    device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START)) 
                     {
                         if(game.lives != 0)
                         {
@@ -191,5 +197,4 @@ function updateGameStates(device, game, delta)
 }
 
  
-
 

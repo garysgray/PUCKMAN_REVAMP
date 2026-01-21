@@ -75,18 +75,40 @@ class Player extends GameObject
 
         return true;
     }
-
-    checkForKeyBoardMoveInput(device, game, delta)
-    {
+    
+   checkForKeyBoardMoveInput(device, game, delta) 
+   {
         let dx = 0;
         let dy = 0;
-        
+
+        // ==========================
+        //  Keyboard Input
+        // ==========================
         if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) dy += 1;
         if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W)) dy -= 1;
         if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) dx += 1;
         if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) dx -= 1;
 
-        // set state BEFORE normalization
+        // ==========================
+        // Gamepad Input
+        // ==========================
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        const gp = gamepads[0]; // support only the first gamepad for now
+
+        if (gp) 
+        {
+            // Apply deadzone to joystick axes
+            const deadzone = 0.2;
+            const axisX = Math.abs(gp.axes[0]) > deadzone ? gp.axes[0] : 0;
+            const axisY = Math.abs(gp.axes[1]) > deadzone ? gp.axes[1] : 0;
+
+            dx += axisX;
+            dy += axisY;
+        }
+
+        // ==========================
+        // Determine Player State
+        // ==========================
         if (dx === 0 && dy < 0) this.playerState = GameDefs.playStates.UP;
         else if (dx === 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN;
         else if (dx > 0 && dy === 0) this.playerState = GameDefs.playStates.RIGHT;
@@ -96,18 +118,18 @@ class Player extends GameObject
         else if (dx > 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_RIGHT;
         else if (dx < 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_LEFT;
 
-
-        // normalize diagonal movement
+        // ==========================
+        // Normalize & Move
+        // ==========================
         if (dx !== 0 || dy !== 0) 
         {
             const length = Math.sqrt(dx * dx + dy * dy);
             dx /= length;
             dy /= length;
 
-            // >>> NEW COLLISION-AWARE MOVEMENT <<<
             this.tryMoveWithCollision(game.mapHolder, dx * this.speed * delta, dy * this.speed * delta);
         }
-    }
+}
 
     // -----------------------------
     // Player Mouse Input Binding

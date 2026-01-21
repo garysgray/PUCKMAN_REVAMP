@@ -6,7 +6,7 @@
 // DEBUG TOOLS
 // =======================================================
 const DEV_MODE = false; // false when shipping
-//const DEV_MODE = true; // false when shipping
+//const DEV_MODE = true; // true when dev
 
 let HIT_BOXES = false;
 let DEBUG_TEXT = DEV_MODE;
@@ -67,13 +67,11 @@ function initControllerAndGame()
 
     try 
     {
-        //myController.game.initGame(myController.device);
-        //myController.game.setGame();
-
         updateDebugPanelVisibility(); // DEBUG UI INIT
         updateDebugPanelPosition();   // DEBUG UI INIT POSITION
 
         safeStartGame();
+        
     } catch (e) 
     {
         console.error("Error during init:", e);
@@ -94,6 +92,7 @@ function safeStartGame()
     }
 }
 
+//this helps get debug and other stuff going with a temp canvas obj, so we dont get errors looking for a canvas
 function readyToStart() 
 {
     const canvas = document.getElementById("canvas");
