@@ -37,7 +37,7 @@ function updateGameStates(device, game, delta)
                     }
                     
 
-                    if( game.gamePadEnabled ) //need a little time or gamepad button press gets recorded to soon
+                    if( game.gamePadEnabled ) //need a little time or gamepad button press gets recorded to soon. 
                     {
                         setTimeout(() => 
                         {
