@@ -206,22 +206,22 @@ class Game
             });
 
             const canvas = document.getElementById("canvas");
-canvas.tabIndex = 0; // make focusable
-canvas.focus();
+            canvas.tabIndex = 0; // make focusable
+            canvas.focus();
 
-canvas.addEventListener("keydown", e => {
-    const blockedKeys = [
-        "ArrowUp",
-        "ArrowDown",
-        "ArrowLeft",
-        "ArrowRight",
-        "Space"
-    ];
+            canvas.addEventListener("keydown", e => {
+                const blockedKeys = [
+                    "ArrowUp",
+                    "ArrowDown",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Space"
+                ];
 
-    if (blockedKeys.includes(e.code)) {
-        e.preventDefault();
-    }
-});
+                if (blockedKeys.includes(e.code)) {
+                    e.preventDefault();
+                }
+            });
 
             //load and set images in holder type
             this.setImagesForType(device, GameDefs.playerSpriteTypes);

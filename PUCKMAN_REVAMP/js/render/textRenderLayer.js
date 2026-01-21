@@ -62,8 +62,7 @@ function renderTextLayer(device, game)
             case GameDefs.gameStates.PLAY:
                 try
                 {
-                    // const pauseMsg = "PRESS  CTRL  TO  PAUSE  GAME";
-                    // device.centerTextOnY(pauseMsg, ch * layout.pauseY);
+                   //no tales to tell
                 }
                 catch (e) 
                 {
@@ -88,8 +87,6 @@ function renderTextLayer(device, game)
                         pauseMsg = GameDefs.gameTexts.PAUSE.MESSAGE;
                     }
                     
-
-                    device.colorText("white");
                     device.centerTextOnY(pauseMsg, ch * layout.pauseY);
                     
                 } 
