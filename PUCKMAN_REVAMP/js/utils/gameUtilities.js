@@ -645,7 +645,6 @@ function toggleOnce(isPressed, state)
     return false;
 }
 
-
 function updateHTMLMessage(game) 
 {
     const msg = document.getElementById("message");
@@ -674,4 +673,90 @@ function updateHTMLMessage(game)
         }
         
     }
+}
+
+function setImagesForType(device, type, callback)
+{
+    Object.values(type).forEach(typeDef => 
+    {
+        if (typeDef.path) 
+        {
+            
+            const sprite = new Sprite(typeDef.path, typeDef.type);
+            device.images.addObject(sprite);
+
+            //Call the callback if provided
+            if (callback && typeof callback === "function") 
+            {
+                callback(typeDef, sprite); // pass the type definition and the sprite
+            }
+        }
+    });
+} 
+
+function loadSounds(device, game, soundTypes)
+{
+    Object.values(soundTypes).forEach(sndDef => 
+    {
+        if (sndDef.path) 
+        {
+            device.audio.addSound(sndDef.name, sndDef.path, game.gameConsts.POOLSIZE, game.gameConsts.VOLUME,
+            );
+        }
+    });
+}
+
+function loadTimers(game, timerTypes, timerModes)
+{                                                                                                       // no looping
+    const timer = new Timer( timerTypes.GAME_CLOCK, game.gameConsts.LEVEL_MAX_TIME, timerModes.COUNTDOWN, false); 
+    game.gameTimers.addObject(timer);
+}
+
+function resetTimer(game, timerTypes, timerModes) 
+{
+    const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK);
+
+    if (gameClock)
+    {
+        gameClock.reset(game.gameConsts.LEVEL_MAX_TIME, timerModes.COUNTDOWN, false);
+    }
+}
+
+function addEventListeners(game, keyTypes)
+{
+    window.addEventListener("gamepadconnected", (event) => game.gamePadConnected = true);
+    window.addEventListener("gamepaddisconnected", (event) => game.gamePadConnected = false);
+
+    const canvas = document.getElementById("canvas");
+    canvas.tabIndex = 0; // make focusable
+    canvas.focus();
+
+    canvas.addEventListener("keydown", e => 
+    {
+        const blockedKeys = [
+            keyTypes.UP,
+            keyTypes.DOWN,
+            keyTypes.LEFT,
+            keyTypes.RIGHT,
+            keyTypes.PLAY_KEY,
+        ];
+
+        if (blockedKeys.includes(e.code)) 
+        {
+            e.preventDefault();
+        }
+    });
+}
+
+function addKeysAndGamePads(device)
+{
+    device.keys.initKeys();
+    device.keys.wasPausePressed = false;
+
+    device.keys.isGamepadButtonPressed = function(buttonIndex) 
+    {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        const gp = gamepads[0]; // first controller only
+        return gp ? gp.buttons[buttonIndex]?.pressed : false;
+    };
 }
