@@ -22,7 +22,7 @@ function renderGameObjectsLayer(device, game) {
             {
                 try
                 {
-                    renderBoarder(device, game);
+                    renderBorder(device, game);
                     renderMap(device, game);
 
                     game.goalHolder.forEach(element => 

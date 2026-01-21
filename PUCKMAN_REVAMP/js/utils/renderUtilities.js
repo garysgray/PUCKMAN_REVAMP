@@ -159,12 +159,12 @@ function drawHitBoxs(device, tempObj)
     }
 }
 
-function renderBoarder(device, game)
+function renderBorder(device, game)
 {
     // build cache if needed
     if (!game.cachedBorderReady)
     {
-        game.createCache(device, game.boarderHolder, "cachedBorder", "cachedBorderReady");
+        game.createCache(device, game.borderHolder, "cachedBorder", "cachedBorderReady");
     }
 
     // draw the cached border as one image

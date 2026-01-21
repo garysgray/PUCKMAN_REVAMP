@@ -40,7 +40,7 @@ class Player extends GameObject
         try 
         {
             // Enforce screen bounds
-            this.enforceBoarderBounds(game); 
+            this.enforceBorderBounds(game); 
 
             this.checkForKeyBoardMoveInput(device, game, delta);
 

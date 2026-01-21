@@ -6,99 +6,126 @@
 
 class Game 
 {
+    // -----------------------------
+    // Core Systems
+    // -----------------------------
     #gameConsts;
     #billBoards;
     #gameTimers;
-    
+
+    // -----------------------------
+    // Entity Holders
+    // -----------------------------
     #enemyHolder;
-    #boarderHolder;
+    #borderHolder;
     #mapHolder;
     #goalHolder;
 
+    // -----------------------------
+    // Viewport
+    // -----------------------------
     #canvasWidth;
     #canvasHeight;
     #canvasHalfW;
     #canvasHalfH;
 
+    // -----------------------------
+    // Border & map buffers
+    // -----------------------------
+    #borderHorizontalBuffer;
+    #borderVerticalBuffer;
+    
+    // -----------------------------
+    // Game State
+    // -----------------------------
     #gameState;
     #score;
     #lives;
     #player;
     #gameLevel;
+    #gameIsPaused;
 
-    #boarderHorizontalBuffer;
-    #boarderVerticleBuffer;
-
+    // -----------------------------
+    // Map / Level Generation
+    // -----------------------------
     #cachedBorder;
     #cachedBorderReady;
-
     #cachedMap;
     #cachedMapReady;
-
     #mapSafeMargin;
     #mapLaneSpacing;
-
     #mapEmptyChance;
     #mapSpawnRadius;
     #goalCount;
-    
+
+    // -----------------------------
+    // Input
+    // -----------------------------
     #gamePadConnected;
     #gamePadEnabled;
-    #gameIsPaused;
 
-
+    // =======================================================
+    // CONSTRUCTOR
+    // =======================================================
     constructor() 
     {
         try 
         {
+            // Core systems
             this.#gameConsts = new GameConsts();
             this.#billBoards = new ObjHolder();
             this.#gameTimers = new ObjHolder();
+
+            // Entity holders
             this.#enemyHolder = new ObjHolder();
             this.#goalHolder = new ObjHolder();
-            this.#boarderHolder = new ObjHolder();
+            this.#borderHolder = new ObjHolder();
             this.#mapHolder = new ObjHolder();
+
         } 
         catch (err) 
         {
             console.error("Failed to initialize object holders:", err);
         }
 
+        // Canvas
         this.#canvasWidth = this.#gameConsts.SCREEN_WIDTH;
         this.#canvasHeight = this.#gameConsts.SCREEN_HEIGHT;
         this.#canvasHalfW = this.#canvasWidth * 0.5;
         this.#canvasHalfH = this.#canvasHeight * 0.5;
 
+        // Game state
         this.#gameState = GameDefs.gameStates.INIT;
         this.#score = 0;
         this.#lives = 0;
         this.#gameLevel = 1;
         this.#player = null;
+        this.#gameIsPaused = false;
 
-        this.#boarderHorizontalBuffer = 0;
-        this.#boarderVerticleBuffer = 0;
+        // Border & map buffers
+        this.#borderHorizontalBuffer = 0;
+        this.#borderVerticalBuffer = 0;
 
+        // Cached assets
         this.#cachedBorder = null;
         this.#cachedBorderReady = false;
-
         this.#cachedMap = null;
         this.#cachedMapReady = false;
 
+        // Map generation params
         this.#mapSafeMargin = 0;
         this.#mapLaneSpacing = 0;
-
         this.#mapEmptyChance = 0;
         this.#mapSpawnRadius = 0;
-
         this.#goalCount = 0;
 
+        // Input
         this.#gamePadConnected = false;
         this.#gamePadEnabled = false;
-        this.#gameIsPaused = false;
     }
 
     // =======================================================
-    // GETTERS and SETTERS
+    // GETTERS
     // =======================================================
     get gameConsts() { return this.#gameConsts; }
 
@@ -106,7 +133,7 @@ class Game
     get gameTimers() { return this.#gameTimers; }
     get enemyHolder() { return this.#enemyHolder; }
     get player() { return this.#player; }
-    get boarderHolder() { return this.#boarderHolder; }
+    get borderHolder() { return this.#borderHolder; }
     get mapHolder() { return this.#mapHolder; }
     get goalHolder() { return this.#goalHolder; }
 
@@ -120,70 +147,74 @@ class Game
     get lives() { return this.#lives; }
     get gameLevel() { return this.#gameLevel; }
 
-    get boarderHorizontalBuffer() { return this.#boarderHorizontalBuffer; }
-    get boarderVerticleBuffer() { return this.#boarderVerticleBuffer; }
+    get borderHorizontalBuffer() { return this.#borderHorizontalBuffer; }
+    get borderVerticalBuffer() { return this.#borderVerticalBuffer; }
 
-    get cachedBorder () { return this.#cachedBorder ; }
-    get cachedBorderReady () { return this.#cachedBorderReady ; }
+    get cachedBorder() { return this.#cachedBorder; }
+    get cachedBorderReady() { return this.#cachedBorderReady; }
 
-    get cachedMap () { return this.#cachedMap ; }
-    get cachedMapReady () { return this.#cachedMapReady ; }
+    get cachedMap() { return this.#cachedMap; }
+    get cachedMapReady() { return this.#cachedMapReady; }
 
-    get mapSafeMargin(){ return this.#mapSafeMargin; }
-    get mapLaneSpacing(){ return this.#mapLaneSpacing; }
+    get mapSafeMargin() { return this.#mapSafeMargin; }
+    get mapLaneSpacing() { return this.#mapLaneSpacing; }
 
-    get mapEmptyChance(){ return this.#mapEmptyChance; }
-    get mapSpawnRadius(){ return this.#mapSpawnRadius; }
+    get mapEmptyChance() { return this.#mapEmptyChance; }
+    get mapSpawnRadius() { return this.#mapSpawnRadius; }
 
-    get goalCount(){ return this.#goalCount; }
+    get goalCount() { return this.#goalCount; }
 
-    get gamePadConnected(){ return this.#gamePadConnected; }
-    get gamePadEnabled(){ return this.#gamePadEnabled; }
-    get gameIsPaused(){ return this.#gameIsPaused; }
+    get gamePadConnected() { return this.#gamePadConnected; }
+    get gamePadEnabled() { return this.#gamePadEnabled; }
+    get gameIsPaused() { return this.#gameIsPaused; }
 
-    /// SETS
+    // =======================================================
+    // SETTERS
+    // =======================================================
     set gameState(v) { this.#gameState = v; }
     set score(v) { this.#score = v; }
     set lives(v) { this.#lives = v; }
     set gameLevel(v) { this.#gameLevel = v; }
-    set boarderHorizontalBuffer(v) { this.#boarderHorizontalBuffer = v; }
-    set boarderVerticleBuffer(v) { this.#boarderVerticleBuffer = v; }
+    set player(v) { this.#player = v; }
 
-    set cachedBorder (v) { this.#cachedBorder  = v; }
-    set cachedBorderReady (v) { this.#cachedBorderReady  = v; }
+    set borderHorizontalBuffer(v) { this.#borderHorizontalBuffer = v; }
+    set borderVerticalBuffer(v) { this.#borderVerticalBuffer = v; }
 
-    set cachedMap (v) { this.#cachedMap  = v; }
-    set cachedMapReady (v) { this.#cachedMapReady  = v; }
+    set cachedBorder(v) { this.#cachedBorder = v; }
+    set cachedBorderReady(v) { this.#cachedBorderReady = v; }
 
-    set player (v) { this.#player  = v; }
+    set cachedMap(v) { this.#cachedMap = v; }
+    set cachedMapReady(v) { this.#cachedMapReady = v; }
 
-    set mapSafeMargin (v) { this.#mapSafeMargin  = v; }
-    set mapLaneSpacing (v) { this.#mapLaneSpacing  = v; }
+    set mapSafeMargin(v) { this.#mapSafeMargin = v; }
+    set mapLaneSpacing(v) { this.#mapLaneSpacing = v; }
 
-    set mapEmptyChance (v) { this.#mapEmptyChance  = v; }
-    set mapSpawnRadius (v) { this.#mapSpawnRadius  = v; }
+    set mapEmptyChance(v) { this.#mapEmptyChance = v; }
+    set mapSpawnRadius(v) { this.#mapSpawnRadius = v; }
 
-    set goalCount (v) { this.#goalCount  = v; }
+    set goalCount(v) { this.#goalCount = v; }
 
-    set gamePadConnected (v) { this.#gamePadConnected  = v; }
-    set gamePadEnabled (v) { this.#gamePadEnabled  = v; }
-    set gameIsPaused (v) { this.#gameIsPaused  = v; }
+    set gamePadConnected(v) { this.#gamePadConnected = v; }
+    set gamePadEnabled(v) { this.#gamePadEnabled = v; }
+    set gameIsPaused(v) { this.#gameIsPaused = v; }
 
     // =======================================================
-    // FUNCTIONS
+    // UTILITY FUNCTIONS
     // =======================================================
-
-    decreaseLives(a) { this.lives -= a; }
-    increaseScore(a) { this.score += a; }
+    decreaseLives(a = 1) { this.lives -= a; }
+    increaseScore(a = 1) { this.score += a; }
+    increaseGameLevel(a = 1) { this.gameLevel += a; }
     setGameState(state) { this.gameState = state; }
-    increaseGameLevel(a) { this.#gameLevel += a; }
 
+    // =======================================================
+    // INITIALIZATION
+    // =======================================================
     initGame(device)
     {
         try 
         {
+            // --- Input setup ---
             device.keys.initKeys();
-
             device.keys.wasPausePressed = false;
 
             device.keys.isGamepadButtonPressed = function(buttonIndex) 
@@ -193,37 +224,30 @@ class Game
                 return gp ? gp.buttons[buttonIndex]?.pressed : false;
             };
 
-            window.addEventListener("gamepadconnected", (event) => 
-            {
-                this.gamePadConnected = true;
-                //console.log("Gamepad connected:", event.gamepad);
-            });
-
-            window.addEventListener("gamepaddisconnected", (event) => 
-            {
-                 this.gamePadConnected = false;
-                //console.log("Gamepad disconnected:", event.gamepad);
-            });
+            window.addEventListener("gamepadconnected", (event) => this.gamePadConnected = true);
+            window.addEventListener("gamepaddisconnected", (event) => this.gamePadConnected = false);
 
             const canvas = document.getElementById("canvas");
             canvas.tabIndex = 0; // make focusable
             canvas.focus();
 
-            canvas.addEventListener("keydown", e => {
+            canvas.addEventListener("keydown", e => 
+            {
                 const blockedKeys = [
-                    "ArrowUp",
-                    "ArrowDown",
-                    "ArrowLeft",
-                    "ArrowRight",
-                    "Space"
+                    GameDefs.keyTypes.UP,
+                    GameDefs.keyTypes.DOWN,
+                    GameDefs.keyTypes.LEFT,
+                    GameDefs.keyTypes.RIGHT,
+                    GameDefs.keyTypes.PLAY_KEY,
                 ];
 
-                if (blockedKeys.includes(e.code)) {
+                if (blockedKeys.includes(e.code)) 
+                {
                     e.preventDefault();
                 }
             });
 
-            //load and set images in holder type
+            // --- Load images ---
             this.setImagesForType(device, GameDefs.playerSpriteTypes);
             this.setImagesForType(device, GameDefs.mapSpriteTypes);
             this.setImagesForType(device, GameDefs.goalsSpriteTypes);
@@ -237,7 +261,7 @@ class Game
                 this.billBoards.addObject(board);
             });
 
-             // Load sounds
+            // --- Load sounds ---
             Object.values(GameDefs.soundTypes).forEach(sndDef => 
             {
                 if (sndDef.path) 
@@ -247,6 +271,7 @@ class Game
                 }
             });
 
+            // --- Initialize timers ---
             const timer = new Timer(
                 GameDefs.timerTypes.GAME_CLOCK,
                 this.gameConsts.LEVEL_MAX_TIME,
@@ -264,6 +289,7 @@ class Game
 
     setGame() 
     { 
+         // Reset game state if not losing or winning
         if (this.gameState != GameDefs.gameStates.LOSE && this.gameState != GameDefs.gameStates.WIN)
         {
            this.gameLevel = 1;
@@ -271,24 +297,46 @@ class Game
            this.lives = this.gameConsts.GAME_LIVES_START_AMOUNT;
         }
 
-        // Need to reset level even if player wins level
-        // Clear out these holders
+        // Clear out entity holders
         this.enemyHolder.clearObjects();
         this.goalHolder.clearObjects();
-        this.boarderHolder.clearObjects();
+        this.borderHolder.clearObjects();
         this.mapHolder.clearObjects();
 
-        // Build the boarders and map
+        // Build the borders and map
         this.setMapValues();
-        let randValue = Math.floor(Math.random() * (Object.values(GameDefs.mapSpriteTypes).length));
-        let randSprite = Object.values(GameDefs.mapSpriteTypes)[randValue];
-        this.buildBoarder(randSprite.type, randSprite.w, randSprite.h);
+
+        // Pick a random map sprite
+        let randSprite = this.getRandomMapSprite(GameDefs.mapSpriteTypes);
+
+        this.buildborder(randSprite.type, randSprite.w, randSprite.h);
         this.buildMap();
         this.buildPlayer();
 
-        // Reset Enemies
-        // fixx maybe need an enemyResetFunction()
-        Object.values(GameDefs.characterSpriteTypes).forEach(spriteDef =>
+        // Spawn enemies
+        this.spawnEnemies(GameDefs.characterSpriteTypes, this.enemyHolder);
+        
+        // Reset game clock timer
+        const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
+        if (gameClock)
+        {
+            gameClock.reset(
+                this.gameConsts.LEVEL_MAX_TIME,
+                GameDefs.timerModes.COUNTDOWN,
+                false
+            );
+        }
+    }
+
+    getRandomMapSprite(spriteTypes) 
+    {
+        const sprites = Object.values(spriteTypes);
+        return sprites[Math.floor(Math.random() * sprites.length)];
+    }
+
+    spawnEnemies(types, holder)
+    {
+        Object.values(types).forEach(spriteDef =>
         {
             const enemy = new Enemy(
                 spriteDef.type,
@@ -299,20 +347,9 @@ class Game
                 spriteDef.s
             );
 
-            this.enemyHolder.addObject(enemy);
+            holder.addObject(enemy);
         });
 
-        // reset gameclock
-        // FIX make game clock a timer instead
-        const gameClock = this.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
-        if (gameClock)
-        {
-            gameClock.reset(
-                this.gameConsts.LEVEL_MAX_TIME,
-                GameDefs.timerModes.COUNTDOWN,
-                false
-            );
-        }
     }
 
     setImagesForType(device, type, callback)
@@ -342,8 +379,8 @@ class Game
                 GameDefs.playerSpriteTypes.PLAYER.w,
                 GameDefs.playerSpriteTypes.PLAYER.h,
                 this.canvasHalfW,
-                this.boarderVerticleBuffer + this.gameConsts.MAP_BUFFER_Y,
-                this.gameConsts.PLAYER_SPEED
+                this.borderVerticalBuffer + this.gameConsts.MAP_BUFFER_Y,
+                GameDefs.playerSpriteTypes.PLAYER.s
             );
         } 
         catch (err) 
@@ -482,7 +519,7 @@ class Game
         }    
     }
 
-    buildBoarder(name, width, height) 
+    buildborder(name, width, height) 
     {
         try 
         {
@@ -492,28 +529,28 @@ class Game
             if (maxWidth % 2 !== 0) maxWidth--;
             if (maxHeight % 2 !== 0) maxHeight--;
 
-            this.boarderHorizontalBuffer = (this.canvasWidth - maxWidth * width) * 0.5;
-            this.boarderVerticleBuffer = (this.canvasHeight - (this.canvasHeight * this.gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
+            this.borderHorizontalBuffer = (this.canvasWidth - maxWidth * width) * 0.5;
+            this.borderVerticalBuffer = (this.canvasHeight - (this.canvasHeight * this.gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
 
             // Top & Bottom
             for (let i = 0; i < maxWidth; i++) 
             {
-                this.boarderHolder.addObject(
-                    new GameObject(name, width, height, i * width + this.boarderHorizontalBuffer, this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                this.borderHolder.addObject(
+                    new GameObject(name, width, height, i * width + this.borderHorizontalBuffer, this.borderVerticalBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
                 );
-                this.boarderHolder.addObject(
-                    new GameObject(name, width, height, i * width + this.#boarderHorizontalBuffer, this.canvasHeight - (this.boarderVerticleBuffer + height))
+                this.borderHolder.addObject(
+                    new GameObject(name, width, height, i * width + this.#borderHorizontalBuffer, this.canvasHeight - (this.borderVerticalBuffer + height))
                 );
             }
 
             // Left & Right
             for (let i = 0; i < maxHeight; i++) 
             {
-                this.boarderHolder.addObject(
-                    new GameObject(name, width, height, this.boarderHorizontalBuffer, i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                this.borderHolder.addObject(
+                    new GameObject(name, width, height, this.borderHorizontalBuffer, i * width + this.borderVerticalBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
                 );
-                this.boarderHolder.addObject(
-                    new GameObject(name, width, height, this.canvasWidth - (this.boarderHorizontalBuffer + width), i * width + this.boarderVerticleBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
+                this.borderHolder.addObject(
+                    new GameObject(name, width, height, this.canvasWidth - (this.borderHorizontalBuffer + width), i * width + this.borderVerticalBuffer + this.canvasHeight * this.gameConsts.HUD_BUFFER)
                 );
             }
 
@@ -522,7 +559,7 @@ class Game
         }
         catch (err) 
         {
-            console.error("Failed to build boarder:", err);
+            console.error("Failed to build border:", err);
         }    
     }
 

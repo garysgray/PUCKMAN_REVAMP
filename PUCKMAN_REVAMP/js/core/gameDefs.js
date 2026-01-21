@@ -5,6 +5,9 @@
 // Immutable enumerations, texts, billboard & sprite configs.
 // =======================================================
 
+const MAP_TILE_SIZE = { w: 24, h: 24 };
+const BILLBOARD_SIZE = { w: 400, h: 100 };
+
 const GameDefs = Object.freeze({
     gameStates: {
         INIT: 0,
@@ -37,53 +40,52 @@ const GameDefs = Object.freeze({
     behaveStates:{
         ROAM: 0,
         FOLLOW: 1,
-        RUN: 2,
+        RUN: 2, 
         STOP: 3,
     },
 
     gamepadButtons: {
         START: 9,  // Start button
         PAUSE: 8   // Select / Back button
-},
-
+    },
+        
     playerSpriteTypes: {
-        PLAYER:       { type: "player",   w: 24, h: 24, path: "assets/sprites/pacs.png" },
+        PLAYER:       { type: "player",  ...MAP_TILE_SIZE, s: 200, path: "assets/sprites/pacs.png" },
     },
 
     characterSpriteTypes: {
-        RED_GHOST:    { type: "red_ghost",     w: 24, h: 24, s: 150, path: "assets/sprites/ghosts/red_ghosts.png" },
-        BLUE_GHOST:    { type: "blue_ghost",     w: 24, h: 24, s: 140,  path: "assets/sprites/ghosts/blue_ghosts.png" },
-        GREEN_GHOST:    { type: "green_ghost",     w: 24, h: 24, s: 130, path: "assets/sprites/ghosts/green_ghosts.png" },
-        ORANGE_GHOST:    { type: "orange_ghost",     w: 24, h: 24, s: 120, path: "assets/sprites/ghosts/orange_ghosts.png" },
-        PINK_GHOST:    { type: "pink_ghost",     w: 24, h: 24, s: 100, path: "assets/sprites/ghosts/pink_ghosts.png" },
+        RED_GHOST:    { type: "red_ghost",       ...MAP_TILE_SIZE, s: 150, path: "assets/sprites/ghosts/red_ghosts.png" },
+        BLUE_GHOST:    { type: "blue_ghost",     ...MAP_TILE_SIZE, s: 140,  path: "assets/sprites/ghosts/blue_ghosts.png" },
+        GREEN_GHOST:    { type: "green_ghost",   ...MAP_TILE_SIZE, s: 130, path: "assets/sprites/ghosts/green_ghosts.png" },
+        ORANGE_GHOST:    { type: "orange_ghost", ...MAP_TILE_SIZE, s: 120, path: "assets/sprites/ghosts/orange_ghosts.png" },
+        PINK_GHOST:    { type: "pink_ghost",     ...MAP_TILE_SIZE, s: 100, path: "assets/sprites/ghosts/pink_ghosts.png" },
     },
 
     mapSpriteTypes: {
-        RED_BRICK:    { type: "red_brick",    w: 24, h: 24, path: "assets/sprites/bricks/red_brick.png" },
-        BLUE_BRICK:    { type: "blue_brick",    w: 24, h: 24, path: "assets/sprites/bricks/blue_brick.png" },
-        GREEN_BRICK:    { type: "green_brick",    w: 24, h: 24, path: "assets/sprites/bricks/green_brick.png" },
-        PURPLE_BRICK:    { type: "purple_brick",    w: 24, h: 24, path: "assets/sprites/bricks/purple_brick.png" },
-        YELLOW_BRICK:    { type: "yellow_brick",    w: 24, h: 24, path: "assets/sprites/bricks/yellow_brick.png" },
+        RED_BRICK:    { type: "red_brick",       ...MAP_TILE_SIZE, path: "assets/sprites/bricks/red_brick.png" },
+        BLUE_BRICK:    { type: "blue_brick",     ...MAP_TILE_SIZE, path: "assets/sprites/bricks/blue_brick.png" },
+        GREEN_BRICK:    { type: "green_brick",   ...MAP_TILE_SIZE, path: "assets/sprites/bricks/green_brick.png" },
+        PURPLE_BRICK:    { type: "purple_brick", ...MAP_TILE_SIZE, path: "assets/sprites/bricks/purple_brick.png" },
+        YELLOW_BRICK:    { type: "yellow_brick", ...MAP_TILE_SIZE, path: "assets/sprites/bricks/yellow_brick.png" },
     },
 
     goalsSpriteTypes: {
-        APPLE:     { type: "apple",    w: 24, h: 24, path: "assets/sprites/fruits/apple.png" },
-        BANNANA:   { type: "bannana",  w: 24, h: 24,  path: "assets/sprites/fruits/bannana.png" },
-        CHERRIES:  { type: "cherries", w: 24, h: 24, path: "assets/sprites/fruits/cherries.png" },
-        LEMON:     { type: "lemon",    w: 24, h: 24, path: "assets/sprites/fruits/lemon.png" },
-        ORANGE:    { type: "orange",   w: 24, h: 24, path: "assets/sprites/fruits/orange.png" },
+        APPLE:     { type: "apple",    ...MAP_TILE_SIZE, path: "assets/sprites/fruits/apple.png" },
+        BANANA:   { type: "banana",    ...MAP_TILE_SIZE, path: "assets/sprites/fruits/banana.png" },
+        CHERRIES:  { type: "cherries", ...MAP_TILE_SIZE, path: "assets/sprites/fruits/cherries.png" },
+        LEMON:     { type: "lemon",    ...MAP_TILE_SIZE, path: "assets/sprites/fruits/lemon.png" },
+        ORANGE:    { type: "orange",   ...MAP_TILE_SIZE, path: "assets/sprites/fruits/orange.png" },
     },
 
     billBoardTypes: {
-        SPLASH:     { type: "splash",     w: 400, h: 100, path: "assets/sprites/billBoards/gameSplash.png" , isCenter: true },
-        PAUSE:      { type: "pause",      w: 400, h: 100, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
-        WIN:        { type: "win",        w: 400, h: 100, path: "assets/sprites/billBoards/win.png" , isCenter: true },
-        LOSE:       { type: "lose",       w: 400, h: 100, path: "assets/sprites/billBoards/lose.png" , isCenter: true },
-        FAIL:       { type: "fail",       w: 400, h: 100, path: "assets/sprites/billBoards/fail.png" , isCenter: true },
+        SPLASH:     { type: "splash",  ...BILLBOARD_SIZE, path: "assets/sprites/billBoards/gameSplash.png" , isCenter: true },
+        PAUSE:      { type: "pause",   ...BILLBOARD_SIZE, path: "assets/sprites/billBoards/pause.png" , isCenter: true },
+        WIN:        { type: "win",     ...BILLBOARD_SIZE, path: "assets/sprites/billBoards/win.png" , isCenter: true },
+        LOSE:       { type: "lose",    ...BILLBOARD_SIZE, path: "assets/sprites/billBoards/lose.png" , isCenter: true },
+        FAIL:       { type: "fail",    ...BILLBOARD_SIZE, path: "assets/sprites/billBoards/fail.png" , isCenter: true },
     },
 
     soundTypes: {
-        SHOOT:   { name: "shoot",   path: "assets/sounds/shoot.wav" },
         GET:     { name: "get",     path: "assets/sounds/get.wav" },
         HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav" },
     },
@@ -107,8 +109,8 @@ const GameDefs = Object.freeze({
         INIT: {
             INSTRUCTIONS: [
                  "GET ALL THE FRUIT ",
-                  "DON'T RUN OUT OF TIME",
-                "USE ARROW KEYS TO MOVE", 
+                 "DON'T RUN OUT OF TIME",
+                 "USE ARROW KEYS TO MOVE", 
                  "PRESS SPACE-BAR TO START",
                  "PRESS CTRL TO PAUSE",
             ],
@@ -152,80 +154,77 @@ const GameDefs = Object.freeze({
         GAME_CLOCK: "gameClock",
     },
 
-    parallexType: {
+    parallaxType: {
         HORIZONTAL: 1,
-        VERTICLE:   2
+        VERTICAL:   2
     }
 
 });
 
 // -----------------------------
-// Global Constants
+// GameConsts.js
 // -----------------------------
+// Purpose:
+// Global game constants exposed safely via getters.
+// -----------------------------
+
 class GameConsts 
 {
     // ---- Private fields ----
-    //sizes
-    #SCREEN_WIDTH = 1000;
-    #SCREEN_HEIGHT = 600;
 
-    //times
-    #FALLBACK_DELTA = 16; // fallback ~60fps
-    #SHOOT_COOLDOWN = 0.2; // 200ms
+    // Screen dimensions
+    #SCREEN_WIDTH = 1000
+    #SCREEN_HEIGHT = 600
 
-    //amounts
-    #GAME_LIVES_START_AMOUNT = 3;
-    #HUD_BUFFER = .045;
+    // Timing
+    #SHOOT_COOLDOWN = 0.2       // seconds (~200ms)
 
-    //settings
-    #DEBUG_TEXT_COLOR = "yellow";
-    #FONT_COLOR = 'hsla(49, 100%, 50%, 0.965'
-    #FONT_SETTINGS = `bold 20pt VT323`
+    // Game amounts
+    #GAME_LIVES_START_AMOUNT = 3
+    #HUD_BUFFER = 0.045
 
-    //sound 
-    #POOLSIZE = 5;
-    #VOLUME = 1.0;
+    // UI settings
+    #DEBUG_TEXT_COLOR = "yellow"
+    #FONT_COLOR = "hsla(49, 100%, 50%, 0.965)"
+    #FONT_SETTINGS = "bold 20pt VT323"
 
-    //speed
-    #PLAYER_SPEED = 200;
-    #ENEMY_SPEED  = 150;
+    // Sound
+    #POOLSIZE = 5
+    #VOLUME = 1.0
 
-    #MAP_BUFFER_X = 60;
-    #MAP_BUFFER_Y = 70;
+    // Map / Level
+    #MAP_BUFFER_X = 60
+    #MAP_BUFFER_Y = 70
+    #NUM_MAP_X_TILES = 36
+    #NUM_MAP_Y_TILES = 20
+    #MAP_TILE_WIDTH = MAP_TILE_SIZE.w
+    #MAP_TILE_HEIGHT = MAP_TILE_SIZE.h
+    #LEVEL_MAX_TIME = 60
 
-    #NUM_MAP_X_TILES = 36;
-    #NUM_MAP_Y_TILES = 20;
+    // ---- Getters ----
 
-    #MAP_TILE_WIDTH = 24;
-    #MAP_TILE_HEIGHT = 24;
+    get SCREEN_WIDTH() { return this.#SCREEN_WIDTH }
+    get SCREEN_HEIGHT() { return this.#SCREEN_HEIGHT }
 
-    #LEVEL_MAX_TIME = 60;
+    get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT }
+    get HUD_BUFFER() { return this.#HUD_BUFFER }
 
+    get SHOOT_COOLDOWN() { return this.#SHOOT_COOLDOWN }
+    get DEBUG_TEXT_COLOR() { return this.#DEBUG_TEXT_COLOR }
+    get FONT_SETTINGS() { return this.#FONT_SETTINGS }
+    get FONT_COLOR() { return this.#FONT_COLOR }
 
-    // ---- Getters (expose constants safely) ----
-    get SCREEN_WIDTH(){ return this.#SCREEN_WIDTH; }
-    get SCREEN_HEIGHT(){ return this.#SCREEN_HEIGHT; }
-    get GAME_LIVES_START_AMOUNT(){ return this.#GAME_LIVES_START_AMOUNT; }
-    get HUD_BUFFER(){ return this.#HUD_BUFFER; }
-    get FALLBACK_DELTA(){ return this.#FALLBACK_DELTA; }
-    get SHOOT_COOLDOWN(){ return this.#SHOOT_COOLDOWN; }
-    get DEBUG_TEXT_COLOR(){ return this.#DEBUG_TEXT_COLOR; }
-    get FONT_SETTINGS(){ return this.#FONT_SETTINGS; }
-    get FONT_COLOR(){ return this.#FONT_COLOR; }
-    get POOLSIZE(){ return this.#POOLSIZE; }
-    get VOLUME(){ return this.#VOLUME; }
-    get PLAYER_SPEED(){ return this.#PLAYER_SPEED; }
-    get ENEMY_SPEED(){ return this.#ENEMY_SPEED; }
+    get POOLSIZE() { return this.#POOLSIZE }
+    get VOLUME() { return this.#VOLUME }
 
-    get MAP_BUFFER_X(){ return this.#MAP_BUFFER_X; }
-    get MAP_BUFFER_Y(){ return this.#MAP_BUFFER_Y; }
+    get MAP_BUFFER_X() { return this.#MAP_BUFFER_X }
+    get MAP_BUFFER_Y() { return this.#MAP_BUFFER_Y }
 
-    get NUM_MAP_X_TILES(){ return this.#NUM_MAP_X_TILES; }
-    get NUM_MAP_Y_TILES(){ return this.#NUM_MAP_Y_TILES; }
+    get NUM_MAP_X_TILES() { return this.#NUM_MAP_X_TILES }
+    get NUM_MAP_Y_TILES() { return this.#NUM_MAP_Y_TILES }
 
-    get MAP_TILE_WIDTH(){ return this.#MAP_TILE_WIDTH; }
-    get MAP_TILE_HEIGHT(){ return this.#MAP_TILE_HEIGHT; }
+    get MAP_TILE_WIDTH() { return this.#MAP_TILE_WIDTH }
+    get MAP_TILE_HEIGHT() { return this.#MAP_TILE_HEIGHT }
 
-    get LEVEL_MAX_TIME(){ return this.#LEVEL_MAX_TIME; }
-
+    get LEVEL_MAX_TIME() { return this.#LEVEL_MAX_TIME }
 }
