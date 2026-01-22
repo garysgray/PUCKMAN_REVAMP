@@ -165,6 +165,6 @@ Each state controls its own **update loop, entity updates, and rendering rules**
 ---
 
 ## Notes
-This project is both a **revamp of the original PUCKMAN** and a **live testbed for engine-level concepts**, including procedural generation, deterministic collision, and flexible input systems.  
+This project is both a **tribute to the original PUCKMAN** and a **live testbed for engine-level concepts**, including procedural generation, deterministic collision, and flexible input systems.  
 
 Expect ongoing iteration, refactoring, and system hardening.
