@@ -122,7 +122,7 @@ function gameLoop()
     {
         try 
         {
-            myController.updateGame(fixedStep);
+            myController.callUpdateGame(fixedStep);
         } catch (e) 
         {
             console.error("updateGame error:", e);

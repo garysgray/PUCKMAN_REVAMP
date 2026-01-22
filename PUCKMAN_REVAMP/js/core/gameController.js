@@ -43,8 +43,8 @@ class Controller
         // Initialize layers
         this.#layers = [];
 
-        // Initialize the Game items
-        this.initGame();
+        // Initialize the Game Obj wich will start the game init proccess
+        this.initGameObj();
     }
 
     // ------------------------------------------------------------------------
@@ -55,9 +55,9 @@ class Controller
     get layers() { return this.#layers; }
 
     // ------------------------------------------------------------------------
-    // Initialize game
+    // Initialize the Game Obj wich will start the actual game init proccess
     // ------------------------------------------------------------------------
-    initGame() 
+    initGameObj() 
     {
         try 
         {
@@ -98,14 +98,14 @@ class Controller
     // ------------------------------------------------------------------------
     // Update + Render
     // ------------------------------------------------------------------------
-    updateGame(delta) 
+    callUpdateGame(delta) 
     {
         if (typeof delta !== "number" || delta <= 0) delta = this.game.gameConsts.FALLBACK_DELTA; // fallback ~60fps
 
         try
         {
             // Update game logic
-            updateGameStates(this.device, this.game, delta);
+            updateGame(this.device, this.game, delta);
 
             // Render each layer
             for (const layer of this.layers) 

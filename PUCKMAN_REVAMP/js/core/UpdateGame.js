@@ -3,11 +3,12 @@
 // ----------------------------------------------------------------------------
 // Update Game States
 // - Called each frame from the controller's update() function
+// - NOTE - function does not belong to Game Controller class
 // - Handles updates to core game logic, input responses, and state transitions
 // - Calls for all game objects updates depending on current game state
 // ============================================================================
 
-function updateGameStates(device, game, delta) 
+function updateGame(device, game, delta) 
 {
     try 
     {
