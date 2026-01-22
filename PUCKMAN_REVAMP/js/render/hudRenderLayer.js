@@ -35,7 +35,7 @@ function renderHUDLayer(device, game)
             // ==============================
             // INIT STATE: instructions
             // ==============================
-            case GameDefs.gameStates.INIT:
+            case gameStates.INIT:
                 try
                 {
                 }
@@ -48,13 +48,13 @@ function renderHUDLayer(device, game)
             // ==============================
             // PLAY STATE: HUD elements (score, ammo, lives)
             // ==============================
-            case GameDefs.gameStates.PLAY:
+            case gameStates.PLAY:
                 try
                 {
-                    const scoreText = GameDefs.gameTexts.HUD.SCORE + game.score;
-                    const livesText = GameDefs.gameTexts.HUD.LIVES + game.lives;
-                    const levelText = GameDefs.gameTexts.HUD.LEVEL + game.gameLevel;
-                    const timer = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
+                    const scoreText = gameTexts.HUD.SCORE + game.score;
+                    const livesText = gameTexts.HUD.LIVES + game.lives;
+                    const levelText = gameTexts.HUD.LEVEL + game.gameLevel;
+                    const timer = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK);
 
                     device.colorText(game.gameConsts.FONT_COLOR);
                     device.putText(scoreText, cw * layout.hudScoreX, ch * layout.hudY);
@@ -73,7 +73,7 @@ function renderHUDLayer(device, game)
             // ==============================
             // PAUSE STATE: Resume prompt
             // ==============================
-            case GameDefs.gameStates.PAUSE:
+            case gameStates.PAUSE:
                 try 
                 {
                 }  
@@ -86,7 +86,7 @@ function renderHUDLayer(device, game)
             // ==============================
             // WIN STATE: Replay prompt
             // ==============================
-            case GameDefs.gameStates.WIN:
+            case gameStates.WIN:
                 try 
                 {
                 } 
@@ -99,7 +99,7 @@ function renderHUDLayer(device, game)
             // ==============================
             // LOSE STATE: Restart/Revive prompt
             // ==============================
-            case GameDefs.gameStates.LOSE:
+            case gameStates.LOSE:
                 try 
                 {
                 } 

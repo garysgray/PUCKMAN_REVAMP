@@ -94,7 +94,7 @@ class Game
         this.#canvasHalfH = this.#canvasHeight * 0.5;
 
         // Game state
-        this.#gameState = GameDefs.gameStates.INIT;
+        this.#gameState = gameStates.INIT;
         this.#score = 0;
         this.#lives = 0;
         this.#gameLevel = 1;
@@ -210,20 +210,19 @@ class Game
         try 
         {
             // --- Input setup ---
-   
             // --- Load keyboard keys and gamepad buttons ---
             addKeysAndGamePads(device);
 
             // --- Add events  ---
-            addEventListeners(this, GameDefs.keyTypes);
+            addEventListeners(this, keyTypes);
 
             // --- Load images ---
-            setImagesForType(device, GameDefs.playerSpriteTypes);
-            setImagesForType(device, GameDefs.mapSpriteTypes);
-            setImagesForType(device, GameDefs.goalsSpriteTypes);
-            setImagesForType(device, GameDefs.characterSpriteTypes);
+            setImagesForType(device, playerSpriteTypes);
+            setImagesForType(device, mapSpriteTypes);
+            setImagesForType(device, goalsSpriteTypes);
+            setImagesForType(device, characterSpriteTypes);
 
-            setImagesForType(device, GameDefs.billBoardTypes, boardDef => 
+            setImagesForType(device, billBoardTypes, boardDef => 
             {
                 // This runs for every sprite in billBoardTypes
                 const board = new BillBoard(boardDef.type, boardDef.w, boardDef.h, 0, 0, 0, boardDef.isCenter);
@@ -232,10 +231,10 @@ class Game
             });
 
             // --- Load sounds ---
-            loadSounds(device, this, GameDefs.soundTypes);
+            loadSounds(device, this, soundTypes);
 
             // --- Initialize timers ---
-            loadTimers(this, GameDefs.timerTypes, GameDefs.timerModes );
+            loadTimers(this, timerTypes, timerModes );
             
         } 
         catch (err) 
@@ -247,7 +246,7 @@ class Game
     setGame() 
     { 
         // Reset States and key game values
-        if (this.gameState != GameDefs.gameStates.LOSE && this.gameState != GameDefs.gameStates.WIN)
+        if (this.gameState != gameStates.LOSE && this.gameState != gameStates.WIN)
         {
            this.gameLevel = 1;
            this.score = 0;
@@ -264,16 +263,16 @@ class Game
         setMapValues(this);
 
         // Pick a random map sprite and build border and map
-        let randSprite = getRandomMapSprite(GameDefs.mapSpriteTypes);
+        let randSprite = getRandomMapSprite(mapSpriteTypes);
 
         buildBorder(this, randSprite.type, randSprite.w, randSprite.h);
         buildMap(this);
 
         // Player & enemies
         buildPlayer(this);
-        spawnEnemies(this, GameDefs.characterSpriteTypes, this.enemyHolder);
+        spawnEnemies(this, characterSpriteTypes, this.enemyHolder);
         
         // Reset game clock timer
-        resetTimer(this, GameDefs.timerTypes, GameDefs.timerModes);
+        resetTimer(this, timerTypes, timerModes);
     }
 }

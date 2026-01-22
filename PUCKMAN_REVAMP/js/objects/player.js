@@ -14,12 +14,12 @@ class Player extends GameObject
 
     constructor(width, height, x, y, speed) 
     {
-        super(GameDefs.playerSpriteTypes.PLAYER, width, height, x, y, speed);
+        super(playerSpriteTypes.PLAYER, width, height, x, y, speed);
 
-        this.#playerState = GameDefs.playStates.RIGHT;
-        this.#savedPlayerState = GameDefs.playStates.RIGHT;
+        this.#playerState = playStates.RIGHT;
+        this.#savedPlayerState = playStates.RIGHT;
 
-        this.#coolDownTimer =  new Timer(GameDefs.timerTypes.SHOOT_COOL_DOWN_TIMER, 0, GameDefs.timerModes.COUNTDOWN);
+        this.#coolDownTimer =  new Timer(timerTypes.SHOOT_COOL_DOWN_TIMER, 0, timerModes.COUNTDOWN);
         this.speed = speed;
     }
  
@@ -65,13 +65,13 @@ class Player extends GameObject
         // If its active we check fro user input
         if (this.coolDownTimer.active) return false;
 
-        const firePressed = device.mouseDown || device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY);
+        const firePressed = device.mouseDown || device.keys.isKeyPressed(keyTypes.PLAY_KEY);
 
         // If player used the shoot button on keyboard or mouse
         if (!firePressed) return false;
 
         // Reset timer
-        this.coolDownTimer.reset(game.gameConsts.SHOOT_COOLDOWN, GameDefs.timerModes.COUNTDOWN, false);   
+        this.coolDownTimer.reset(game.gameConsts.SHOOT_COOLDOWN, timerModes.COUNTDOWN, false);   
 
         return true;
     }
@@ -84,10 +84,10 @@ class Player extends GameObject
         // ==========================
         //  Keyboard Input
         // ==========================
-        if (device.keys.isKeyDown(GameDefs.keyTypes.DOWN)  || device.keys.isKeyDown(GameDefs.keyTypes.S)) dy += 1;
-        if (device.keys.isKeyDown(GameDefs.keyTypes.UP)    || device.keys.isKeyDown(GameDefs.keyTypes.W)) dy -= 1;
-        if (device.keys.isKeyDown(GameDefs.keyTypes.RIGHT) || device.keys.isKeyDown(GameDefs.keyTypes.D)) dx += 1;
-        if (device.keys.isKeyDown(GameDefs.keyTypes.LEFT)  || device.keys.isKeyDown(GameDefs.keyTypes.A)) dx -= 1;
+        if (device.keys.isKeyDown(keyTypes.DOWN)  || device.keys.isKeyDown(keyTypes.S)) dy += 1;
+        if (device.keys.isKeyDown(keyTypes.UP)    || device.keys.isKeyDown(keyTypes.W)) dy -= 1;
+        if (device.keys.isKeyDown(keyTypes.RIGHT) || device.keys.isKeyDown(keyTypes.D)) dx += 1;
+        if (device.keys.isKeyDown(keyTypes.LEFT)  || device.keys.isKeyDown(keyTypes.A)) dx -= 1;
 
         // ==========================
         // Gamepad Input
@@ -109,14 +109,14 @@ class Player extends GameObject
         // ==========================
         // Determine Player State
         // ==========================
-        if (dx === 0 && dy < 0) this.playerState = GameDefs.playStates.UP;
-        else if (dx === 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN;
-        else if (dx > 0 && dy === 0) this.playerState = GameDefs.playStates.RIGHT;
-        else if (dx < 0 && dy === 0) this.playerState = GameDefs.playStates.LEFT;
-        else if (dx > 0 && dy < 0) this.playerState = GameDefs.playStates.UP_RIGHT;
-        else if (dx < 0 && dy < 0) this.playerState = GameDefs.playStates.UP_LEFT;
-        else if (dx > 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_RIGHT;
-        else if (dx < 0 && dy > 0) this.playerState = GameDefs.playStates.DOWN_LEFT;
+        if (dx === 0 && dy < 0) this.playerState = playStates.UP;
+        else if (dx === 0 && dy > 0) this.playerState = playStates.DOWN;
+        else if (dx > 0 && dy === 0) this.playerState = playStates.RIGHT;
+        else if (dx < 0 && dy === 0) this.playerState = playStates.LEFT;
+        else if (dx > 0 && dy < 0) this.playerState = playStates.UP_RIGHT;
+        else if (dx < 0 && dy < 0) this.playerState = playStates.UP_LEFT;
+        else if (dx > 0 && dy > 0) this.playerState = playStates.DOWN_RIGHT;
+        else if (dx < 0 && dy > 0) this.playerState = playStates.DOWN_LEFT;
 
         // ==========================
         // Normalize & Move

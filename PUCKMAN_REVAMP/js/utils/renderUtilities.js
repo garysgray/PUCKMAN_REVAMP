@@ -80,7 +80,7 @@ function renderPlayer(device, game)
     {
         const tempObj = game.player;
         
-        const playerImage = device.images.getImage(GameDefs.playerSpriteTypes.PLAYER.type);
+        const playerImage = device.images.getImage(playerSpriteTypes.PLAYER.type);
 
         if (!playerImage) 
         {

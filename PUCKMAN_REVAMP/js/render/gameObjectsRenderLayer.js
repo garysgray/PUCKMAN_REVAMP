@@ -12,13 +12,13 @@ function renderGameObjectsLayer(device, game) {
         // === Render Based on Game State ===
         switch (game.gameState) 
         {
-            case GameDefs.gameStates.INIT: 
+            case gameStates.INIT: 
             {
                 
             } 
             break;
 
-            case GameDefs.gameStates.PLAY: 
+            case gameStates.PLAY: 
             {
                 try
                 {
@@ -46,19 +46,19 @@ function renderGameObjectsLayer(device, game) {
             }
             break;
 
-            case GameDefs.gameStates.PAUSE:
+            case gameStates.PAUSE:
             {
                 
             } 
             break;
 
-            case GameDefs.gameStates.WIN: 
+            case gameStates.WIN: 
             {
                 // Reserved for future win state content
             } 
             break;
 
-            case GameDefs.gameStates.LOSE: 
+            case gameStates.LOSE: 
             {
                 try 
                 {

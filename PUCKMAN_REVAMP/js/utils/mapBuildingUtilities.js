@@ -4,6 +4,32 @@
 // Functions neede to init and build map
 // =======================================================
 
+const MapDefs = Object.freeze({
+
+    MAX_DIFFICULTY_LEVEL: 50,
+
+    BASE_SAFE_MARGIN: 4,
+    BASE_LANE_SPACING: 9,
+    BASE_EMPTY_CHANCE: 0.99,
+    BASE_SPAWN_RADIUS: 4,
+    BASE_GOALS: 2,
+
+    SAFE_MARGIN_STEP: 1,
+    LANE_SPACING_STEP: 1,
+    EMPTY_CHANCE_STEP: 0.05,
+    SPAWN_RADIUS_STEP: 1,
+    GOALS_STEP: 2,
+
+    MIN_SAFE_MARGIN: 2,
+    MIN_LANE_SPACING: 9,
+    MIN_SPAWN_RADIUS: 2,
+    MIN_EMPTY_CHANCE: 0.75,
+    MIN_GOALS: 2,
+
+    MAX_EMPTY_CHANCE: 0.99,
+    MAX_GOALS: 15
+});
+
 function getRandomMapSprite(spriteTypes) 
 {
     const sprites = Object.values(spriteTypes);
@@ -63,8 +89,8 @@ function buildMap(game)
         const centerX = Math.floor(tilesX / 2);
         const centerY = Math.floor(tilesY / 2);
 
-        const palette = Object.values(GameDefs.mapSpriteTypes);
-        const goalsPalette = Object.values(GameDefs.goalsSpriteTypes);
+        const palette = Object.values(mapSpriteTypes);
+        const goalsPalette = Object.values(goalsSpriteTypes);
 
         // 0 = walkable, 1 = wall
         const grid = Array.from({ length: tilesY }, () => Array(tilesX).fill(0));
@@ -211,11 +237,11 @@ function buildPlayer(game)
     try 
     {
         game.player = new Player(
-            GameDefs.playerSpriteTypes.PLAYER.w,
-            GameDefs.playerSpriteTypes.PLAYER.h,
+            playerSpriteTypes.PLAYER.w,
+            playerSpriteTypes.PLAYER.h,
             game.canvasHalfW,
             game.borderVerticalBuffer + game.gameConsts.MAP_BUFFER_Y,
-            GameDefs.playerSpriteTypes.PLAYER.s
+            playerSpriteTypes.PLAYER.s
         );
     } 
     catch (err) 

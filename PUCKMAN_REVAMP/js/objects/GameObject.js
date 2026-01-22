@@ -6,15 +6,10 @@
 // - Tracks position, size, speed, and state
 // - Provides movement and collision functions
 //
-// Projectile extends GameObject
-// - Moves upward each frame until offscreen
-// - Has alive flag for cleanup
+// Enemy extends GameObject
+// - has diffrent gameStates/behavior
 //
-// NPC extends GameObject
-// - Moves downward each frame until offscreen
-// - Has alive flag for cleanup
-//
-// BackDrop extends GameObject
+// BillBoard extends GameObject
 // - Used for static/scrolling backgrounds or decorative elements
 // --------------------------------------------
 
@@ -165,7 +160,7 @@ class GameObject
         // --- X axis ---
         this.posX += dx;
 
-        if (this._collidesWith(holder)) 
+        if (this.collidesWith(holder)) 
         {
             this.posX -= dx;
         }
@@ -173,13 +168,13 @@ class GameObject
         // --- Y axis ---
         this.posY += dy;
 
-        if (this._collidesWith(holder)) 
+        if (this.collidesWith(holder)) 
         {
             this.posY -= dy;
         }
     }
 
-    _collidesWith(holder)
+    collidesWith(holder)
     {
         for (let i = 0; i < holder.getSize(); i++)
         {
@@ -244,7 +239,7 @@ class Enemy extends GameObject
     constructor(name, width, height, x, y, speed) 
     {
         super(name, width, height, x, y, speed);
-        this.behaveState = GameDefs.behaveStates.ROAM;
+        this.behaveState = behaveStates.ROAM;
         this.roamTimer = 0;
         this.roamDirection = { x: 0, y: 0 };
     }
@@ -258,15 +253,15 @@ class Enemy extends GameObject
         {
             switch (this.behaveState) 
             {
-                case GameDefs.behaveStates.ROAM:
+                case behaveStates.ROAM:
                     this.roam(delta, game, target, 100);
                     break;
-                case GameDefs.behaveStates.FOLLOW:
+                case behaveStates.FOLLOW:
                     this.follow(delta, game, target, 200);
                     break;
-                case GameDefs.behaveStates.RUN:
+                case behaveStates.RUN:
                     break;
-                case GameDefs.behaveStates.STOP:
+                case behaveStates.STOP:
                     this.stop(target, 1);
                     break;
             }
@@ -283,7 +278,7 @@ class Enemy extends GameObject
     follow(delta, game, target, stopFollowDistance = 300) 
     {
         if (!target || !target.alive) {
-            this.behaveState = GameDefs.behaveStates.ROAM;
+            this.behaveState = behaveStates.ROAM;
             return;
         }
 
@@ -293,13 +288,13 @@ class Enemy extends GameObject
 
         if (dist < 1) 
         {
-            this.behaveState = GameDefs.behaveStates.STOP;
+            this.behaveState = behaveStates.STOP;
             return;
         }
 
         if (dist > stopFollowDistance) 
         {
-            this.behaveState = GameDefs.behaveStates.ROAM;
+            this.behaveState = behaveStates.ROAM;
             return;
         }
 
@@ -315,10 +310,10 @@ class Enemy extends GameObject
         // Update sprite direction
         if (Math.abs(dx) > Math.abs(dy)) 
         {
-            this.state = dx > 0 ? GameDefs.enemyPlayStates.RIGHT : GameDefs.enemyPlayStates.LEFT;
+            this.state = dx > 0 ? enemyPlayStates.RIGHT : enemyPlayStates.LEFT;
         } else 
         {
-            this.state = dy > 0 ? GameDefs.enemyPlayStates.DOWN : GameDefs.enemyPlayStates.UP;
+            this.state = dy > 0 ? enemyPlayStates.DOWN : enemyPlayStates.UP;
         }
     }
 
@@ -342,10 +337,10 @@ class Enemy extends GameObject
         // Update sprite direction
         if (Math.abs(this.roamDirection.x) > Math.abs(this.roamDirection.y)) 
         {
-            this.state = this.roamDirection.x > 0 ? GameDefs.enemyPlayStates.RIGHT : GameDefs.enemyPlayStates.LEFT;
+            this.state = this.roamDirection.x > 0 ? enemyPlayStates.RIGHT : enemyPlayStates.LEFT;
         } else 
         {
-            this.state = this.roamDirection.y > 0 ? GameDefs.enemyPlayStates.DOWN : GameDefs.enemyPlayStates.UP;
+            this.state = this.roamDirection.y > 0 ? enemyPlayStates.DOWN : enemyPlayStates.UP;
         }
 
         // Switch to follow if target is close
@@ -355,7 +350,7 @@ class Enemy extends GameObject
             const distY = target.posY - this.posY;
             if (Math.sqrt(distX * distX + distY * distY) <= followDistance) 
             {
-                this.behaveState = GameDefs.behaveStates.FOLLOW;
+                this.behaveState = behaveStates.FOLLOW;
             }
         }
     }
@@ -366,86 +361,8 @@ class Enemy extends GameObject
         const dx = target.posX - this.posX;
         const dy = target.posY - this.posY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > aDist) this.behaveState = GameDefs.behaveStates.FOLLOW;
+        if (dist > aDist) this.behaveState = behaveStates.FOLLOW;
     }
-}
-
-
-// --------------------------------------------
-// Projectile
-// --------------------------------------------
-// Fired by the player (or NPCs in the future)
-// - Moves upward each frame
-// - Becomes inactive if offscreen
-// --------------------------------------------
-class Projectile extends GameObject 
-{
-    constructor(name, width, height, posX, posY, speed) 
-    {
-        super(name, width, height, posX, posY, speed);
-    }
-
-    update(device, game, delta) 
-    {
-        try 
-        {
-            this.posY -= this.speed * delta;
-            if (this.posY + this.halfHeight < 0) this.kill();
-        } 
-        catch (e) 
-        {
-            console.error("Projectile update error:", e);
-        }
-    }
-}
-
-// --------------------------------------------
-// NPC (Enemy/Obstacle)
-// --------------------------------------------
-// Moves downward from top of screen
-// Dies if it leaves the play area
-// --------------------------------------------
-class NPC extends GameObject 
-{
-    constructor(name, width, height, x, y, speed) 
-    {
-        super(name, width, height, x, y, speed);
-    }
-
-    update(device, game, delta) 
-    {
-        try 
-        {
-            const hud_buff = game.gameConsts.HUD_BUFFER  * game.gameConsts.SCREEN_HEIGHT;
-            this.moveDown(game, delta);
-            if (this.posY > game.gameConsts.SCREEN_HEIGHT  + hud_buff) this.kill();
-        } 
-        catch (e) 
-        {
-            console.error("NPC update error:", e);
-        }
-    }
-
-    moveDown(game, delta) 
-    {
-        try 
-        {
-            if (game.npcSpeedMuliplyer > 0)
-            {
-                this.posY += (this.speed * game.npcSpeedMuliplyer)  * delta;
-            }
-            else
-            {
-                this.posY += this.speed  * delta;
-            }
-            
-        } 
-        catch (e) 
-        {
-            console.error(`moveDown error for ${this.name}:`, e);
-        }
-    }
-
 }
 
 // --------------------------------------------
@@ -493,60 +410,3 @@ class BillBoard extends GameObject
     }
 }
 
-class ParallaxBillBoard extends BillBoard
-{
-    #parallexType;
-    #posX2 = 0;
-    #posY2 = 0;
-
-    constructor(name, width, height, x, y, speed, isCenter, parallexType) 
-    {
-        super(name, width, height, x, y, speed, isCenter);
-        this.#parallexType = parallexType;
-
-        // start second copy right next to the first
-        this.#posX2 = this.posX + this.width;
-        this.#posY2 = this.posY;
-    }
-
-    get parallexType() { return this.#parallexType; }
-
-    get posX2() { return this.#posX2; }
-    get posY2() { return this.#posY2; }
-
-    set posX2(v) { this.#posX2 = v; }
-    set posY2(v) { this.#posY2 = v; }
-
- 
-
-    update(delta, game) 
-    {
-        // HORIZONTAL
-        if (this.parallexType === GameDefs.parallexType.HORIZONTAL) 
-        {
-           this.posX -= this.speed * delta;
-
-            // calculate scaled width for screen
-            const scaledWidth = game.gameConsts.SCREEN_WIDTH; // or use image.width if you prefer
-            if (this.posX <= -scaledWidth) this.posX += scaledWidth;
-
-            // second copy always aligned
-            this.posX2 = this.posX + scaledWidth;
-            this.posY2 = this.posY;
-        } 
-        else 
-        {
-            // vertical unchanged
-            this.posY -= this.speed * delta;
-            if (this.posY <= -this.height) this.posY += this.height;
-            this.posY2 = this.posY + this.height;
-            this.posX2 = this.posX;
-        }
-    }
-
-    render(device, game, image)
-    {
-        device.renderImage(image, this.posX, this.posY , game.gameConsts.SCREEN_WIDTH , game.gameConsts.SCREEN_HEIGHT);
-        device.renderImage(image, this.posX2, this.posY2,  game.gameConsts.SCREEN_WIDTH , game.gameConsts.SCREEN_HEIGHT);
-    }
-}

@@ -18,11 +18,11 @@ function renderBillBoardsLayer(device, game) {
         // === Render Based on Game State ===
         switch (game.gameState) 
         {
-            case GameDefs.gameStates.INIT: 
+            case gameStates.INIT: 
             {
                 
-                board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.SPLASH.type);
-                const splashImg = device.images.getImage(GameDefs.billBoardTypes.SPLASH.type);
+                board = game.billBoards.getObjectByName(billBoardTypes.SPLASH.type);
+                const splashImg = device.images.getImage(billBoardTypes.SPLASH.type);
                 if (board && splashImg) 
                 {
                     try 
@@ -38,15 +38,15 @@ function renderBillBoardsLayer(device, game) {
             } 
             break;
 
-            case GameDefs.gameStates.PLAY: 
+            case gameStates.PLAY: 
             {
             }
             break;
 
-            case GameDefs.gameStates.PAUSE:
+            case gameStates.PAUSE:
             {
-                board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.PAUSE.type);
-                const pauseImg = device.images.getImage(GameDefs.billBoardTypes.PAUSE.type);           
+                board = game.billBoards.getObjectByName(billBoardTypes.PAUSE.type);
+                const pauseImg = device.images.getImage(billBoardTypes.PAUSE.type);           
                 if (board && pauseImg) 
                 {
                     try 
@@ -61,11 +61,11 @@ function renderBillBoardsLayer(device, game) {
             } 
             break;
 
-            case GameDefs.gameStates.WIN: 
+            case gameStates.WIN: 
             {
                 // Reserved for future win state content
-                board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.WIN.type);
-                const splashImg = device.images.getImage(GameDefs.billBoardTypes.WIN.type);
+                board = game.billBoards.getObjectByName(billBoardTypes.WIN.type);
+                const splashImg = device.images.getImage(billBoardTypes.WIN.type);
                 if (board && splashImg) 
                 {
                     try {
@@ -79,12 +79,12 @@ function renderBillBoardsLayer(device, game) {
             } 
             break;
 
-            case GameDefs.gameStates.LOSE: 
+            case gameStates.LOSE: 
             { 
                 if (game.lives == 0)
                 {
-                    board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.LOSE.type);
-                    const dieImg = device.images.getImage(GameDefs.billBoardTypes.LOSE.type);
+                    board = game.billBoards.getObjectByName(billBoardTypes.LOSE.type);
+                    const dieImg = device.images.getImage(billBoardTypes.LOSE.type);
                     if (board && dieImg) 
                     {
                         try 
@@ -99,8 +99,8 @@ function renderBillBoardsLayer(device, game) {
                 }
                 else
                 {
-                    board = game.billBoards.getObjectByName(GameDefs.billBoardTypes.FAIL.type);
-                    const dieImg = device.images.getImage(GameDefs.billBoardTypes.FAIL.type);
+                    board = game.billBoards.getObjectByName(billBoardTypes.FAIL.type);
+                    const dieImg = device.images.getImage(billBoardTypes.FAIL.type);
                     if (board && dieImg) 
                     {
                         try 

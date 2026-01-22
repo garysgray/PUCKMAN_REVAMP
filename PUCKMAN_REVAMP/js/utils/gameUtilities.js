@@ -470,10 +470,10 @@ class Timer
     #timeLeft;     // countdown mode: seconds remaining
     #elapsedTime;  // countup mode: seconds elapsed
     #active;       // is the timer running?
-    #mode;         // GameDefs.timerModes.COUNTDOWN or COUNTUP
+    #mode;         // timerModes.COUNTDOWN or COUNTUP
     #loop;         // true = auto restart after finish
 
-    constructor(name, durationSeconds = 0, mode = GameDefs.timerModes.COUNTDOWN, loop = false) 
+    constructor(name, durationSeconds = 0, mode = timerModes.COUNTDOWN, loop = false) 
     {
         this.#name = name;
         this.#duration = durationSeconds;
@@ -490,7 +490,7 @@ class Timer
     get timeLeft() { return Math.max(0, this.#timeLeft); }
     get elapsedTime() { return this.#elapsedTime; }
     get progress() {
-        return this.#mode === GameDefs.timerModes.COUNTDOWN
+        return this.#mode === timerModes.COUNTDOWN
             ? 1 - (this.#timeLeft / (this.#duration || 1))
             : (this.#duration ? Math.min(1, this.#elapsedTime / this.#duration) : 0);
     }
@@ -498,7 +498,7 @@ class Timer
     // --- Control ---
     start() 
     {
-        if (this.#mode === GameDefs.timerModes.COUNTDOWN) 
+        if (this.#mode === timerModes.COUNTDOWN) 
         {
             this.#timeLeft = this.#duration;
         } 
@@ -528,7 +528,7 @@ class Timer
     {
         if (!this.#active) return false;
 
-        if (this.#mode === GameDefs.timerModes.COUNTDOWN) 
+        if (this.#mode === timerModes.COUNTDOWN) 
         {
             this.#timeLeft -= delta;
             if (this.#timeLeft <= 0) {
@@ -607,19 +607,19 @@ function checkForPause(device, game)
 {
     try 
     {
-        const pausePressed = device.keys.isKeyPressed(GameDefs.keyTypes.PAUSE_KEY_L) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.PAUSE));
+        const pausePressed = device.keys.isKeyPressed(keyTypes.PAUSE_KEY_L) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(gamepadButtons.PAUSE));
 
         // Use the persistent flag
         if (toggleOnce(pausePressed, device.keys)) 
         {
             // toggle game state
-            if (game.gameState === GameDefs.gameStates.PLAY) 
+            if (game.gameState === gameStates.PLAY) 
             {
-                game.setGameState(GameDefs.gameStates.PAUSE);
+                game.setGameState(gameStates.PAUSE);
             } 
-            else if (game.gameState === GameDefs.gameStates.PAUSE) 
+            else if (game.gameState === gameStates.PAUSE) 
             {
-                game.setGameState(GameDefs.gameStates.PLAY);
+                game.setGameState(gameStates.PLAY);
             }
         }
     } 
@@ -650,26 +650,26 @@ function updateHTMLMessage(game)
     const msg = document.getElementById("message");
     if (!msg) return;
 
-    if (game.gameState != GameDefs.gameStates.INIT) 
+    if (game.gameState != gameStates.INIT) 
     {
         if (game.gamePadEnabled) 
         {
-            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]+"</p>";     
+            msg.innerHTML = "<p>"+gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]+"</p>";     
         } 
         else 
         {
-            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
+            msg.innerHTML = "<p>"+gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
         }
     }
     else
     {
         if(game.gamePadConnected)
         {
-            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS+"</p>";   
+            msg.innerHTML = "<p>"+gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS+"</p>";   
         }
         else 
         {
-            msg.innerHTML = "<p>"+GameDefs.gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
+            msg.innerHTML = "<p>"+gameTexts.INIT.INSTRUCTIONS[4]+"</p>";
         }
         
     }
@@ -760,3 +760,52 @@ function addKeysAndGamePads(device)
         return gp ? gp.buttons[buttonIndex]?.pressed : false;
     };
 }
+
+// Suggested Splits
+
+// You can split the utilities into logical modules:
+
+
+// Rendering / Canvas Utilities → renderUtils.js
+
+        // Device class
+
+        // drawHitbox
+
+        // renderImage, renderClip, centerImage, putText, centerTextOnY, colorText, setFont, debugText
+
+// Input Utilities → inputUtils.js
+
+        // KeyManager
+
+        // toggleOnce
+
+        // checkForPause
+
+        // addKeysAndGamePads
+
+// Audio Utilities → audioUtils.js
+
+        // Sound
+
+        // AudioPlayer
+
+        // loadSounds
+
+// Timer Utilities → timerUtils.js
+
+        // Timer
+
+        // loadTimers, resetTimer
+
+// Asset / Game Object Utilities → assetUtils.js
+
+        // ObjHolder
+
+        // Sprite
+
+        // setImagesForType
+
+// DOM / UI Utilities → uiUtils.js
+
+        // updateHTMLMessage

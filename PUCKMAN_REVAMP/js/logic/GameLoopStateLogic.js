@@ -19,14 +19,14 @@ function updateGameStates(device, game, delta)
             // -------------------------------------------------------
             // INIT STATE
             // -------------------------------------------------------
-            case GameDefs.gameStates.INIT:
+            case gameStates.INIT:
                 try 
                 {
                     game.setGame();
 
                     if ( game.gamePadConnected)
                     {
-                        if (toggleOnce(device.keys.isKeyPressed(GameDefs.keyTypes.Q), { value: device.keys.wasQPressed })) 
+                        if (toggleOnce(device.keys.isKeyPressed(keyTypes.Q), { value: device.keys.wasQPressed })) 
                         {
                             game.gamePadEnabled = !game.gamePadEnabled;
                         }
@@ -41,17 +41,17 @@ function updateGameStates(device, game, delta)
                     {
                         setTimeout(() => 
                         {
-                            if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))) 
+                            if (device.keys.isKeyPressed(keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(gamepadButtons.START))) 
                             {       
-                                game.setGameState(GameDefs.gameStates.PLAY);
+                                game.setGameState(gameStates.PLAY);
                             }
                         }, 500);
                     }
                     else
                     {
-                        if (device.keys.isKeyPressed(GameDefs.keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))) 
+                        if (device.keys.isKeyPressed(keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(gamepadButtons.START))) 
                             {       
-                                game.setGameState(GameDefs.gameStates.PLAY);
+                                game.setGameState(gameStates.PLAY);
                             }
                     }
                     
@@ -65,12 +65,12 @@ function updateGameStates(device, game, delta)
             // -------------------------------------------------------
             // PLAY STATE
             // -------------------------------------------------------
-            case GameDefs.gameStates.PLAY:
+            case gameStates.PLAY:
                 try 
                 {
                      
                     // Game clock that helps update when NPC's speed should incread and give player points
-                    const gameClock = game.gameTimers.getObjectByName(GameDefs.timerTypes.GAME_CLOCK);
+                    const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK);
 
                     if (gameClock.active)
                     {
@@ -80,7 +80,7 @@ function updateGameStates(device, game, delta)
 
                     if (gameClock.timeLeft == 0)
                     {
-                        game.setGameState(GameDefs.gameStates.LOSE);
+                        game.setGameState(gameStates.LOSE);
                         break;
                     }
 
@@ -96,8 +96,8 @@ function updateGameStates(device, game, delta)
                     // check player enemy collision
                     if (checkPlayerGameObjCollisions(game.enemyHolder, game.player) !== false)
                     {
-                         device.audio.playSound(GameDefs.soundTypes.HURT.name);
-                         game.setGameState(GameDefs.gameStates.LOSE);
+                         device.audio.playSound(soundTypes.HURT.name);
+                         game.setGameState(gameStates.LOSE);
                          break;
                     }
 
@@ -109,7 +109,7 @@ function updateGameStates(device, game, delta)
                         if (tempValue !== false)
                         {
                             game.goalHolder.subObject(tempValue);
-                            device.audio.playSound(GameDefs.soundTypes.GET.name);
+                            device.audio.playSound(soundTypes.GET.name);
                             // FIXX need fix magic num
                             game.increaseScore(1); 
                         }
@@ -117,7 +117,7 @@ function updateGameStates(device, game, delta)
                         if (game.goalHolder.getSize() === 0)
                         {
                             //should go to next level FIXX function?
-                            game.setGameState(GameDefs.gameStates.WIN); 
+                            game.setGameState(gameStates.WIN); 
                             game.increaseGameLevel(1); 
                             break;
                         }
@@ -135,7 +135,7 @@ function updateGameStates(device, game, delta)
             // -------------------------------------------------------
             // PAUSE STATE
             // -------------------------------------------------------
-            case GameDefs.gameStates.PAUSE:
+            case gameStates.PAUSE:
                 try 
                 {
                 
@@ -151,16 +151,16 @@ function updateGameStates(device, game, delta)
             // -------------------------------------------------------
             // WIN STATE - currently not in use
             // -------------------------------------------------------
-            case GameDefs.gameStates.WIN:
+            case gameStates.WIN:
                 try 
                 {
                     // Check for game restart and Init game if it happens  
-                    if (device.keys.isKeyPressed(GameDefs.keyTypes.RESET_KEY) ||
-                    device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START))
+                    if (device.keys.isKeyPressed(keyTypes.RESET_KEY) ||
+                    device.keys.isGamepadButtonPressed(gamepadButtons.START))
                     {
-                        //game.setGameState(GameDefs.gameStates.INIT);
+                        //game.setGameState(gameStates.INIT);
                         game.setGame();  
-                        game.setGameState(GameDefs.gameStates.PLAY);
+                        game.setGameState(gameStates.PLAY);
                     }
                 } 
                 catch (e) 
@@ -172,20 +172,20 @@ function updateGameStates(device, game, delta)
             // -------------------------------------------------------
             // LOSE STATE
             // -------------------------------------------------------
-            case GameDefs.gameStates.LOSE:
+            case gameStates.LOSE:
                 try 
                 {
-                    if (device.keys.isKeyPressed(GameDefs.keyTypes.RESET_KEY) ||
-                    device.keys.isGamepadButtonPressed(GameDefs.gamepadButtons.START)) 
+                    if (device.keys.isKeyPressed(keyTypes.RESET_KEY) ||
+                    device.keys.isGamepadButtonPressed(gamepadButtons.START)) 
                     {
                         if(game.lives != 0)
                         {
                             game.lives--;
                             game.setGame() 
-                            game.setGameState(GameDefs.gameStates.PLAY);
+                            game.setGameState(gameStates.PLAY);
                             break
                         }
-                        else{ game.setGameState(GameDefs.gameStates.INIT);}
+                        else{ game.setGameState(gameStates.INIT);}
                     }
                 } 
                 catch (e) 

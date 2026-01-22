@@ -31,7 +31,7 @@ function renderTextLayer(device, game)
             // ==============================
             // INIT STATE: instructions
             // ==============================
-            case GameDefs.gameStates.INIT:
+            case gameStates.INIT:
                 try
                 {
                     let instructions = null;
@@ -39,11 +39,11 @@ function renderTextLayer(device, game)
                     {
                         if (game.gamePadEnabled)
                         {
-                             instructions = GameDefs.gameTexts.INIT.GAMEPAD_INSTRUCTIONS[idx];
+                             instructions = gameTexts.INIT.GAMEPAD_INSTRUCTIONS[idx];
                         }
                         else
                         {
-                             instructions = GameDefs.gameTexts.INIT.INSTRUCTIONS[idx];
+                             instructions = gameTexts.INIT.INSTRUCTIONS[idx];
                         }
                         
                         
@@ -59,7 +59,7 @@ function renderTextLayer(device, game)
             // ==============================
             // PLAY STATE: 
             // ==============================
-            case GameDefs.gameStates.PLAY:
+            case gameStates.PLAY:
                 try
                 {
                    //no tales to tell
@@ -73,18 +73,18 @@ function renderTextLayer(device, game)
             // ==============================
             // PAUSE STATE: Resume prompt
             // ==============================
-            case GameDefs.gameStates.PAUSE:
+            case gameStates.PAUSE:
                 try 
                 {
                     let pauseMsg = null;
 
                     if (game.gamePadEnabled)
                     {
-                        pauseMsg = GameDefs.gameTexts.PAUSE.GAMEPAD_MESSAGE;
+                        pauseMsg = gameTexts.PAUSE.GAMEPAD_MESSAGE;
                     }
                     else
                     {
-                        pauseMsg = GameDefs.gameTexts.PAUSE.MESSAGE;
+                        pauseMsg = gameTexts.PAUSE.MESSAGE;
                     }
                     
                     device.centerTextOnY(pauseMsg, ch * layout.pauseY);
@@ -99,18 +99,18 @@ function renderTextLayer(device, game)
             // ==============================
             // WIN STATE: Replay prompt
             // ==============================
-            case GameDefs.gameStates.WIN:
+            case gameStates.WIN:
                 try 
                 {
                     let winMsg = null;
 
                     if (game.gamePadEnabled)
                     {
-                        winMsg = GameDefs.gameTexts.WIN.GAMEPAD_MESSAGE;
+                        winMsg = gameTexts.WIN.GAMEPAD_MESSAGE;
                     }
                     else
                     {
-                        winMsg = GameDefs.gameTexts.WIN.MESSAGE;
+                        winMsg = gameTexts.WIN.MESSAGE;
                     }
 
                     device.centerTextOnY(winMsg, ch * layout.winLoseY);
@@ -125,7 +125,7 @@ function renderTextLayer(device, game)
             // ==============================
             // LOSE STATE: Restart/Revive prompt
             // ==============================
-            case GameDefs.gameStates.LOSE:
+            case gameStates.LOSE:
                 try 
                 {
                     let loseMsg = null;
@@ -135,11 +135,11 @@ function renderTextLayer(device, game)
 
                         if (game.gamePadEnabled)
                         {
-                            loseMsg = GameDefs.gameTexts.LOSE.GAMEPAD_LOSE_MESSAGE;
+                            loseMsg = gameTexts.LOSE.GAMEPAD_LOSE_MESSAGE;
                         }
                         else
                         {
-                            loseMsg =  GameDefs.gameTexts.LOSE.LOSE_MESSAGE;
+                            loseMsg =  gameTexts.LOSE.LOSE_MESSAGE;
                         }
 
                         device.centerTextOnY(loseMsg, ch * layout.winLoseY);    
@@ -149,11 +149,11 @@ function renderTextLayer(device, game)
                         let dieMsg = null; 
                         if (game.gamePadEnabled)
                         {
-                            dieMsg = GameDefs.gameTexts.LOSE.GAMEPAD_DIE_MESSAGE;
+                            dieMsg = gameTexts.LOSE.GAMEPAD_DIE_MESSAGE;
                         }
                         else
                         {
-                            dieMsg =  GameDefs.gameTexts.LOSE.DIE_MESSAGE;
+                            dieMsg =  gameTexts.LOSE.DIE_MESSAGE;
                         }
 
                         device.centerTextOnY(dieMsg, ch * layout.winLoseY);    
