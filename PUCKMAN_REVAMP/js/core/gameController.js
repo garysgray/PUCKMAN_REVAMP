@@ -62,36 +62,18 @@ class Controller
         try 
         {
             this.game.initGame(this.device);
-            this.game.initByControl = true;
 
             // Layers have to be rendered in this order
-            if (typeof billBoardsLayer !== 'undefined')  this.addLayer(billBoardsLayer);      // game backgrounds
-            if (typeof hudRenderLayer !== 'undefined')   this.addLayer(hudRenderLayer);       // game HUD
-            if (typeof textRenderLayer !== 'undefined')  this.addLayer(textRenderLayer);      // game text
-            if (typeof gameObjectsLayer !== 'undefined') this.addLayer(gameObjectsLayer);     // game objects
+            if (typeof billBoardsLayer !== 'undefined')  addRenderLayer(billBoardsLayer, this.layers);      // game backgrounds
+            if (typeof hudRenderLayer !== 'undefined')   addRenderLayer(hudRenderLayer, this.layers);       // game HUD
+            if (typeof textRenderLayer !== 'undefined')  addRenderLayer(textRenderLayer, this.layers);      // game text
+            if (typeof gameObjectsLayer !== 'undefined') addRenderLayer(gameObjectsLayer, this.layers);     // game objects
             
         }
         catch (error) 
         {
             console.error("Failed to initialize game components:", error.message);
             alert("An error occurred while initializing game components.");
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // Add a render layer
-    // ------------------------------------------------------------------------
-    addLayer(layer) 
-    {
-        try
-        {
-            if (!layer) throw new Error("Layer is undefined or null.");
-            this.layers.push(layer);
-        } 
-        catch (error)
-        {
-            console.error("Error adding layer:", error.message);
-            alert("An error occurred while adding a render layer.");
         }
     }
 
@@ -104,7 +86,8 @@ class Controller
 
         try
         {
-            // Update game logic
+            // independent function UpdateGame.js that updates everything game related from Game.js 
+            // except rendering, thats done in each layer affiliated
             updateGame(this.device, this.game, delta);
 
             // Render each layer

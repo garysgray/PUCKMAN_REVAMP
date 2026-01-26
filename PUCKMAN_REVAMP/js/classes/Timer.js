@@ -25,6 +25,7 @@ class Timer
 
     // --- Getters ---
     get name() { return this.#name; }
+    get mode() { return this.#mode; }
     get active() { return this.#active; }
     get timeLeft() { return Math.max(0, this.#timeLeft); }
     get elapsedTime() { return this.#elapsedTime; }
@@ -100,5 +101,16 @@ class Timer
         const minutes = Math.floor(total / 60);
         const seconds = total % 60;
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
+
+    static loadTimers(timerHolder, timerTypes)
+    {                                                                                                       
+        
+        Object.values(timerTypes).forEach(timeDef => 
+        {
+            const timer = new Timer( timeDef.name, timeDef.duration, timeDef.timerMode, false); 
+            timerHolder.addObject(timer);
+            
+        });
     }
 }

@@ -1,17 +1,10 @@
 // ============================================================================
-// Base GameObject + Child Classes (Player, Projectile, NPC, BackDrop)
+// BASE GAMEOBJECT CLASS
 // ============================================================================
 // --------------------------------------------
 // GameObject is the base class for all in-game entities
 // - Tracks position, size, speed, and state
 // - Provides movement and collision functions
-//
-// Enemy extends GameObject
-// - has diffrent gameStates/behavior
-//
-// BillBoard extends GameObject
-// - Used for static/scrolling backgrounds or decorative elements
-// --------------------------------------------
 
 class GameObject 
 {
@@ -232,181 +225,50 @@ class GameObject
     }
 }
 
-class Enemy extends GameObject
-{
-    #behaveState;
 
-    constructor(name, width, height, x, y, speed) 
-    {
-        super(name, width, height, x, y, speed);
-        this.behaveState = behaveStates.ROAM;
-        this.roamTimer = 0;
-        this.roamDirection = { x: 0, y: 0 };
-    }
 
-    get behaveState() { return this.#behaveState; }
-    set behaveState(v) { this.#behaveState = v; }
+// // --------------------------------------------
+// // BillBoard
+// // --------------------------------------------
+// // Static or decorative background object
+// // Currently does nothing, but could support parallax or animation
+// // --------------------------------------------
+// class BillBoard extends GameObject 
+// {
+//     #isCenter = true;
 
-    update(delta, game, target) 
-    {
-        try 
-        {
-            switch (this.behaveState) 
-            {
-                case behaveStates.ROAM:
-                    this.roam(delta, game, target, 100);
-                    break;
-                case behaveStates.FOLLOW:
-                    this.follow(delta, game, target, 200);
-                    break;
-                case behaveStates.RUN:
-                    break;
-                case behaveStates.STOP:
-                    this.stop(target, 1);
-                    break;
-            }
+//     constructor(name, width, height, x, y, speed, isCenter = true) 
+//     {
+//         super(name, width, height, x, y, speed);
 
-            this.enforceBorderBounds(game);
+//         this.#isCenter = isCenter;
+//     }
 
-        } 
-        catch (e) 
-        {
-            console.error("Enemy update error:", e);
-        }
-    }
+//     get isCenter() { return this.#isCenter; }
 
-    follow(delta, game, target, stopFollowDistance = 300) 
-    {
-        if (!target || !target.alive) {
-            this.behaveState = behaveStates.ROAM;
-            return;
-        }
-
-        let dx = target.posX - this.posX;
-        let dy = target.posY - this.posY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 1) 
-        {
-            this.behaveState = behaveStates.STOP;
-            return;
-        }
-
-        if (dist > stopFollowDistance) 
-        {
-            this.behaveState = behaveStates.ROAM;
-            return;
-        }
-
-        dx /= dist;
-        dy /= dist;
-
-        const moveX = dx * this.speed * delta;
-        const moveY = dy * this.speed * delta;
-
-        // Move with collision
-        this.tryMoveWithCollision(game.mapHolder, moveX, moveY);
-
-        // Update sprite direction
-        if (Math.abs(dx) > Math.abs(dy)) 
-        {
-            this.state = dx > 0 ? enemyPlayStates.RIGHT : enemyPlayStates.LEFT;
-        } else 
-        {
-            this.state = dy > 0 ? enemyPlayStates.DOWN : enemyPlayStates.UP;
-        }
-    }
-
-    roam(delta, game, target, followDistance = 200) 
-    {
-        if (this.roamTimer <= 0) 
-        {
-            const angle = Math.random() * Math.PI * 2;
-            this.roamDirection = { x: Math.cos(angle), y: Math.sin(angle) };
-            this.roamTimer = 1 + Math.random() * 2;
-        }
-
-        this.roamTimer -= delta;
-
-        const moveX = this.roamDirection.x * this.speed * delta;
-        const moveY = this.roamDirection.y * this.speed * delta;
-
-        // Move with collision
-        this.tryMoveWithCollision(game.mapHolder, moveX, moveY);
-
-        // Update sprite direction
-        if (Math.abs(this.roamDirection.x) > Math.abs(this.roamDirection.y)) 
-        {
-            this.state = this.roamDirection.x > 0 ? enemyPlayStates.RIGHT : enemyPlayStates.LEFT;
-        } else 
-        {
-            this.state = this.roamDirection.y > 0 ? enemyPlayStates.DOWN : enemyPlayStates.UP;
-        }
-
-        // Switch to follow if target is close
-        if (target) 
-        {
-            const distX = target.posX - this.posX;
-            const distY = target.posY - this.posY;
-            if (Math.sqrt(distX * distX + distY * distY) <= followDistance) 
-            {
-                this.behaveState = behaveStates.FOLLOW;
-            }
-        }
-    }
-
-    stop(target, aDist)
-    {
-        if (!target) return;
-        const dx = target.posX - this.posX;
-        const dy = target.posY - this.posY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > aDist) this.behaveState = behaveStates.FOLLOW;
-    }
-}
-
-// --------------------------------------------
-// BillBoard
-// --------------------------------------------
-// Static or decorative background object
-// Currently does nothing, but could support parallax or animation
-// --------------------------------------------
-class BillBoard extends GameObject 
-{
-    #isCenter = true;
-
-    constructor(name, width, height, x, y, speed, isCenter = true) 
-    {
-        super(name, width, height, x, y, speed);
-
-        this.#isCenter = isCenter;
-    }
-
-    get isCenter() { return this.#isCenter; }
-
-    centerObjectInWorld(screenW, screenH) 
-    {
-        if (this.#isCenter)
-        {
-            try 
-            {
-                this.posX = (screenW - this.width) * 0.5;
-                this.posY = (screenH - this.height) * 0.5;
-            } 
-            catch (e) 
-            {
-                console.error("BillBoard centerObjectInWorld error:", e);
-            }
-        }
+//     centerObjectInWorld(screenW, screenH) 
+//     {
+//         if (this.#isCenter)
+//         {
+//             try 
+//             {
+//                 this.posX = (screenW - this.width) * 0.5;
+//                 this.posY = (screenH - this.height) * 0.5;
+//             } 
+//             catch (e) 
+//             {
+//                 console.error("BillBoard centerObjectInWorld error:", e);
+//             }
+//         }
         
-    }
-    update(device, delta) 
-    {
-        // Optional: BillBoard scrolling/animation
-    }
-    render(device, image, yBuff)
-    {
-        device.renderImage(image, this.posX, this.posY - yBuff);
-    }
-}
+//     }
+//     update(device, delta) 
+//     {
+//         // Optional: BillBoard scrolling/animation
+//     }
+//     render(device, image, yBuff)
+//     {
+//         device.renderImage(image, this.posX, this.posY - yBuff);
+//     }
+// }
 

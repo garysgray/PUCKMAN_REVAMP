@@ -35,7 +35,7 @@ class Device
             //this.#mouseDown = false;
             this.#images = (typeof ObjHolder !== "undefined") ? new ObjHolder() : { addObject: () => {} };
             this.#audio = (typeof AudioPlayer !== "undefined") ? new AudioPlayer() : { addSound: () => {} };
-            this.#keys = (typeof KeyManager !== "undefined") ? new KeyManager() : { clearFrameKeys: () => {} };
+            this.#keys = (typeof KeyButtonManager !== "undefined") ? new KeyButtonManager() : { clearFrameKeys: () => {} };
 
         } 
         catch (err) 
@@ -152,5 +152,24 @@ class Device
         } 
         catch
         { /* ignore */ }
+    }
+
+    setImagesForType(type, callback)
+    {
+        Object.values(type).forEach(typeDef => 
+        {
+            if (typeDef.path) 
+            {
+                
+                const sprite = new Sprite(typeDef.path, typeDef.type);
+                this.images.addObject(sprite);
+
+                //Call the callback if provided
+                if (callback && typeof callback === "function") 
+                {
+                    callback(typeDef, sprite); // pass the type definition and the sprite
+                }
+            }
+        });
     }
 }

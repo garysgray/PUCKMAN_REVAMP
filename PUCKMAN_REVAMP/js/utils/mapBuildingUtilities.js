@@ -4,32 +4,6 @@
 // Functions neede to init and build map
 // =======================================================
 
-const MapDefs = Object.freeze({
-
-    MAX_DIFFICULTY_LEVEL: 50,
-
-    BASE_SAFE_MARGIN: 4,
-    BASE_LANE_SPACING: 9,
-    BASE_EMPTY_CHANCE: 0.99,
-    BASE_SPAWN_RADIUS: 4,
-    BASE_GOALS: 2,
-
-    SAFE_MARGIN_STEP: 1,
-    LANE_SPACING_STEP: 1,
-    EMPTY_CHANCE_STEP: 0.05,
-    SPAWN_RADIUS_STEP: 1,
-    GOALS_STEP: 2,
-
-    MIN_SAFE_MARGIN: 2,
-    MIN_LANE_SPACING: 9,
-    MIN_SPAWN_RADIUS: 2,
-    MIN_EMPTY_CHANCE: 0.75,
-    MIN_GOALS: 2,
-
-    MAX_EMPTY_CHANCE: 0.99,
-    MAX_GOALS: 15
-});
-
 function getRandomMapSprite(spriteTypes) 
 {
     const sprites = Object.values(spriteTypes);
@@ -232,91 +206,43 @@ function createCache(device, game, holder, cacheKey, readyKey)
     game[readyKey] = true;
 }
 
-function buildPlayer(game)
-{
-    try 
-    {
-        game.player = new Player(
-            playerSpriteTypes.PLAYER.w,
-            playerSpriteTypes.PLAYER.h,
-            game.canvasHalfW,
-            game.borderVerticalBuffer + game.gameConsts.MAP_BUFFER_Y,
-            playerSpriteTypes.PLAYER.s
-        );
-    } 
-    catch (err) 
-    {
-        console.error("Failed to initialize player:", err);
-    }
-}
-
-function spawnEnemies(game, types, holder)
-{
-    Object.values(types).forEach(spriteDef =>
-    {
-        const enemy = new Enemy(
-            spriteDef.type,
-            spriteDef.w,
-            spriteDef.h,        
-            game.canvasHalfW,
-            game.canvasHalfH,
-            spriteDef.s
-        );
-
-        holder.addObject(enemy);
-    });
-
-}
-
 function setMapValues(game) 
 {
-    // =======================================================
-    // 1) LEVEL CONTROL
-    // =======================================================
+    // LEVEL CONTROL
     const level = Math.min(game.gameLevel, MapDefs.MAX_DIFFICULTY_LEVEL);
 
     // Every 5 levels = new difficulty tier
     const tier = Math.floor((level - 1) / 5);
 
-    // =======================================================
-    // 2) BASE VALUES (LEVEL 1 FEEL)
-    // =======================================================
+    // BASE VALUES (LEVEL 1 FEEL)
     game.mapSafeMargin   = MapDefs.BASE_SAFE_MARGIN;
     game.mapLaneSpacing  = MapDefs.BASE_LANE_SPACING;
     game.mapEmptyChance  = MapDefs.BASE_EMPTY_CHANCE;
     game.mapSpawnRadius  = MapDefs.BASE_SPAWN_RADIUS;
     game.goalCount       = MapDefs.BASE_GOALS;
 
-    // =======================================================
-    // 3) DIFFICULTY PER TIER (BIG STEPS)
-    // =======================================================
+    // DIFFICULTY PER TIER (BIG STEPS)
     game.mapSafeMargin  -= tier * MapDefs.SAFE_MARGIN_STEP;
     game.mapLaneSpacing -= tier * MapDefs.LANE_SPACING_STEP;
     game.mapEmptyChance -= tier * MapDefs.EMPTY_CHANCE_STEP;
     game.mapSpawnRadius -= tier * MapDefs.SPAWN_RADIUS_STEP;
     game.goalCount      += tier * MapDefs.GOALS_STEP;
 
-    // =======================================================
-    // 4) SMALL PER-LEVEL VARIATION (FLAVOR)
-    // =======================================================
+    // SMALL PER-LEVEL VARIATION (FLAVOR)
     if (level % 2 === 0)
     {
         game.mapEmptyChance += 0.02; // tiny random tweak (optional to move to MapDefs)
         game.goalCount += 1;          // occasional extra goal
     }
 
-    // =======================================================
-    // 5) HARD LIMITS (DESIGN SAFETY NET)
-    // =======================================================
+    // HARD LIMITS (DESIGN SAFETY NET)
     game.mapSafeMargin  = Math.max(MapDefs.MIN_SAFE_MARGIN,  game.mapSafeMargin);
     game.mapLaneSpacing = Math.max(MapDefs.MIN_LANE_SPACING, game.mapLaneSpacing);
     game.mapSpawnRadius = Math.max(MapDefs.MIN_SPAWN_RADIUS, game.mapSpawnRadius);
     game.mapEmptyChance = Math.max(MapDefs.MIN_EMPTY_CHANCE, Math.min(MapDefs.MAX_EMPTY_CHANCE, game.mapEmptyChance));
     game.goalCount      = Math.max(MapDefs.MIN_GOALS, Math.min(MapDefs.MAX_GOALS, game.goalCount));
 
-    // =======================================================
-    // 6) DEBUG
-    // =======================================================
+    // DEBUG
     // console.log(
     //     `LEVEL: ${game.gameLevel} | TIER: ${tier}`,
     //     {

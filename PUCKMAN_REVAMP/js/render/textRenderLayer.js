@@ -9,6 +9,9 @@
 
 function renderTextLayer(device, game) 
 {
+    // Updates the message at bottom of screen 
+    renderHTMLMessage(game); 
+
     try 
     {
         const cw = game.gameConsts.SCREEN_WIDTH;
@@ -164,10 +167,11 @@ function renderTextLayer(device, game)
                     console.error("Error rendering lose text:", e);
                 }
                 break;
-
+                
             default:
                 console.warn("Unknown game state in text layer:", game.gameState);
                 break;
+            
         }
     } 
     catch (e) 

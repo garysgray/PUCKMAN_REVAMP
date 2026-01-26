@@ -62,6 +62,7 @@ class Game
     // -----------------------------
     #gamePadConnected;
     #gamePadEnabled;
+    #keyboardTouched;
 
     // =======================================================
     // CONSTRUCTOR
@@ -120,6 +121,7 @@ class Game
         // Input
         this.#gamePadConnected = false;
         this.#gamePadEnabled = false;
+        this.#keyboardTouched = false
     }
 
     // =======================================================
@@ -165,6 +167,8 @@ class Game
     get gamePadConnected() { return this.#gamePadConnected; }
     get gamePadEnabled() { return this.#gamePadEnabled; }
 
+    get keyboardTouched() { return this.#keyboardTouched; }
+
     // =======================================================
     // SETTERS
     // =======================================================
@@ -194,6 +198,9 @@ class Game
     set gamePadConnected(v) { this.#gamePadConnected = v; }
     set gamePadEnabled(v) { this.#gamePadEnabled = v; }
 
+    set keyboardTouched(v) { this.#keyboardTouched = v; }
+
+
     // =======================================================
     // UTILITY FUNCTIONS
     // =======================================================
@@ -209,20 +216,19 @@ class Game
     {
         try 
         {
-            // --- Input setup ---
-            // --- Load keyboard keys and gamepad buttons ---
-            addKeysAndGamePads(device);
-
             // --- Add events  ---
-            addEventListeners(this, keyTypes);
+            device.keys.addEventListeners(this, keyTypes);
+
+            // --- Load keyboard keys and gamepad buttons ---
+            device.keys.addKeysAndGamePads();
 
             // --- Load images ---
-            setImagesForType(device, playerSpriteTypes);
-            setImagesForType(device, mapSpriteTypes);
-            setImagesForType(device, goalsSpriteTypes);
-            setImagesForType(device, characterSpriteTypes);
+            device.setImagesForType(playerSpriteTypes);
+            device.setImagesForType(mapSpriteTypes);
+            device.setImagesForType(goalsSpriteTypes);
+            device.setImagesForType(characterSpriteTypes);
 
-            setImagesForType(device, billBoardTypes, boardDef => 
+            device.setImagesForType(billBoardTypes, boardDef => 
             {
                 // This runs for every sprite in billBoardTypes
                 const board = new BillBoard(boardDef.type, boardDef.w, boardDef.h, 0, 0, 0, boardDef.isCenter);
@@ -231,11 +237,10 @@ class Game
             });
 
             // --- Load sounds ---
-            loadSounds(device, this, soundTypes);
+            AudioPlayer.loadSounds(device, this, soundTypes);
 
             // --- Initialize timers ---
-            loadTimers(this, timerTypes, timerModes );
-            
+            Timer.loadTimers(this.gameTimers, timerTypes)
         } 
         catch (err) 
         {
@@ -269,10 +274,12 @@ class Game
         buildMap(this);
 
         // Player & enemies
-        buildPlayer(this);
-        spawnEnemies(this, characterSpriteTypes, this.enemyHolder);
+        Player.buildPlayer(this);
+        Enemy.spawnEnemies(this, characterSpriteTypes, this.enemyHolder)
         
         // Reset game clock timer
-        resetTimer(this, timerTypes, timerModes);
+        const gameClock = this.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
+        gameClock.reset();
+
     }
 }

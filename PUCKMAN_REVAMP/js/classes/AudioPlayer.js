@@ -126,4 +126,16 @@ class AudioPlayer
     }
 
     hasSound(name) { return !!this.getSound(name); }
+
+    static loadSounds(device, game, soundTypes)
+    {
+        Object.values(soundTypes).forEach(sndDef => 
+        {
+            if (sndDef.path) 
+            {
+                device.audio.addSound(sndDef.name, sndDef.path, game.gameConsts.POOLSIZE, game.gameConsts.VOLUME,
+                );
+            }
+        });
+    }
  }

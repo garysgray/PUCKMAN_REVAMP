@@ -8,7 +8,6 @@
 // --------------------------------------------
 class Player extends GameObject 
 {
-    #coolDownTimer;
     #playerState; 
     #savedPlayerState;
 
@@ -17,22 +16,10 @@ class Player extends GameObject
         super(playerSpriteTypes.PLAYER, width, height, x, y, speed);
 
         this.#playerState = playStates.RIGHT;
-        this.#savedPlayerState = playStates.RIGHT;
-
-        this.#coolDownTimer =  new Timer(timerTypes.SHOOT_COOL_DOWN_TIMER, 0, timerModes.COUNTDOWN);
         this.speed = speed;
     }
- 
-    get coolDownTimer() { return this.#coolDownTimer; }
     get playerState() { return this.#playerState; }
-    get savedPlayerState() { return this.#savedPlayerState; }
-
     set playerState(v) { this.#playerState = v; }
-    set savedPlayerState(v) { this.#savedPlayerState = v; }
-
-    savePlayerState(state)    { this.#savedPlayerState = state; }
-    restorePlayerState()      { this.#playerState = this.#savedPlayerState; }
-    setPlayerState(playerState) { this.#playerState = playerState; }
 
     // Update player each frame
     update(device, game, delta) 
@@ -56,26 +43,6 @@ class Player extends GameObject
         }
     }
 
-    // Uses the coolDownTimer to make sure audio does not spam audio file when checking for user shoot input
-    checkforShoot(device, game, delta )
-    {
-        // Update the timer
-        this.coolDownTimer.update(delta);
-
-        // If its active we check fro user input
-        if (this.coolDownTimer.active) return false;
-
-        const firePressed = device.mouseDown || device.keys.isKeyPressed(keyTypes.PLAY_KEY);
-
-        // If player used the shoot button on keyboard or mouse
-        if (!firePressed) return false;
-
-        // Reset timer
-        this.coolDownTimer.reset(game.gameConsts.SHOOT_COOLDOWN, timerModes.COUNTDOWN, false);   
-
-        return true;
-    }
-    
    checkForKeyBoardMoveInput(device, game, delta) 
    {
         let dx = 0;
@@ -131,12 +98,21 @@ class Player extends GameObject
         }
 }
 
-    // -----------------------------
-    // Player Mouse Input Binding
-    // If you want mouse to control player, call this functinin in setGame
-    // -----------------------------
-    setMouseToPlayer(device) 
+    static buildPlayer(game)
     {
-        device.setupMouse(this, device);
-    } 
+        try 
+        {
+            game.player = new Player(
+                playerSpriteTypes.PLAYER.w,
+                playerSpriteTypes.PLAYER.h,
+                game.canvasHalfW,
+                game.borderVerticalBuffer + game.gameConsts.MAP_BUFFER_Y,
+                playerSpriteTypes.PLAYER.s
+            );
+        } 
+        catch (err) 
+        {
+            console.error("Failed to initialize player:", err);
+        }
+    }
 }

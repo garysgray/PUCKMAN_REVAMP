@@ -1,75 +1,6 @@
 //***************************************************************
-// Rendering Functions for Game Objects
+// Rendering Functions for Game
 //***************************************************************
-// These helper functions are called inside renderGameObjectsLayer
-// (which is wrapped in a Layer and managed by controller.js).
-// Each function is responsible for rendering a specific type of
-// object in the game: NPC sprites, projectiles, and the player.
-//***************************************************************
-
-//---------------------------------------------------------------
-// Render NPC Sprites (orbs, fireAmmo, etc.)
-//---------------------------------------------------------------
-function renderNPCSprites(device, game) 
-{
-    try
-    {
-        // Preload references to images (avoid repeated lookups each frame)
-        const orbImage      = device.images.getImage(GameDefs.spriteTypes.ORB.type);
-        const fireAmmoImage = device.images.getImage(GameDefs.spriteTypes.FIRE_AMMO.type);
-
-        for (let i = 0; i < game.gameSprites.getSize(); i++) 
-        {
-            const tempObj = game.gameSprites.getIndex?.(i);
-            if (!tempObj) continue;
-
-            switch(tempObj.name) 
-            {
-                case GameDefs.spriteTypes.ORB.type:
-                    if (orbImage) device.centerImage(orbImage, tempObj.posX, tempObj.posY);
-                    else console.warn("ORB image missing.");
-                break;
-
-                case GameDefs.spriteTypes.FIRE_AMMO.type:
-                    if (fireAmmoImage) device.centerImage(fireAmmoImage, tempObj.posX, tempObj.posY);
-                    else console.warn("FIRE_AMMO image missing.");
-                break;
-
-                default:
-                    console.warn("Unknown NPC type:", tempObj.name);
-            }
-
-            if (DRAW_DEBUG_HITBOXES && tempObj) drawHitBoxs(device, tempObj);
-        }
-
-    } catch (e) {
-        console.error("Error in renderNPCSprites:", e);
-    }
-}
-
-//---------------------------------------------------------------
-// Render Bullets (projectiles)
-//---------------------------------------------------------------
-function renderProjectiles(device, game) 
-{
-    try 
-    {
-        const bulletImage = device.images.getImage?.(GameDefs.spriteTypes.BULLET.type);
-        if (!bulletImage) console.warn("Bullet image missing.");
-
-        for (let i = 0; i < game.projectiles.getSize(); i++) 
-        {
-            const tempObj = game.projectiles.getIndex?.(i);
-            if (!tempObj) continue;
-
-            if (bulletImage) device.centerImage(bulletImage, tempObj.posX, tempObj.posY);
-            if (DRAW_DEBUG_HITBOXES) drawHitBoxs(device, tempObj);
-        }
-
-    } catch (e) {
-        console.error("Error in renderProjectiles:", e);
-    }
-}
 
 //---------------------------------------------------------------
 // Render Player (different clips based on playState)
@@ -97,7 +28,7 @@ function renderPlayer(device, game)
             tempObj.playerState,
         );
         
-        if (DRAW_DEBUG_HITBOXES) drawHitBoxs(device, tempObj);
+        if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, tempObj);
 
     } 
     catch (e)
@@ -130,32 +61,11 @@ function renderStateSprite(device, sprite )
             sprite.state,
         );
 
-        if (DRAW_DEBUG_HITBOXES) drawHitBoxs(device, sprite);
+        if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, sprite);
     } 
     catch (e)
     {
         console.error("Error in renderStateSprite:", e);
-    }
-}
-
-//---------------------------------------------------------------
-// Render HITBOXES if DRAW_DEBUG_HITBOXES == true
-//---------------------------------------------------------------
-function drawHitBoxs(device, tempObj) 
-{
-    try 
-    {
-        const x = tempObj.posX - tempObj.halfWidth;
-        const y = tempObj.posY - tempObj.halfHeight;
-        const w = tempObj.width;
-        const h = tempObj.height;
-
-        device.ctx.strokeStyle = "lime";
-        device.ctx.strokeRect(x, y, w, h);
-    } 
-    catch (e)
-    {
-        console.error("Error in drawHitBoxs:", e);
     }
 }
 
@@ -181,4 +91,76 @@ function renderMap(device, game)
 
     // draw the cached border as one image
     device.ctx.drawImage(game.cachedMap, 0, 0);
+}
+
+
+//---------------------------------------------------------------
+// Render HITBOXES if DRAW_DEBUG_HITBOXES == true
+//---------------------------------------------------------------
+function renderHitBoxs(device, tempObj) 
+{
+    try 
+    {
+        const x = tempObj.posX - tempObj.halfWidth;
+        const y = tempObj.posY - tempObj.halfHeight;
+        const w = tempObj.width;
+        const h = tempObj.height;
+
+        device.ctx.strokeStyle = "lime";
+        device.ctx.strokeRect(x, y, w, h);
+    } 
+    catch (e)
+    {
+        console.error("Error in renderHitBoxs:", e);
+    }
+}
+
+// =======================================================
+// HTML MESSAGE HANDLER
+// =======================================================
+
+function renderHTMLMessage(game) 
+{
+    const msg = document.getElementById("message");
+    if (!msg) return;
+
+    if (game.gameState != gameStates.INIT) 
+    {
+        if (game.gamePadEnabled) 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]}</p>`;
+        } 
+        else 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
+        }
+    }
+    else
+    {
+        if (game.gamePadConnected)
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS}</p>`;
+        }
+        else 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
+        }
+    }
+}
+
+// ------------------------------------------------------------------------
+// Add a render layer
+// ------------------------------------------------------------------------
+function addRenderLayer(layer, holder) 
+{
+    try
+    {
+        if (!layer) throw new Error("Layer is undefined or null.");
+        holder.push(layer);
+    } 
+    catch (error)
+    {
+        console.error("Error adding layer:", error.message);
+        alert("An error occurred while adding a render layer.");
+    }
 }

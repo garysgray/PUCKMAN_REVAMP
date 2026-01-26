@@ -36,7 +36,7 @@ class GameConsts
     #NUM_MAP_Y_TILES = 20
     #MAP_TILE_WIDTH = MAP_TILE_SIZE.w
     #MAP_TILE_HEIGHT = MAP_TILE_SIZE.h
-    #LEVEL_MAX_TIME = 60
+    #LEVEL_MAX_TIME = 10
 
     // ---- Getters ----
 

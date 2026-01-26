@@ -14,7 +14,7 @@ function renderGameObjectsLayer(device, game) {
         {
             case gameStates.INIT: 
             {
-                
+                // no game objects at this time to render
             } 
             break;
 
@@ -25,6 +25,7 @@ function renderGameObjectsLayer(device, game) {
                     renderBorder(device, game);
                     renderMap(device, game);
 
+                    // Render each goal
                     game.goalHolder.forEach(element => 
                     {
                          renderStateSprite(device, element );
@@ -62,7 +63,7 @@ function renderGameObjectsLayer(device, game) {
             {
                 try 
                 {
-                    renderPlayer(device, game);
+                    //renderPlayer(device, game);
                 } 
                 catch (e) 
                 {

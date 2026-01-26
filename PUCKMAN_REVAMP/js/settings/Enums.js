@@ -54,17 +54,17 @@ const timerModes =
 };
 
 // Only clock used in game at this time
+// const timerTypes = 
+// { 
+//      GAME_CLOCK:"gameClock" 
+     
+// };
+
 const timerTypes = 
 { 
-     GAME_CLOCK:"gameClock" 
+     GAME_CLOCK:  { name: "gameClock", duration: 60, timerMode: timerModes.COUNTDOWN },  
+     PLAY_DELAY:  { name: "playDelay", duration: .5, timerMode: timerModes.COUNTDOWN },     
 };
-
-//Button Mapping for gamepads
-// const gamepadButtons = 
-// {
-//      START: 9,  
-//      PAUSE: 8 
-// };
 
 Object.freeze(gameStates);
 Object.freeze(enemyPlayStates);
@@ -72,4 +72,11 @@ Object.freeze(playStates);
 Object.freeze(behaveStates);
 Object.freeze(timerModes);
 Object.freeze(timerTypes);
-// Object.freeze(gamepadButtons);
+
+
+// const soundTypes = 
+// {
+//     GAME_CLOCK:     { name: "gameClock", timerMode: COUNTDOWN },
+//     HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav" },
+// };
+

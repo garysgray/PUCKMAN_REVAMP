@@ -7,14 +7,13 @@
 // - Handles updates to core game logic, input responses, and state transitions
 // - Calls for all game objects updates depending on current game state
 // ============================================================================
-
 function updateGame(device, game, delta) 
 {
     try 
     {
-        // Updates the message at bottom of screen 
-        updateHTMLMessage(game); 
-        
+        const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name); 
+        const playDelayTimer = game.gameTimers.getObjectByName(timerTypes.PLAY_DELAY.name);
+
         switch (game.gameState) 
         {
             // -------------------------------------------------------
@@ -25,37 +24,24 @@ function updateGame(device, game, delta)
                 {
                     game.setGame();
 
-                    if ( game.gamePadConnected)
+                    playDelayTimer.update(delta);
+
+                    if (game.gamePadConnected)
                     {
-                        if (toggleOnce(device.keys.isKeyPressed(keyTypes.Q), { value: device.keys.wasQPressed })) 
+                        if (device.keys.toggleOnce(device.keys.isKeyPressed(keyTypes.Q), { value: device.keys.wasQPressed })) 
                         {
                             game.gamePadEnabled = !game.gamePadEnabled;
                         }
                     }
-                    else
-                    {
-                        game.gamePadEnabled = false;
-                    }
                     
+                    if (playDelayTimer.active) break;
 
-                    if( game.gamePadEnabled ) //need a little time or gamepad button press gets recorded to soon. 
+                    const playPressed = device.keys.isKeyPressed(keyTypes.PLAY_KEY) || device.keys.isGamepadButtonPressed(gamepadButtons.START);
+
+                    if ((game.gamePadEnabled && playPressed) || (!game.gamePadEnabled && playPressed && game.keyboardTouched)) 
                     {
-                        setTimeout(() => 
-                        {
-                            if (device.keys.isKeyPressed(keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(gamepadButtons.START))) 
-                            {       
-                                game.setGameState(gameStates.PLAY);
-                            }
-                        }, 500);
+                        game.setGameState(gameStates.PLAY);
                     }
-                    else
-                    {
-                        if (device.keys.isKeyPressed(keyTypes.PLAY_KEY) || (game.gamePadEnabled && device.keys.isGamepadButtonPressed(gamepadButtons.START))) 
-                            {       
-                                game.setGameState(gameStates.PLAY);
-                            }
-                    }
-                    
                 } 
                 catch (e) 
                 {
@@ -69,10 +55,6 @@ function updateGame(device, game, delta)
             case gameStates.PLAY:
                 try 
                 {
-                     
-                    // Game clock that helps update when NPC's speed should incread and give player points
-                    const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK);
-
                     if (gameClock.active)
                     {
                         // Update game time clock
@@ -124,7 +106,7 @@ function updateGame(device, game, delta)
                         }
                     }
 
-                    checkForPause(device, game); 
+                    device.keys.checkForPause( game); 
 
                 } 
                 catch (e) 
@@ -138,9 +120,8 @@ function updateGame(device, game, delta)
             // -------------------------------------------------------
             case gameStates.PAUSE:
                 try 
-                {
-                
-                    checkForPause(device, game); 
+                {    
+                    device.keys.checkForPause( game); 
                     
                 }
                 catch (e) 
@@ -175,7 +156,7 @@ function updateGame(device, game, delta)
             // -------------------------------------------------------
             case gameStates.LOSE:
                 try 
-                {
+                { 
                     if (device.keys.isKeyPressed(keyTypes.RESET_KEY) ||
                     device.keys.isGamepadButtonPressed(gamepadButtons.START)) 
                     {
@@ -186,7 +167,11 @@ function updateGame(device, game, delta)
                             game.setGameState(gameStates.PLAY);
                             break
                         }
-                        else{ game.setGameState(gameStates.INIT);}
+                        else
+                        { 
+                            game.setGameState(gameStates.INIT);
+                            playDelayTimer.start();
+                        }
                     }
                 } 
                 catch (e) 
@@ -205,6 +190,4 @@ function updateGame(device, game, delta)
         console.error("updateGameStates main error:", e);
     }
 }
-
- 
 
