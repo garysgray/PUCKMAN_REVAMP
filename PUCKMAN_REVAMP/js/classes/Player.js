@@ -9,7 +9,6 @@
 class Player extends GameObject 
 {
     #playerState; 
-    #savedPlayerState;
 
     constructor(width, height, x, y, speed) 
     {
@@ -105,7 +104,7 @@ class Player extends GameObject
             game.player = new Player(
                 playerSpriteTypes.PLAYER.w,
                 playerSpriteTypes.PLAYER.h,
-                game.canvasHalfW,
+                game.gameConsts.SCREEN_WIDTH * 0.5,
                 game.borderVerticalBuffer + game.gameConsts.MAP_BUFFER_Y,
                 playerSpriteTypes.PLAYER.s
             );

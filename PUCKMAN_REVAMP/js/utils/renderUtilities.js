@@ -2,71 +2,51 @@
 // Rendering Functions for Game
 //***************************************************************
 
-//---------------------------------------------------------------
-// Render Player (different clips based on playState)
-//---------------------------------------------------------------
-function renderPlayer(device, game) 
+function renderClipSprite(device, sprite, imageKey, stateKey)
 {
-    try 
+    try
     {
-        const tempObj = game.player;
-        
-        const playerImage = device.images.getImage(playerSpriteTypes.PLAYER.type);
+        const image = device.images.getImage(imageKey);
 
-        if (!playerImage) 
+        if (!image)
         {
-            console.warn("Player image missing.");
+            console.warn("Sprite image missing:", imageKey);
         }
 
-         // Always draw according to the internal state
         device.renderClip(
-            playerImage,
-            tempObj.posX,
-            tempObj.posY,
-            tempObj.width,
-            tempObj.height,
-            tempObj.playerState,
-        );
-        
-        if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, tempObj);
-
-    } 
-    catch (e)
-    {
-        console.error("Error in renderPlayer:", e);
-    }
-}
-
-//---------------------------------------------------------------
-// Render spriteObj (different clips based on playState)
-//---------------------------------------------------------------
-function renderStateSprite(device, sprite ) 
-{
-    try 
-    {
-       const spriteImage = device.images.getImage(sprite.name);
-
-        if (!spriteImage) 
-        {
-            console.warn("spriteObj image missing.");
-        }
-
-         //Always draw according to the internal state
-        device.renderClip(
-            spriteImage,
+            image,
             sprite.posX,
             sprite.posY,
             sprite.width,
             sprite.height,
-            sprite.state,
+            sprite[stateKey]
         );
 
         if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, sprite);
-    } 
+    }
     catch (e)
     {
-        console.error("Error in renderStateSprite:", e);
+        console.error("Error in renderClipSprite:", e);
     }
+}
+
+function renderPlayer(device, game)
+{
+    renderClipSprite(
+        device,
+        game.player,
+        playerSpriteTypes.PLAYER.type,
+        "playerState"
+    );
+}
+function renderStateSprite(device, sprite)
+{
+    renderClipSprite(
+        device,
+        sprite,
+        sprite.name,
+        "state"
+    );
 }
 
 function renderBorder(device, game)
@@ -74,7 +54,7 @@ function renderBorder(device, game)
     // build cache if needed
     if (!game.cachedBorderReady)
     {
-        createCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady");
+        createRenderCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady");
     }
 
     // draw the cached border as one image
@@ -86,7 +66,7 @@ function renderMap(device, game)
     // build cache if needed
     if (!game.cachedMapReady)
     {
-        createCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady");
+        createRenderCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady");
     }
 
     // draw the cached border as one image
@@ -164,3 +144,28 @@ function addRenderLayer(layer, holder)
         alert("An error occurred while adding a render layer.");
     }
 }
+
+// ---------------------------------------------------
+// Render Cache
+// ---------------------------------------------------
+function createRenderCache(device, game, holder, cacheKey, readyKey)
+{
+    const canvas = document.createElement("canvas");
+    canvas.width  = game.gameConsts.SCREEN_WIDTH;
+    canvas.height = game.gameConsts.SCREEN_HEIGHT;
+
+    const ctx = canvas.getContext("2d");
+
+    for (let i = 0; i < holder.getSize(); i++)
+    {
+        const obj = holder.getIndex(i);
+        const img = device.images.getImage(obj.name);
+        if (!img) continue;
+
+        ctx.drawImage(img, obj.posX, obj.posY, obj.width, obj.height);
+    }
+
+    game[cacheKey] = canvas;
+    game[readyKey] = true;
+}
+

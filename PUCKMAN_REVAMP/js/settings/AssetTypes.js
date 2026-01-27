@@ -55,9 +55,16 @@ const soundTypes =
     HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav" },
 };
 
+const timerTypes = 
+{ 
+     GAME_CLOCK:  { name: "gameClock", duration: 0, timerMode: timerModes.COUNTDOWN },  
+     PLAY_DELAY:  { name: "playDelay", duration: 0, timerMode: timerModes.COUNTDOWN },     
+};
+
 Object.freeze(playerSpriteTypes);
 Object.freeze(characterSpriteTypes);
 Object.freeze(mapSpriteTypes);
 Object.freeze(goalsSpriteTypes);
 Object.freeze(billBoardTypes);
 Object.freeze(soundTypes);
+Object.freeze(timerTypes);

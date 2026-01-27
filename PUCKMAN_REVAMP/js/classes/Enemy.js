@@ -142,8 +142,8 @@ class Enemy extends GameObject
                 spriteDef.type,
                 spriteDef.w,
                 spriteDef.h,        
-                game.canvasHalfW,
-                game.canvasHalfH,
+                game.gameConsts.SCREEN_WIDTH * 0.5,
+                game.gameConsts.SCREEN_HEIGHT * 0.5,
                 spriteDef.s
             );
 

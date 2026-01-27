@@ -28,5 +28,7 @@ const MapDefs = Object.freeze({
     MIN_GOALS: 2,
 
     MAX_EMPTY_CHANCE: 0.99,
-    MAX_GOALS: 15
+    MAX_GOALS: 15,
+
+    DIFFICULTY_TIER_SIZE: 5,
 });

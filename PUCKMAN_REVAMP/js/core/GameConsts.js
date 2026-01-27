@@ -2,66 +2,65 @@
 // GameConsts.js
 // -----------------------------
 // Purpose:
-// Global game constants exposed safely via getters.
+// Global game constants exposed via getters
 // -----------------------------
+class GameConsts {
+    // ---- Screen ----
+    #SCREEN_WIDTH  = 1000;
+    #SCREEN_HEIGHT = 600;
+    #HUD_BUFFER    = 0.045;
 
-class GameConsts 
-{
-    // ---- Private fields ----
+    // ---- Gameplay ----
+    #GAME_LIVES_START_AMOUNT     = 3;
+    #LEVEL_MAX_TIME              = 20;
+    #PLAY_PAUSE_DELAY_TIME       = 0.5;
 
-    // Screen dimensions
-    #SCREEN_WIDTH = 1000
-    #SCREEN_HEIGHT = 600
+    // ---- UI ----
+    #DEBUG_TEXT_COLOR = "yellow";
+    #FONT_COLOR       = "hsla(49, 100%, 50%, 0.965)";
+    #FONT_SETTINGS    = "bold 20pt VT323";
 
-    // Timing
-    #SHOOT_COOLDOWN = 0.2       // seconds (~200ms)
+    // ---- Sound ----
+    #POOLSIZE = 5;
+    #VOLUME   = 1.0;
 
-    // Game amounts
-    #GAME_LIVES_START_AMOUNT = 3
-    #HUD_BUFFER = 0.045
-
-    // UI settings
-    #DEBUG_TEXT_COLOR = "yellow"
-    #FONT_COLOR = "hsla(49, 100%, 50%, 0.965)"
-    #FONT_SETTINGS = "bold 20pt VT323"
-
-    // Sound
-    #POOLSIZE = 5
-    #VOLUME = 1.0
-
-    // Map / Level
-    #MAP_BUFFER_X = 60
-    #MAP_BUFFER_Y = 70
-    #NUM_MAP_X_TILES = 36
-    #NUM_MAP_Y_TILES = 20
-    #MAP_TILE_WIDTH = MAP_TILE_SIZE.w
-    #MAP_TILE_HEIGHT = MAP_TILE_SIZE.h
-    #LEVEL_MAX_TIME = 10
+    // ---- Map / Level ----
+    #MAP_BUFFER_X                = 60;
+    #MAP_BUFFER_Y                = 70;
+    #NUM_MAP_X_TILES             = 36;
+    #NUM_MAP_Y_TILES             = 20;
+    #MAP_TILE_WIDTH              = MAP_TILE_SIZE.w;
+    #MAP_TILE_HEIGHT             = MAP_TILE_SIZE.h;
+    #MAX_GOAL_PLACEMENT_ATTEMPTS = 25;
+    #EVEN_LEVEL_EMPTY_CHANCE_BONUS = 0.02;
 
     // ---- Getters ----
+    // Screen
+    get SCREEN_WIDTH()  { return this.#SCREEN_WIDTH; }
+    get SCREEN_HEIGHT() { return this.#SCREEN_HEIGHT; }
+    get HUD_BUFFER()    { return this.#HUD_BUFFER; }
 
-    get SCREEN_WIDTH() { return this.#SCREEN_WIDTH }
-    get SCREEN_HEIGHT() { return this.#SCREEN_HEIGHT }
+    // Gameplay
+    get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT; }
+    get LEVEL_MAX_TIME()          { return this.#LEVEL_MAX_TIME; }
+    get PLAY_PAUSE_DELAY_TIME()   { return this.#PLAY_PAUSE_DELAY_TIME; }
 
-    get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT }
-    get HUD_BUFFER() { return this.#HUD_BUFFER }
+    // UI
+    get DEBUG_TEXT_COLOR() { return this.#DEBUG_TEXT_COLOR; }
+    get FONT_COLOR()       { return this.#FONT_COLOR; }
+    get FONT_SETTINGS()    { return this.#FONT_SETTINGS; }
 
-    get SHOOT_COOLDOWN() { return this.#SHOOT_COOLDOWN }
-    get DEBUG_TEXT_COLOR() { return this.#DEBUG_TEXT_COLOR }
-    get FONT_SETTINGS() { return this.#FONT_SETTINGS }
-    get FONT_COLOR() { return this.#FONT_COLOR }
+    // Sound
+    get POOLSIZE() { return this.#POOLSIZE; }
+    get VOLUME()   { return this.#VOLUME; }
 
-    get POOLSIZE() { return this.#POOLSIZE }
-    get VOLUME() { return this.#VOLUME }
-
-    get MAP_BUFFER_X() { return this.#MAP_BUFFER_X }
-    get MAP_BUFFER_Y() { return this.#MAP_BUFFER_Y }
-
-    get NUM_MAP_X_TILES() { return this.#NUM_MAP_X_TILES }
-    get NUM_MAP_Y_TILES() { return this.#NUM_MAP_Y_TILES }
-
-    get MAP_TILE_WIDTH() { return this.#MAP_TILE_WIDTH }
-    get MAP_TILE_HEIGHT() { return this.#MAP_TILE_HEIGHT }
-
-    get LEVEL_MAX_TIME() { return this.#LEVEL_MAX_TIME }
+    // Map / Level
+    get MAP_BUFFER_X()                { return this.#MAP_BUFFER_X; }
+    get MAP_BUFFER_Y()                { return this.#MAP_BUFFER_Y; }
+    get NUM_MAP_X_TILES()             { return this.#NUM_MAP_X_TILES; }
+    get NUM_MAP_Y_TILES()             { return this.#NUM_MAP_Y_TILES; }
+    get MAP_TILE_WIDTH()              { return this.#MAP_TILE_WIDTH; }
+    get MAP_TILE_HEIGHT()             { return this.#MAP_TILE_HEIGHT; }
+    get MAX_GOAL_PLACEMENT_ATTEMPTS() { return this.#MAX_GOAL_PLACEMENT_ATTEMPTS; }
+    get EVEN_LEVEL_EMPTY_CHANCE_BONUS() { return this.#EVEN_LEVEL_EMPTY_CHANCE_BONUS; }
 }

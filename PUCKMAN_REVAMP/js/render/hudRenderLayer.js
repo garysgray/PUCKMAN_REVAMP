@@ -30,7 +30,15 @@ function drawHud(device, game )
     device.putText(scoreText, cw * layout.hudScoreX, ch * layout.hudY);
     device.putText(livesText, cw * layout.hudLivesX, ch * layout.hudY);
 
-    device.putText(`Time: ${timer.formatted}`, cw * layout.hudClockX, (ch * layout.hudY) );  
+    if (timer.timeLeft == 0)
+    {
+        device.putText(`Time: 0:00`, cw * layout.hudClockX, (ch * layout.hudY) );  
+    }
+    else
+    {
+        device.putText(`Time: ${timer.formatted}`, cw * layout.hudClockX, (ch * layout.hudY) );  
+    }
+    
     device.putText(levelText, cw * layout.hudLevelX, ch * layout.hudY);
 }
 
