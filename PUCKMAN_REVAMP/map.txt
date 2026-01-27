@@ -12,6 +12,7 @@ Folder Structure:
 PUCKMAN_REVAMP/
 ├── css/
 │   └── style.css                      # Stylesheets for the game
+|
 ├── js/
 |   |
 │   ├── classes/                       # Contains game object classes
@@ -52,6 +53,8 @@ PUCKMAN_REVAMP/
 │   │   ├── RenderUtilities.js         # Rendering helper functions
 │   │   └── GameUtilities.js           # Misc utilities (timers, input, etc.)
 |   |
+|   └── Main.js                        # Starting point for code from index.HTML
+|   
 ├── spec/                              # Unit and integration tests
 │   ├── deviceSpec.js                  # Tests for Device class
 │   ├── gameControllerSpec.js          # Tests for GameController class
