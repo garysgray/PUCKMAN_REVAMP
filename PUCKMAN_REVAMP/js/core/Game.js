@@ -229,8 +229,8 @@ class Game
         Player.buildPlayer(this);
         Enemy.spawnEnemies(this, characterSpriteTypes, this.enemyHolder);
         
-        // Reset game clock
+        // Set game clock
         const gameClock = this.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
-        gameClock.reset(this.#gameConsts.LEVEL_MAX_TIME);
+        gameClock.setAndStart(this.#gameConsts.LEVEL_MAX_TIME);
     }
 }

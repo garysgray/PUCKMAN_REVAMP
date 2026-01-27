@@ -103,7 +103,7 @@ function updateGame(device, game, delta)
                             game.setGameState(gameStates.PLAY);
                         } else {
                             game.setGameState(gameStates.INIT);
-                            playDelayTimer.reset(game.gameConsts.PLAY_PAUSE_DELAY_TIME);
+                            playDelayTimer.setAndStart(game.gameConsts.PLAY_PAUSE_DELAY_TIME);
                         }
                     }
                 } 

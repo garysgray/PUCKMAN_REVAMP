@@ -2,7 +2,7 @@
 // Rendering Functions for Game
 //***************************************************************
 
-function renderClipSprite(device, sprite, imageKey, stateKey)
+function renderClipSprite(device, sprite, imageKey, frame)
 {
     try
     {
@@ -19,7 +19,7 @@ function renderClipSprite(device, sprite, imageKey, stateKey)
             sprite.posY,
             sprite.width,
             sprite.height,
-            sprite[stateKey]
+            frame
         );
 
         if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, sprite);
@@ -36,7 +36,7 @@ function renderPlayer(device, game)
         device,
         game.player,
         playerSpriteTypes.PLAYER.type,
-        "playerState"
+        game.player.playerState
     );
 }
 function renderStateSprite(device, sprite)
@@ -45,7 +45,7 @@ function renderStateSprite(device, sprite)
         device,
         sprite,
         sprite.name,
-        "state"
+        sprite.state
     );
 }
 

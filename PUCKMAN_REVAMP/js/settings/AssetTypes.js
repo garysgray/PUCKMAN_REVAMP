@@ -57,8 +57,8 @@ const soundTypes =
 
 const timerTypes = 
 { 
-     GAME_CLOCK:  { name: "gameClock", duration: 0, timerMode: timerModes.COUNTDOWN },  
-     PLAY_DELAY:  { name: "playDelay", duration: 0, timerMode: timerModes.COUNTDOWN },     
+     GAME_CLOCK:  { name: "gameClock", timerMode: timerModes.COUNTDOWN },  
+     PLAY_DELAY:  { name: "playDelay", timerMode: timerModes.COUNTDOWN },     
 };
 
 Object.freeze(playerSpriteTypes);

@@ -1,61 +1,71 @@
 // ============================================================================
-// TIMER CLASS
+// TIMER CLASS (Cleaned)
 // ============================================================================
 
 class Timer
 {
-    #name
+    #name;
     #duration;     // seconds for one cycle
-    #timeLeft;     // countdown mode: seconds remaining
-    #elapsedTime;  // countup mode: seconds elapsed
-    #active;       // is the timer running?
-    #mode;         // timerModes.COUNTDOWN or COUNTUP
-    #loop;         // true = auto restart after finish
+    #timeLeft;     // countdown mode
+    #elapsedTime;  // countup mode
+    #active;
+    #mode;         // timerModes.COUNTDOWN | COUNTUP
+    #loop;         // for cadence-based timers (weapons, AI, spawners)
 
     constructor(name, durationSeconds = 0, mode = timerModes.COUNTDOWN, loop = false) 
     {
         this.#name = name;
         this.#duration = durationSeconds;
+        this.#mode = mode;
+        this.#loop = loop;
+
         this.#timeLeft = durationSeconds;
         this.#elapsedTime = 0;
         this.#active = false;
-        this.#mode = mode;
-        this.#loop = loop;
     }
 
-    // --- Getters ---
+    // ---------------------------------------------------
+    // Getters
+    // ---------------------------------------------------
     get name() { return this.#name; }
     get mode() { return this.#mode; }
     get active() { return this.#active; }
     get timeLeft() { return Math.max(0, this.#timeLeft); }
     get elapsedTime() { return this.#elapsedTime; }
-    get progress() {
-        return this.#mode === timerModes.COUNTDOWN
-            ? 1 - (this.#timeLeft / (this.#duration || 1))
-            : (this.#duration ? Math.min(1, this.#elapsedTime / this.#duration) : 0);
+
+    get progress()
+    {
+        if (this.#mode === timerModes.COUNTDOWN)
+        {
+            return 1 - (this.#timeLeft / (this.#duration || 1));
+        }
+        return this.#duration
+            ? Math.min(1, this.#elapsedTime / this.#duration)
+            : 0;
     }
 
-    // --- Control ---
-    start() 
+    // ---------------------------------------------------
+    // Control
+    // ---------------------------------------------------
+    start()
     {
-        if (this.#mode === timerModes.COUNTDOWN) 
+        if (this.#mode === timerModes.COUNTDOWN)
         {
             this.#timeLeft = this.#duration;
-        } 
-        else 
+        }
+        else
         {
             this.#elapsedTime = 0;
         }
         this.#active = true;
     }
 
-    stop() 
+    stop()
     {
         this.#active = false;
     }
 
-    // reset now explicitly sets duration, mode, and loop
-    reset(durationSeconds = this.#duration, mode = this.#mode, loop = this.#loop) 
+    setAndStart(durationSeconds = this.#duration, mode = this.#mode, loop = this.#loop)
     {
         this.#duration = durationSeconds;
         this.#mode = mode;
@@ -63,39 +73,52 @@ class Timer
         this.start();
     }
 
-    // update returns true on a "tick/finish" moment
-    update(delta) 
+    // ---------------------------------------------------
+    // Update
+    // ---------------------------------------------------
+    // Returns true on finish / tick
+    update(delta)
     {
         if (!this.#active) return false;
 
-        if (this.#mode === timerModes.COUNTDOWN) 
-        {
-            this.#timeLeft -= delta;
-            if (this.#timeLeft <= 0) {
-                if (this.#loop) 
-                {
-                    // restart but preserve slight overflow
-                    this.#timeLeft += this.#duration;
-                } else {
-                    this.#active = false;
-                }
-                return true;
-            }
-        } 
-        else 
-        { // COUNTUP
-            this.#elapsedTime += delta;
-            if (this.#loop && this.#duration > 0 && this.#elapsedTime >= this.#duration) 
-            {
-                this.#elapsedTime -= this.#duration;
-                return true;
-            }
-        }
-        return false;
+        return this.#mode === timerModes.COUNTDOWN
+            ? this.#updateCountdown(delta)
+            : this.#updateCountup(delta);
     }
 
-    // Formatted MM:SS
-    get formatted() 
+    #updateCountdown(delta)
+    {
+        this.#timeLeft -= delta;
+
+        if (this.#timeLeft > 0) return false;
+
+        if (this.#loop)
+        {
+            this.#timeLeft += this.#duration;
+        }
+        else
+        {
+            this.#active = false;
+        }
+
+        return true;
+    }
+
+    #updateCountup(delta)
+    {
+        this.#elapsedTime += delta;
+
+        if (!this.#loop || this.#duration <= 0) return false;
+        if (this.#elapsedTime < this.#duration) return false;
+
+        this.#elapsedTime -= this.#duration;
+        return true;
+    }
+
+    // ---------------------------------------------------
+    // Formatting
+    // ---------------------------------------------------
+    get formatted()
     {
         const total = Math.floor(this.#timeLeft);
         const minutes = Math.floor(total / 60);
@@ -103,14 +126,20 @@ class Timer
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     }
 
+    // ---------------------------------------------------
+    // Static helpers
+    // ---------------------------------------------------
     static loadTimers(timerHolder, timerTypes)
-    {                                                                                                       
-        
-        Object.values(timerTypes).forEach(timeDef => 
+    {
+        Object.values(timerTypes).forEach(def =>
         {
-            const timer = new Timer( timeDef.name, timeDef.duration, timeDef.timerMode, false); 
+            const timer = new Timer(
+                def.name,
+                def.duration,
+                def.timerMode,
+                false
+            );
             timerHolder.addObject(timer);
-            
         });
     }
 }
