@@ -51,6 +51,8 @@ class Game
     #gamePadEnabled;
     #keyboardTouched;
 
+    #nextExtraLifeScore;
+
     // =======================================================
     // CONSTRUCTOR
     // =======================================================
@@ -95,6 +97,8 @@ class Game
         this.#gamePadConnected = false;
         this.#gamePadEnabled   = false;
         this.#keyboardTouched  = false;
+
+        this.#nextExtraLifeScore = this.#gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
     }
 
     // =======================================================
@@ -128,6 +132,8 @@ class Game
     get gamePadEnabled()   { return this.#gamePadEnabled; }
     get keyboardTouched()  { return this.#keyboardTouched; }
 
+    get nextExtraLifeScore()  { return this.#nextExtraLifeScore; }
+
     // =======================================================
     // SETTERS
     // =======================================================
@@ -150,11 +156,12 @@ class Game
     set gamePadEnabled(v)   { this.#gamePadEnabled = v; }
     set keyboardTouched(v)  { this.#keyboardTouched = v; }
 
+    set nextExtraLifeScore(v)  { this.#nextExtraLifeScore = v; }
+
     // =======================================================
     // UTILITY FUNCTIONS
     // =======================================================
     decreaseLives(a = 1)   { this.lives -= a; }
-    increaseScore(a = 1)   { this.score += a; }
     increaseGameLevel()     { this.gameLevel++; }
     setGameState(state)     { this.gameState = state; }
 
@@ -232,5 +239,24 @@ class Game
         // Set game clock
         const gameClock = this.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
         gameClock.setAndStart(this.#gameConsts.LEVEL_MAX_TIME);
+    }
+
+    increaseScore(a) 
+    {
+        this.score += a;
+
+        // Initialize nextExtraLifeScore if not already set
+        if (this.nextExtraLifeScore === undefined) 
+        {
+            this.nextExtraLifeScore = this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
+        }
+
+        // Check if we passed the milestone for extra life
+        while (this.score >= this.nextExtraLifeScore) 
+        {
+            this.lives++;
+            // Increment milestone for next life
+            this.nextExtraLifeScore += this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
+        }
     }
 }

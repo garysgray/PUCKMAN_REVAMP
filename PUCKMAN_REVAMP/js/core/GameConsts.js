@@ -34,6 +34,12 @@ class GameConsts {
     #MAX_GOAL_PLACEMENT_ATTEMPTS = 25;
     #EVEN_LEVEL_EMPTY_CHANCE_BONUS = 0.02;
 
+    // ---Scoring------
+    #VALUE_FOR_GETTING_GOAL = 10;
+    #VALUE_FOR_UNIT_OF_TIME_LEFT = 5;
+    #VALUE_FOR_WINNING_LEVEL = 100;
+    #VALUE_WHEN_NEW_LIFE_AWARDED = 10000;
+
     // ---- Getters ----
     // Screen
     get SCREEN_WIDTH()  { return this.#SCREEN_WIDTH; }
@@ -63,4 +69,10 @@ class GameConsts {
     get MAP_TILE_HEIGHT()             { return this.#MAP_TILE_HEIGHT; }
     get MAX_GOAL_PLACEMENT_ATTEMPTS() { return this.#MAX_GOAL_PLACEMENT_ATTEMPTS; }
     get EVEN_LEVEL_EMPTY_CHANCE_BONUS() { return this.#EVEN_LEVEL_EMPTY_CHANCE_BONUS; }
+
+    // ---Scoring------
+    get VALUE_FOR_GETTING_GOAL() { return this.#VALUE_FOR_GETTING_GOAL; }
+    get VALUE_FOR_UNIT_OF_TIME_LEFT() { return this.#VALUE_FOR_UNIT_OF_TIME_LEFT; }
+    get VALUE_WHEN_NEW_LIFE_AWARDED() { return this.#VALUE_WHEN_NEW_LIFE_AWARDED; }
+    get VALUE_FOR_WINNING_LEVEL() { return this.#VALUE_FOR_WINNING_LEVEL; }
 }

@@ -116,8 +116,11 @@ function gameLoop()
         }
 
         accumulator -= fixedStep;
+
+        myController.device.keys.clearFrameKeys();
     }
 
+    
     // --------------------
     // DEBUG TEXT
     // --------------------

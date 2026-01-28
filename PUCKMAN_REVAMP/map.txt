@@ -57,8 +57,8 @@ PUCKMAN_REVAMP/
 │   ├── utils/                         # Utility functions
 │   │   │ 
 │   │   ├── CollisionUtilities.js      # Collision detection utilities
-│   │   ├── RenderUtilities.js         # Rendering helper functions
-│   │   └── GameUtilities.js           # Misc utilities (timers, input, etc.)
+│   │   ├── MapDefs.js                 # Map and difficulty settings
+│   │   └── RenderUtilities.js         # Rendering helper functions
 |   |
 |   └── Main.js                        # Starting point for code from index.HTML
 |   

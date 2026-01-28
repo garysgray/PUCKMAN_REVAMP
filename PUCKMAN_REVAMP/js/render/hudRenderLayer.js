@@ -48,7 +48,7 @@ function renderHUDLayer(device, game)
     {
         // Set default font and color
         device.setFont(game.gameConsts.FONT_SETTINGS);
-        device.colorText(game.gameConsts.FONT_COLOR);
+        device.setTextColor(game.gameConsts.FONT_COLOR);
 
         switch (game.gameState) 
         {

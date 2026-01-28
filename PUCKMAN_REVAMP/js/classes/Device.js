@@ -1,5 +1,6 @@
 // ============================================================================
-//  DEVICE CLASS - Manages canvas, rendering, input tools (mouse/keyboard)
+// DEVICE CLASS
+// Manages canvas, rendering, audio, and input
 // ============================================================================
 
 class Device 
@@ -11,164 +12,126 @@ class Device
     #audio;
     #keys;
 
-    constructor(width, height, canvasEl = null) 
+    constructor(width, height) 
     {
-        try
-        {
-            // Use passed canvas element or fallback to document.getElementById
-            this.#canvas = canvasEl || document.getElementById("canvas");
+        this.#canvas =  document.getElementById("canvas");
 
-            if (!this.#canvas) 
-            {
-                console.warn("Canvas element not found; using dummy canvas for test.");
-                // dummy canvas for testing
-                this.#canvas = { width, height, getContext: () => ({ 
-                    drawImage: () => {}, fillText: () => {}, measureText: () => ({ width: 0 }), 
-                    save: () => {}, restore: () => {}, strokeRect: () => {}, fillRect: () => {} 
-                })};
-            }
+        this.#canvas.width  = width;
+        this.#canvas.height = height;
 
-            this.#ctx = this.#canvas.getContext("2d") || {};
-            this.#canvas.width = width;
-            this.#canvas.height = height;
+        this.#ctx = this.#canvas.getContext("2d") || {};
 
-            //this.#mouseDown = false;
-            this.#images = (typeof ObjHolder !== "undefined") ? new ObjHolder() : { addObject: () => {} };
-            this.#audio = (typeof AudioPlayer !== "undefined") ? new AudioPlayer() : { addSound: () => {} };
-            this.#keys = (typeof KeyButtonManager !== "undefined") ? new KeyButtonManager() : { clearFrameKeys: () => {} };
-
-        } 
-        catch (err) 
-        {
-            console.error("Device initialization failed:", err.message);
-            throw err;
-        }
+        // Core subsystems 
+        this.#images = new ObjHolder();
+        this.#audio  = new AudioPlayer();
+        this.#keys   = new KeyButtonManager();
     }
 
-    // -----------------------------
+    // ------------------------------------------------------------------------
     // Getters
-    // -----------------------------
+    // ------------------------------------------------------------------------
     get canvas() { return this.#canvas; }
-    get ctx() { return this.#ctx; }
+    get ctx()    { return this.#ctx; }
     get images() { return this.#images; }
-    get audio() { return this.#audio; }
-    get keys() { return this.#keys; }
+    get audio()  { return this.#audio; }
+    get keys()   { return this.#keys; }
 
-
-    renderImage(aImageOrSprite, aX = 0, aY = 0, w, h) 
+    // ------------------------------------------------------------------------
+    // Rendering helpers
+    // ------------------------------------------------------------------------
+    renderImage(imageOrSprite, x = 0, y = 0, w, h) 
     {
-        try 
+        if (!imageOrSprite) return;
+
+        const img = imageOrSprite.image ?? imageOrSprite;
+        if (!img) return;
+
+        if (Number.isFinite(w) && Number.isFinite(h)) 
         {
-            if (!aImageOrSprite) return;
-            const img = aImageOrSprite.image ?? aImageOrSprite;
-            if (typeof w === "number" && typeof h === "number") 
-            {
-                this.#ctx.drawImage(img, aX, aY, w, h);
-            }
-            else 
-            {
-                this.#ctx.drawImage(img, aX, aY);
-            }
+            this.#ctx.drawImage(img, x, y, w, h);
         } 
-        catch (err) 
+        else 
         {
-            console.warn("renderImage failed:", err.message);
+            this.#ctx.drawImage(img, x, y);
         }
     }
 
-    renderClip(aClip, aPosX, aPosY, aWidth, aHeight, aState = 0) 
+    renderClip(clip, x, y, w, h, state = 0) 
     {
-        try 
-        {
-            this.#ctx.drawImage(
-                aClip,
-                aState * aWidth,
-                0,
-                aWidth,
-                aHeight,
-                aPosX - aWidth * 0.5,
-                aPosY - aHeight * 0.5,
-                aWidth,
-                aHeight
-            );
-        } 
-        catch (err) 
-        {
-            console.warn("renderClip failed:", err.message);
-        }
-    }
-    
-    centerImage(aImage, aPosX, aPosY) 
-    {
-        try 
-        {
-            const img = aImage.image ?? aImage;
-            if (!img) return;
-            this.#ctx.drawImage(img, aPosX - img.width * 0.5, aPosY - img.height * 0.5);
-        }
-         catch (err) 
-        {
-            console.warn("centerImage failed:", err.message);
-        }
+        if (!clip) return;
+
+        this.#ctx.drawImage(
+            clip,
+            state * w,
+            0,
+            w,
+            h,
+            x - w * 0.5,
+            y - h * 0.5,
+            w,
+            h
+        );
     }
 
-    putText(aString, x, y) 
+    centerImage(imageOrSprite, x, y) 
     {
-        try { this.#ctx.fillText(aString, x, y); } 
-        catch { /* ignore */ }
+        const img = imageOrSprite?.image ?? imageOrSprite;
+        if (!img) return;
+
+        this.#ctx.drawImage(
+            img,
+            x - img.width * 0.5,
+            y - img.height * 0.5
+        );
     }
 
-    centerTextOnY(text, posY) 
+    // ------------------------------------------------------------------------
+    // Text helpers
+    // ------------------------------------------------------------------------
+    putText(text, x, y) 
     {
-        try 
-        {
-            const textWidth = this.#ctx.measureText(text).width;
-            const centerX = (this.#canvas.width - textWidth) * 0.5;
-            this.#ctx.fillText(text, centerX, posY);
-        } 
-        catch 
-        { /* ignore */ }
+        this.#ctx.fillText(text, x, y);
     }
 
-    colorText(color) 
+    centerTextOnY(text, y) 
     {
-        try { this.#ctx.fillStyle = color.toString(); } 
-        catch { /* ignore */ }
+        const textWidth = this.#ctx.measureText(text).width;
+        const x = (this.#canvas.width - textWidth) * 0.5;
+        this.#ctx.fillText(text, x, y);
+    }
+
+    setTextColor(color) 
+    {
+        this.#ctx.fillStyle = color;
     }
 
     setFont(font) 
     {
-        try { this.#ctx.font = font.toString(); } 
-        catch { /* ignore */ }
+        this.#ctx.font = font;
     }
 
-    debugText(text, posX, posY, color = "white") 
+    debugText(text, x, y, color = "white") 
     {
-        try 
-        {
-            this.setFont("24px Arial Black");
-            this.colorText(color);
-            this.putText(text.toString() ?? "", posX, posY);
-        } 
-        catch
-        { /* ignore */ }
+        this.setFont("24px Arial Black");
+        this.setTextColor(color);
+        this.putText(String(text), x, y);
     }
 
-    setImagesForType(type, callback)
+    // ------------------------------------------------------------------------
+    // Asset loading
+    // ------------------------------------------------------------------------
+    setImagesForType(typeDefs, callback) 
     {
-        Object.values(type).forEach(typeDef => 
+        Object.values(typeDefs).forEach(def => 
         {
-            if (typeDef.path) 
+            if (!def.path) return;
+
+            const sprite = new Sprite(def.path, def.type);
+            this.#images.addObject(sprite);
+
+            if (typeof callback === "function") 
             {
-                
-                const sprite = new Sprite(typeDef.path, typeDef.type);
-                this.images.addObject(sprite);
-
-                //Call the callback if provided
-                if (callback && typeof callback === "function") 
-                {
-                    callback(typeDef, sprite); // pass the type definition and the sprite
-                }
+                callback(def, sprite);
             }
         });
     }
