@@ -9,6 +9,7 @@ function handleInitState(device, game, playDelayTimer, delta)
 {
     try
     {
+        device.audio.stopAll();
         game.setGame();
         playDelayTimer.update(delta);
 
@@ -46,6 +47,8 @@ function handlePlayState(device, game, gameClock, delta)
 {
     try
     {
+        
+
         if (gameClock.active)
         {
             gameClock.update(delta);
@@ -159,6 +162,7 @@ function handleWinState(device, game)
         if (device.keys.isKeyPressed(keyTypes.RESET_KEY) ||
             device.keys.isGamepadButtonPressed(gamepadButtons.START))
         {
+            device.audio.stopAll();
             game.setGame();
             game.setGameState(gameStates.PLAY);
         }
