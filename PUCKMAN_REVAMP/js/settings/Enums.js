@@ -59,10 +59,10 @@ const tileType =
      TILE_WALL: 1, 
 };
 
-
 Object.freeze(gameStates);
 Object.freeze(enemyPlayStates);
 Object.freeze(playStates);
 Object.freeze(behaveStates);
 Object.freeze(timerModes);
 Object.freeze(tileType);
+

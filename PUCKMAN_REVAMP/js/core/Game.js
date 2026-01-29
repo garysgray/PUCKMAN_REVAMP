@@ -243,20 +243,21 @@ class Game
 
     increaseScore(a) 
     {
+        if (a <= 0) return 0;
+
         this.score += a;
 
-        // Initialize nextExtraLifeScore if not already set
         if (this.nextExtraLifeScore === undefined) 
-        {
-            this.nextExtraLifeScore = this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
-        }
+            this.nextExtraLifeScore = this.score + this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
 
-        // Check if we passed the milestone for extra life
-        while (this.score >= this.nextExtraLifeScore) 
+        // Simple check: only one life per call
+        if (this.score >= this.nextExtraLifeScore) 
         {
             this.lives++;
-            // Increment milestone for next life
             this.nextExtraLifeScore += this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
+            return 1;
         }
+
+        return 0;
     }
 }

@@ -9,9 +9,6 @@
 
 function renderTextLayer(device, game) 
 {
-    // Updates the message at bottom of screen 
-    renderHTMLMessage(game); 
-
     try 
     {
         const cw = game.gameConsts.SCREEN_WIDTH;
@@ -133,6 +130,8 @@ function renderTextLayer(device, game)
                 {
                     let loseMsg = null;
 
+                    const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
+
                     if (game.lives <= 0) 
                     {
 
@@ -146,6 +145,21 @@ function renderTextLayer(device, game)
                         }
 
                         device.centerTextOnY(loseMsg, ch * layout.winLoseY);    
+                    }
+
+                    else if (gameClock.timeLeft === 0)
+                    {
+                        let outOfTimeMsg = null; 
+                        if (game.gamePadEnabled)
+                        {
+                            outOfTimeMsg = gameTexts.LOSE.GAMEPAD_OUT_OF_TIME;
+                        }
+                        else
+                        {
+                            outOfTimeMsg =  gameTexts.LOSE.OUT_OF_TIME;
+                        }
+
+                        device.centerTextOnY(outOfTimeMsg, ch * layout.winLoseY); 
                     }
                     else 
                     {

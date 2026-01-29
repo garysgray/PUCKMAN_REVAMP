@@ -28,4 +28,21 @@ class Layer
             console.error(`Layer '${this.name}': Error during render -`, e);
         }
     }
+    // ------------------------------------------------------------------------
+    // Add a render layer
+    // ------------------------------------------------------------------------
+    static addRenderLayer(layer, holder) 
+    {
+        try
+        {
+            if (!layer) throw new Error("Layer is undefined or null.");
+            holder.push(layer);
+        } 
+        catch (error)
+        {
+            console.error("Error adding layer:", error.message);
+            alert("An error occurred while adding a render layer.");
+        }
+    }
+
 }

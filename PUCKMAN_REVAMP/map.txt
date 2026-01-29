@@ -2,9 +2,9 @@ Key Points of the Folder Structure:
 - The root contains an `index.html` file that serves as the entry point to the game.
 - The `js` directory holds all JavaScript files organized into subdirectories based on functionality:
   - core: Contains foundational controller functions and handling of the game operations.
-  - logic: Contains the foundational logic of the game, including input.
-  - objects: Holds game object definitions, such as Player, Projectile, NPC, and other entities.
+  - classes: Holds game object definitions, such as Player, and other entities.
   - render: Includes rendering functions and layers that manage the drawing of game objects and UI.
+  - settings: Contains enums, types, definitions for game elements
   - utils: Contains utility classes and functions that support various functionalities (like sound management and drawing).
 - The `css` directory contains the stylesheet for styling the game's UI.
 
@@ -37,7 +37,7 @@ PUCKMAN_REVAMP/
 │   │   ├── Game.js                    # Main game management class
 │   │   ├── GameConsts.js              # Global constants for the game
 │   │   ├── GameController.js          # Controls game flow and interactions
-│   │   └── UpdateGame.js              # Main loop for updating game state
+│   │   └── UpdateGameStates.js              # Main loop for updating game state
 |   |
 │   ├── render/                        # Rendering logic for visuals on screen
 │   │   │ 
@@ -57,20 +57,9 @@ PUCKMAN_REVAMP/
 │   ├── utils/                         # Utility functions
 │   │   │ 
 │   │   ├── CollisionUtilities.js      # Collision detection utilities
-│   │   ├── MapDefs.js                 # Map and difficulty settings
 │   │   └── RenderUtilities.js         # Rendering helper functions
 |   |
 |   └── Main.js                        # Starting point for code from index.HTML
-|   
-├── spec/                              # Unit and integration tests
-|   |
-│   ├── deviceSpec.js                  # Tests for Device class
-│   ├── gameControllerSpec.js          # Tests for GameController class
-│   └── playerSpec.js                  # Tests for Player class
-|   
-├── test/                              # HTML file to run tests
-|   |
-│   └── index.html                     # HTML file integrating Jasmine testing
 |   
 ├── index.html                         # Main HTML file for the game
 |   

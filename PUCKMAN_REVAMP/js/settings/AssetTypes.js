@@ -51,8 +51,14 @@ const billBoardTypes =
 
 const soundTypes = 
 {
-    GET:     { name: "get",     path: "assets/sounds/get.wav" },
-    HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav" },
+    PICKUP:  { name: "pickup",  path: "assets/sounds/pickup.wav" },
+    HURT:    { name: "hurt",    path: "assets/sounds/hurt.wav"   },
+    ERROR:   { name: "error",   path: "assets/sounds/error.wav"  },
+    MOVE:    { name: "move",    path: "assets/sounds/move.wav"   },
+    LOSE:    { name: "lose",    path: "assets/sounds/lose.wav"   },
+    WIN:     { name: "win",     path: "assets/sounds/win.wav"    },
+    LIFE:    { name: "life",    path: "assets/sounds/life.wav"   },
+    TIMEOUT: { name: "timeout", path: "assets/sounds/timeout.wav"},
 };
 
 const timerTypes = 

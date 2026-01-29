@@ -21,31 +21,40 @@ class Player extends GameObject
     set playerState(v) { this.#playerState = v; }
 
     // Update player each frame
-    update(device, game, delta) 
-    {
-        try 
-        {
-            // Enforce screen bounds
-            this.enforceBorderBounds(game); 
 
-            this.checkForKeyBoardMoveInput(device, game, delta);
 
-            // Sync player state with current playState
-            if (this.state !== game.playState) 
-            {
-                this.state = game.playState;
-            }   
-        } 
-        catch (e) 
-        {
-            console.error("Player update error:", e);
+    update(device, game, delta, sound)
+{
+    try {
+        this.enforceBorderBounds(game);
+
+        const moved = this.checkForKeyBoardMoveInput(device, game, delta);
+
+        const moveSound = device.audio.getSound(sound.name);
+        if (moveSound && moved) {
+            // Only play if not already playing
+            if (!moveSound.isPlaying()) {
+                moveSound.play();
+            }
         }
+
+        if (this.state !== game.playState) {
+            this.state = game.playState;
+        }
+
+    } catch (e) {
+        console.error("Player update error:", e);
     }
 
-   checkForKeyBoardMoveInput(device, game, delta) 
-   {
+    //return moved;
+}
+
+    checkForKeyBoardMoveInput(device, game, delta) 
+    {
         let dx = 0;
         let dy = 0;
+
+        let move = false;
 
         // ==========================
         //  Keyboard Input
@@ -94,8 +103,12 @@ class Player extends GameObject
             dy /= length;
 
             this.tryMoveWithCollision(game.mapHolder, dx * this.speed * delta, dy * this.speed * delta);
+            move = true;
         }
-}
+
+        return move;
+    }
+
 
     static buildPlayer(game)
     {

@@ -64,10 +64,10 @@ class Controller
             this.game.initGame(this.device);
 
             // Layers have to be rendered in this order
-            if (typeof billBoardsLayer !== 'undefined')  addRenderLayer(billBoardsLayer, this.layers);      // game backgrounds
-            if (typeof hudRenderLayer !== 'undefined')   addRenderLayer(hudRenderLayer, this.layers);       // game HUD
-            if (typeof textRenderLayer !== 'undefined')  addRenderLayer(textRenderLayer, this.layers);      // game text
-            if (typeof gameObjectsLayer !== 'undefined') addRenderLayer(gameObjectsLayer, this.layers);     // game objects
+            if (typeof billBoardsLayer !== 'undefined')  Layer.addRenderLayer(billBoardsLayer, this.layers);      // game backgrounds
+            if (typeof hudRenderLayer !== 'undefined')   Layer.addRenderLayer(hudRenderLayer, this.layers);       // game HUD
+            if (typeof textRenderLayer !== 'undefined')  Layer.addRenderLayer(textRenderLayer, this.layers);      // game text
+            if (typeof gameObjectsLayer !== 'undefined') Layer.addRenderLayer(gameObjectsLayer, this.layers);     // game objects
             
         }
         catch (error) 
@@ -88,7 +88,7 @@ class Controller
         {
             // independent function UpdateGame.js that updates everything game related from Game.js 
             // except rendering, thats done in each layer affiliated
-            updateGame(this.device, this.game, delta);
+            this.updateGame(this.device, this.game, delta);
 
             // Render each layer
             for (const layer of this.layers) 
@@ -113,4 +113,41 @@ class Controller
             alert("An error occurred during the game update. Please restart.");
         }
     }
+
+    updateGame(device, game, delta)
+    {
+        try
+        {
+            // Get timers
+            const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
+            const playDelayTimer = game.gameTimers.getObjectByName(timerTypes.PLAY_DELAY.name);
+
+            // State handlers
+            const stateHandlers =
+            {
+                [gameStates.INIT]:  () => handleInitState(device, game, playDelayTimer, delta),
+                [gameStates.PLAY]:  () => handlePlayState(device, game, gameClock, delta),
+                [gameStates.PAUSE]: () => handlePauseState(device, game),
+                [gameStates.WIN]:   () => handleWinState(device, game),
+                [gameStates.LOSE]:  () => handleLoseState(device, game, playDelayTimer)
+            };
+
+            const handler = stateHandlers[game.gameState];
+
+            if (handler)
+            {
+                handler();
+            }
+            else
+            {
+                console.warn("Unknown game state:", game.gameState);
+            }
+
+        }
+        catch (e)
+        {
+            console.error("updateGame main error:", e);
+        }
+    }
+
 }

@@ -24,7 +24,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 
 ### 1. Procedural Map & Level Generation
 - Grid-based procedural map system with **walkable paths**
-- Walls placed safely without overlapping player spawns
+- Walls placed safely without overlapping player spawns or goals
 - Difficulty scales with **level tiers**
 - Configurable generation parameters:
   - `mapSafeMargin` – prevents spawns near borders
@@ -34,6 +34,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Optional tile color variation based on distance from map center
 - Map and borders cached after generation for efficiency
 - Ensures all goals are reachable
+- Safe initialization prevents overlap with player, enemies, or map edges
 
 ---
 
@@ -42,6 +43,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Goal count, enemy AI, and map density scale with level
 - Score and level-specific modifiers applied automatically
 - Progression triggered when all goals are collected
+- Supports automatic reset and next-level transition
 
 ---
 
@@ -53,6 +55,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - Plays audio feedback
   - Advances game state
 - Fully collision-aware with map and entity holders
+- Supports dynamic repositioning if blocked
 
 ---
 
@@ -65,14 +68,17 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Interactions:
   - Goals → score and state update
   - Enemies → life reduction
+- Handles runtime input changes without breaking movement
 
 ---
 
 ### 5. Enemy / NPC System
 - `Enemy` extends **GameObject**
-- Basic AI with `ROAM`, `FOLLOW`, and `STOP` states
+- AI states: `ROAM`, `FOLLOW`, `STOP`
 - Integrated with collision system
 - Designed for easy extension with additional behaviors
+- Movement respects map layout and player position
+- Avoids goal and spawn conflicts
 
 ---
 
@@ -80,6 +86,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Unified input for **keyboard + gamepad**
 - Gamepad via HTML5 Gamepad API
 - Supports pause, state switching, and runtime toggle
+- Smooth handling prevents accidental key repeat or scroll
 
 ---
 
@@ -90,6 +97,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - `WIN` – level complete
 - `LOSE` – game over
 - Each state manages its own update loop and rendering rules
+- Transitions are deterministic and reset properly
 
 ---
 
@@ -99,8 +107,10 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - `tryMoveWithCollision()` for safe movement
 - Utility functions:
   - `rectsCollide()`, `roughNear()`, `overlapsAny()`, `checkPlayerGameObjCollisions()`
-- Handles collisions with map, player, and other entities
+- Handles collisions with map, player, enemies, and goals
 - Optimized for performance
+- Prevents tunneling and overlap glitches
+- Works with both static and moving objects
 
 ---
 
@@ -112,7 +122,8 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - HUD (score, lives, level)
   - Text overlays
 - Map and borders rendered once per level for efficiency
-- Optional debug overlay shows hitboxes and runtime info
+- Optional debug overlay shows hitboxes, entity positions, and runtime info
+- Flexible layering allows easy addition of effects
 
 ---
 
@@ -120,8 +131,15 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Sound effects for:
   - Goal collection
   - Player damage
+  - Level Up
+  - Player movement
+  - Player lose
+  - Player Win
+  - Player xtra life
+  - Player out of time
 - Audio pooling prevents playback issues
-- Designed for easy future expansion
+- Fully integrated with game state changes
+- Designed for easy future expansion (background music, enemy sounds)
 
 ---
 
@@ -131,6 +149,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Safe initialization checks prevent race conditions
 - Fixed-step game loop ensures consistent updates
 - Console logging for debugging
+- Modular structure allows replacing any core system without breaking others
 
 ---
 
@@ -140,15 +159,13 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - **Deterministic collisions:** avoids glitches
 - **Performance-aware:** optimized Canvas rendering
 - **Debug-friendly:** easy to inspect and reason about
+- **Extendable:** supports new entities, input, or map rules
 
 ---
 
 ## Future Work
 - Expanded enemy AI behaviors
 - Power-ups and modifiers
-- Persistent high scores
-- Optional mobile-friendly input
-- More map variety in procedural generation
 
 ---
 

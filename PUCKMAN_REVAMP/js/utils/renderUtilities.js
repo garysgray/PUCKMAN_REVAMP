@@ -95,56 +95,6 @@ function renderHitBoxs(device, tempObj)
     }
 }
 
-// =======================================================
-// HTML MESSAGE HANDLER
-// =======================================================
-
-function renderHTMLMessage(game) 
-{
-    const msg = document.getElementById("message");
-    if (!msg) return;
-
-    if (game.gameState != gameStates.INIT) 
-    {
-        if (game.gamePadEnabled) 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]}</p>`;
-        } 
-        else 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
-        }
-    }
-    else
-    {
-        if (game.gamePadConnected)
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS}</p>`;
-        }
-        else 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
-        }
-    }
-}
-
-// ------------------------------------------------------------------------
-// Add a render layer
-// ------------------------------------------------------------------------
-function addRenderLayer(layer, holder) 
-{
-    try
-    {
-        if (!layer) throw new Error("Layer is undefined or null.");
-        holder.push(layer);
-    } 
-    catch (error)
-    {
-        console.error("Error adding layer:", error.message);
-        alert("An error occurred while adding a render layer.");
-    }
-}
-
 // ---------------------------------------------------
 // Render Cache
 // ---------------------------------------------------

@@ -11,7 +11,8 @@ class Sound
     #index;
     #poolSize;
 
-    constructor(name, src, poolSize = 1, volume = 1) 
+
+    constructor(name, src, poolSize = 1, volume = 1 ) 
     {
         this.#name = name;
         this.#src = src;
@@ -19,6 +20,8 @@ class Sound
         this.#index = 0;
         this.#poolSize = Math.max(1, poolSize);
         this.#pool = [];
+
+
 
         // Preload audio pool
         for (let i = 0; i < this.#poolSize; i++) 
@@ -32,6 +35,7 @@ class Sound
 
     get name() { return this.#name; }
 
+
     //Play the sound
     //@param {number} volume Optional volume override (0-1)
     play(volume = this.#volume) 
@@ -40,8 +44,12 @@ class Sound
         {
             let audio = this.#pool[this.#index];
 
-            // If audio is still playing, clone a new one to allow overlap
-            if (!audio.paused) audio = audio.cloneNode(true);
+          
+                //if (!audio.paused) return; //  key difference
+            
+                // If audio is still playing, clone a new one to allow overlap
+                if (!audio.paused) audio = audio.cloneNode(true);
+            
 
             audio.volume = volume;
             audio.currentTime = 0;
@@ -54,6 +62,15 @@ class Sound
         }
     }
 
+    isPlaying() 
+    {
+        return this.#pool.some(audio => !audio.paused && !audio.ended);
+    }
+
+    stop()
+    {
+
+    }
     stopAll() 
     {
         this.#pool.forEach(a =>         
@@ -77,7 +94,7 @@ class AudioPlayer
     }
 
     // Add a sound to the player
-    addSound(name, src, poolSize = 1, volume = 1) 
+    addSound(name, src,  poolSize = 1, volume = 1) 
     {
         if (!name || !src) return;
         try 
@@ -97,21 +114,21 @@ class AudioPlayer
     }
 
     // Play a sound by name, optionally overriding volume
-    playSound(name, volume) 
+    playSound(aSound, volume) 
     {
-        const sound = this.getSound(name);
+        const sound = this.getSound(aSound.name);
         if (!sound) 
         {
-            console.warn(`Sound "${name}" not found`);
+            console.warn(`Sound "${aSound.name}" not found`);
             return;
         }
         sound.play(volume);
     }
 
     // Stop a specific sound
-    stopSound(name) 
+    stopSound(aSound) 
     {
-        const sound = this.getSound(name);
+        const sound = this.getSound(aSound.name);
         if (sound) sound.stopAll();
     }
 

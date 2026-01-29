@@ -86,7 +86,7 @@ function renderHUDLayer(device, game)
             case gameStates.PAUSE:
                 try 
                 {
-                        
+                    
                 }  
                 catch (e) 
                 {

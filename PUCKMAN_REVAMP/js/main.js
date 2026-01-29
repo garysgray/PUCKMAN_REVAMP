@@ -120,11 +120,12 @@ function gameLoop()
         myController.device.keys.clearFrameKeys();
     }
 
+    // Updates the message at bottom of screen
+    renderHTMLMessage(myController.game); 
     
     // --------------------
     // DEBUG TEXT
     // --------------------
-
     clearDebugLines();
 
     if (DRAW_DEBUG_TEXT)
@@ -149,6 +150,38 @@ function gameLoop()
     rafId = requestAnimationFrame(gameLoop);
 }
 
+// =======================================================
+// HTML MESSAGE HANDLER
+// =======================================================
+
+function renderHTMLMessage(game) 
+{
+    const msg = document.getElementById("message");
+    if (!msg) return;
+
+    if (game.gameState != gameStates.INIT) 
+    {
+        if (game.gamePadEnabled) 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]}</p>`;
+        } 
+        else 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
+        }
+    }
+    else
+    {
+        if (game.gamePadConnected)
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS}</p>`;
+        }
+        else 
+        {
+            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
+        }
+    }
+}
 
 // =======================================================
 // DEBUG UI 

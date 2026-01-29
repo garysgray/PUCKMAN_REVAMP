@@ -187,7 +187,6 @@ class GameObject
         return false;
     }
 
-
     enforceBorderBounds(game) 
     {
         try 
