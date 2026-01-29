@@ -24,30 +24,34 @@ class Player extends GameObject
 
 
     update(device, game, delta, sound)
-{
-    try {
-        this.enforceBorderBounds(game);
+    {
+        try {
+            this.enforceBorderBounds(game);
 
-        const moved = this.checkForKeyBoardMoveInput(device, game, delta);
+            const moved = this.checkForKeyBoardMoveInput(device, game, delta);
 
-        const moveSound = device.audio.getSound(sound.name);
-        if (moveSound && moved) {
-            // Only play if not already playing
-            if (!moveSound.isPlaying()) {
-                moveSound.play();
+            const moveSound = device.audio.getSound(sound.name);
+            if (moveSound && moved) {
+                // Only play if not already playing
+                if (!moveSound.isPlaying()) {
+                    moveSound.play();
+                }
             }
+            else
+            {
+                moveSound.stop();
+            }
+
+            if (this.state !== game.playState) {
+                this.state = game.playState;
+            }
+
+        } catch (e) {
+            console.error("Player update error:", e);
         }
 
-        if (this.state !== game.playState) {
-            this.state = game.playState;
-        }
-
-    } catch (e) {
-        console.error("Player update error:", e);
+        //return moved;
     }
-
-    //return moved;
-}
 
     checkForKeyBoardMoveInput(device, game, delta) 
     {
