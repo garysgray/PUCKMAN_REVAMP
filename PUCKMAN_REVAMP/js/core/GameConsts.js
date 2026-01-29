@@ -38,7 +38,7 @@ class GameConsts {
     #VALUE_FOR_GETTING_GOAL = 10;
     #VALUE_FOR_UNIT_OF_TIME_LEFT = 5;
     #VALUE_FOR_WINNING_LEVEL = 100;
-    #VALUE_WHEN_NEW_LIFE_AWARDED = 500;
+    #VALUE_WHEN_NEW_LIFE_AWARDED = 10000;
 
     // ---- Getters ----
     // Screen
