@@ -10,8 +10,8 @@
 // DEBUG FLAGS
 // =======================================================
 
-//const DEV_MODE = false; // false when shipping
-const DEV_MODE = true;     // true when dev
+const DEV_MODE = false; // false when shipping
+//const DEV_MODE = true;     // true when dev
 
 let HIT_BOXES  = false;
 let DEBUG_TEXT = DEV_MODE;
