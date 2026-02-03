@@ -159,13 +159,6 @@ class Game
     set nextExtraLifeScore(v)  { this.#nextExtraLifeScore = v; }
 
     // =======================================================
-    // UTILITY FUNCTIONS
-    // =======================================================
-    decreaseLives(a = 1)   { this.lives -= a; }
-    increaseGameLevel()     { this.gameLevel++; }
-    setGameState(state)     { this.gameState = state; }
-
-    // =======================================================
     // INITIALIZATION
     // =======================================================
     initGame(device)
@@ -214,6 +207,7 @@ class Game
             this.gameLevel = 1;
             this.score     = 0;
             this.lives     = this.gameConsts.GAME_LIVES_START_AMOUNT;
+            this.nextExtraLifeScore = this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
         }
 
         // Clear entity holders
@@ -235,12 +229,19 @@ class Game
         // Spawn player & enemies
         Player.buildPlayer(this);
         Enemy.spawnEnemies(this, characterSpriteTypes, this.enemyHolder);
-        
+
         // Set game clock
         const gameClock = this.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
         gameClock.setAndStart(this.#gameConsts.LEVEL_MAX_TIME);
     }
 
+    // =======================================================
+    // UTILITY FUNCTIONS
+    // =======================================================
+    decreaseLives(a = 1)   { this.lives -= a; }
+    increaseGameLevel()     { this.gameLevel++; }
+    setGameState(state)     { this.gameState = state; }
+    
     increaseScore(a) 
     {
         if (a <= 0) return 0;
@@ -260,4 +261,11 @@ class Game
 
         return 0;
     }
+    // Inside your Game class
+    calculateTimeBonus(timeLeft)
+    {
+        // Multiply by value-per-time-unit and floor it
+        return Math.floor(timeLeft * this.gameConsts.VALUE_FOR_UNIT_OF_TIME_LEFT);
+    }
+
 }

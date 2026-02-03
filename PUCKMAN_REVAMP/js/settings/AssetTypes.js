@@ -64,7 +64,15 @@ const soundTypes =
 const timerTypes = 
 { 
      GAME_CLOCK:  { name: "gameClock", timerMode: timerModes.COUNTDOWN },  
-     PLAY_DELAY:  { name: "playDelay", timerMode: timerModes.COUNTDOWN },     
+     PLAY_DELAY:  { name: "playDelay", timerMode: timerModes.COUNTDOWN },  
+     LOSE_DELAY:  { name: "loseDelay", timerMode: timerModes.COUNTDOWN },   
+};
+
+const AudioStates = 
+{ 
+    PLAY : "PLAY",
+    LOSE : "LOSE",
+    WIN  : "WIN",
 };
 
 Object.freeze(playerSpriteTypes);
@@ -74,3 +82,4 @@ Object.freeze(goalsSpriteTypes);
 Object.freeze(billBoardTypes);
 Object.freeze(soundTypes);
 Object.freeze(timerTypes);
+Object.freeze(AudioStates);

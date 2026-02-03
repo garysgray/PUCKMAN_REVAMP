@@ -18,6 +18,40 @@ let gameRunning = false;
 let rafId       = null;
 
 
+// ---------------------------
+// FULLSCREEN HELPERS
+// ---------------------------
+
+function toggleFullScreen(canvas) {
+    if (!document.fullscreenElement) {
+        if (canvas.requestFullscreen) canvas.requestFullscreen({ navigationUI: "hide" });
+        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+        else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+}
+
+function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) {
+    if (!canvas) return;
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const scale = Math.min(windowWidth / internalWidth, windowHeight / internalHeight);
+
+    canvas.style.width = internalWidth * scale + "px";
+    canvas.style.height = internalHeight * scale + "px";
+
+    canvas.style.display = "block";
+    canvas.style.marginLeft = "auto";
+    canvas.style.marginRight = "auto";
+    canvas.style.marginTop = ((windowHeight - internalHeight * scale) / 2) + "px";
+    canvas.style.marginBottom = ((windowHeight - internalHeight * scale) / 2) + "px";
+}
+
+
 // =======================================================
 // ENTRY POINT
 // =======================================================
@@ -191,8 +225,8 @@ function renderHTMLMessage(game)
 // DEBUG FLAGS
 // =======================================================
 
-const DEV_MODE = false; // false when shipping
-//const DEV_MODE = true;     // true when dev
+//const DEV_MODE = false; // false when shipping
+const DEV_MODE = true;     // true when dev
 
 let HIT_BOXES  = false;
 let DEBUG_TEXT = DEV_MODE;

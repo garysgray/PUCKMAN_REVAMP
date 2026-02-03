@@ -32,6 +32,7 @@ class Timer
     get active() { return this.#active; }
     get timeLeft() { return Math.max(0, this.#timeLeft); }
     get elapsedTime() { return this.#elapsedTime; }
+    get finished() { return !this.#active && this.#timeLeft <= 0;}
 
     get progress()
     {

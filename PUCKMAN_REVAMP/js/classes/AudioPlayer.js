@@ -11,8 +11,7 @@ class Sound
     #index;
     #poolSize;
 
-
-    constructor(name, src, poolSize = 1, volume = 1 ) 
+    constructor(name, src, poolSize = 1, volume = 1) 
     {
         this.#name = name;
         this.#src = src;
@@ -20,8 +19,6 @@ class Sound
         this.#index = 0;
         this.#poolSize = Math.max(1, poolSize);
         this.#pool = [];
-
-
 
         // Preload audio pool
         for (let i = 0; i < this.#poolSize; i++) 
@@ -35,28 +32,26 @@ class Sound
 
     get name() { return this.#name; }
 
-
-    //Play the sound
-    //@param {number} volume Optional volume override (0-1)
-    play(volume = this.#volume) 
+    // Play the sound
+    play() 
     {
         try 
         {
             let audio = this.#pool[this.#index];
 
-          
-                //if (!audio.paused) return; //  key difference
-            
-                // If audio is still playing, clone a new one to allow overlap
-                if (!audio.paused) audio = audio.cloneNode(true);
-            
+            // Allow overlap by cloning
+            if (!audio.paused) 
+            {
+                audio = audio.cloneNode(true);
+            }
 
-            audio.volume = volume;
+            audio.volume = this.#volume;
             audio.currentTime = 0;
             audio.play();
 
             this.#index = (this.#index + 1) % this.#poolSize;
-        } catch (err) 
+        } 
+        catch (err) 
         {
             console.error(`Failed to play sound "${this.#name}":`, err);
         }
@@ -67,10 +62,6 @@ class Sound
         return this.#pool.some(audio => !audio.paused && !audio.ended);
     }
 
-    stop()
-    {
-
-    }
     stopAll() 
     {
         this.#pool.forEach(a =>         
@@ -79,7 +70,8 @@ class Sound
             {
                 a.pause();
                 a.currentTime = 0;
-            } catch {}
+            } 
+            catch {}
         });
     }
 }
@@ -88,51 +80,76 @@ class AudioPlayer
 {
     #sounds;
 
+    #gameState;
+    #lastPlayTime;
+    #currentPriority;
+
+    #MIN_GAP_MS = 120;
+
     constructor() 
     {
         this.#sounds = new ObjHolder();
+
+        this.#gameState = "PLAY";
+        this.#lastPlayTime = 0;
+        this.#currentPriority = -1;
     }
 
-    // Add a sound to the player
-    addSound(name, src,  poolSize = 1, volume = 1) 
+    setAudioGameState(state)
+    {
+        this.#gameState = state;
+        this.#currentPriority = -1;
+    }
+
+    addSound(name, src, poolSize = 1, volume = 1) 
     {
         if (!name || !src) return;
+
         try 
         {
             const sound = new Sound(name, src, poolSize, volume);
             this.#sounds.addObject(sound);
-        } catch (err) 
+        } 
+        catch (err) 
         {
             console.error(`Failed to add sound "${name}":`, err);
         }
     }
 
-    // Retrieve a sound by name
     getSound(name) 
     {
         return this.#sounds.getObjectByName(name);
     }
 
-    // Play a sound by name, optionally overriding volume
-    playSound(aSound, volume) 
+    requestSound(aSound, priority = 0, allowedStates = ["PLAY"])
     {
-        const sound = this.getSound(aSound.name);
-        if (!sound) 
+        if (!allowedStates.includes(this.#gameState)) return;
+
+        const now = performance.now();
+
+        if (
+            priority < this.#currentPriority &&
+            now - this.#lastPlayTime < this.#MIN_GAP_MS
+        ) 
         {
-            console.warn(`Sound "${aSound.name}" not found`);
             return;
         }
-        sound.play(volume);
+
+        const sound = this.getSound(aSound.name);
+        if (!sound) return;
+
+        sound.play();
+
+        this.#currentPriority = priority;
+        this.#lastPlayTime = now;
     }
 
-    // Stop a specific sound
     stopSound(aSound) 
     {
         const sound = this.getSound(aSound.name);
         if (sound) sound.stopAll();
     }
 
-    // Stop all sounds in the audio player
     stopAll() 
     {
         this.#sounds.forEach(sound => 
@@ -141,27 +158,23 @@ class AudioPlayer
         });
     }
 
-    //Check if a sound exists
     hasSound(name) 
     {
         return !!this.getSound(name);
     }
 
-    // Remove a sound by name
     removeSound(name) 
     {
         const sound = this.getSound(name);
         if (sound) this.#sounds.subObjectByName(name);
     }
 
-    // Reload a sound by name (recreates the pool)
     reloadSound(name, src, poolSize, volume) 
     {
         this.removeSound(name);
         this.addSound(name, src, poolSize, volume);
     }
 
-    // Load a batch of sounds
     static loadSounds(device, game, soundTypes) 
     {
         Object.values(soundTypes).forEach(sndDef => 
@@ -172,7 +185,7 @@ class AudioPlayer
                     sndDef.name,
                     sndDef.path,
                     game.gameConsts.POOLSIZE,
-                    game.gameConsts.VOLUME
+                    sndDef.volume ?? 1
                 );
             }
         });

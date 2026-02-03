@@ -79,7 +79,7 @@ p
 /* ------------------------------------------------------------------ */
 #top_menu 
 {
-   display: flex;
+    display: flex;
     justify-content: center;
     gap: var(--menu-gap);
     background: var(--glass-bg);

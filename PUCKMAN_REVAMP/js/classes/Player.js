@@ -9,6 +9,8 @@
 class Player extends GameObject 
 {
     #playerState; 
+    #justHit;
+    #isDying;
 
     constructor(width, height, x, y, speed) 
     {
@@ -16,9 +18,18 @@ class Player extends GameObject
 
         this.#playerState = playStates.RIGHT;
         this.speed = speed;
+
+        this.#justHit = false;
+        this.#isDying = false;
     }
     get playerState() { return this.#playerState; }
     set playerState(v) { this.#playerState = v; }
+
+    get justHit() { return this.#justHit; }
+    get isDying() { return this.#isDying; }
+
+    set justHit(v) { this.#justHit = v; }
+    set isDying(v) { this.#isDying = v; }
 
     // Update player each frame
 
@@ -26,6 +37,7 @@ class Player extends GameObject
     update(device, game, delta, sound)
     {
         try {
+            
             this.enforceBorderBounds(game);
 
             const moved = this.checkForKeyBoardMoveInput(device, game, delta);
@@ -39,7 +51,7 @@ class Player extends GameObject
             }
             else
             {
-                moveSound.stop();
+                moveSound.stopAll();
             }
 
             if (this.state !== game.playState) {
@@ -111,6 +123,11 @@ class Player extends GameObject
         }
 
         return move;
+    }
+    reset()
+    {
+        this.#justHit = false;
+        this.#isDying = false;
     }
 
 

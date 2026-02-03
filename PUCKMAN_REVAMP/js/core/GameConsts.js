@@ -4,16 +4,23 @@
 // Purpose:
 // Global game constants exposed via getters
 // -----------------------------
-class GameConsts {
+class GameConsts 
+{
     // ---- Screen ----
     #SCREEN_WIDTH  = 1000;
     #SCREEN_HEIGHT = 600;
     #HUD_BUFFER    = 0.045;
 
     // ---- Gameplay ----
-    #GAME_LIVES_START_AMOUNT     = 3;
+    #GAME_LIVES_START_AMOUNT = 3;
+    #LAST_LIFE               = 1;
+    #NO_LIVES                = 0;
+    #NO_TIME                = 0;
+    #NO_VALUE                = 0;
+
     #LEVEL_MAX_TIME              = 20;
     #PLAY_PAUSE_DELAY_TIME       = 0.5;
+    #LOSE_SOUND_DELAY_TIME       = 0.1;
 
     // ---- UI ----
     #DEBUG_TEXT_COLOR = "yellow";
@@ -23,6 +30,14 @@ class GameConsts {
     // ---- Sound ----
     #POOLSIZE = 5;
     #VOLUME   = 1.0;
+
+    #PRIORITY_LOSE_DELAYED = 80;
+
+    #PRIORITY_WIN          = 90;
+    #PRIORITY_LOSE         = 90;
+    #PRIORITY_TIMEOUT      = 95;
+
+    #PRIORITY_LIFE         = 100; // absolute override
 
     // ---- Map / Level ----
     #MAP_BUFFER_X                = 60;
@@ -38,7 +53,7 @@ class GameConsts {
     #VALUE_FOR_GETTING_GOAL = 10;
     #VALUE_FOR_UNIT_OF_TIME_LEFT = 5;
     #VALUE_FOR_WINNING_LEVEL = 100;
-    #VALUE_WHEN_NEW_LIFE_AWARDED = 10000;
+    #VALUE_WHEN_NEW_LIFE_AWARDED = 1000;
 
     // ---- Getters ----
     // Screen
@@ -48,8 +63,23 @@ class GameConsts {
 
     // Gameplay
     get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT; }
+    get LAST_LIFE()               { return this.#LAST_LIFE; }
+    get NO_LIVES()                { return this.#NO_LIVES; }
+    get NO_TIME()                { return this.#NO_TIME; }
+    get NO_VALUE()                { return this.#NO_VALUE; }
+    
     get LEVEL_MAX_TIME()          { return this.#LEVEL_MAX_TIME; }
     get PLAY_PAUSE_DELAY_TIME()   { return this.#PLAY_PAUSE_DELAY_TIME; }
+    get LOSE_SOUND_DELAY_TIME()   { return this.#LOSE_SOUND_DELAY_TIME; }
+
+    get PRIORITY_LOSE_DELAYED() { return this.#PRIORITY_LOSE_DELAYED; }
+
+    get PRIORITY_WIN()          { return this.#PRIORITY_WIN; }
+    get PRIORITY_LOSE()         { return this.#PRIORITY_LOSE; }
+    get PRIORITY_TIMEOUT()     { return this.#PRIORITY_TIMEOUT; }
+
+    get PRIORITY_LIFE()         { return this.#PRIORITY_LIFE; }
+
 
     // UI
     get DEBUG_TEXT_COLOR() { return this.#DEBUG_TEXT_COLOR; }

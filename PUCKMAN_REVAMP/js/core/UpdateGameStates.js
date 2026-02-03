@@ -10,7 +10,9 @@ function handleInitState(device, game, playDelayTimer, delta)
     try
     {
         device.audio.stopAll();
+
         game.setGame();
+
         playDelayTimer.update(delta);
 
         // Toggle gamepad with Q
@@ -20,17 +22,16 @@ function handleInitState(device, game, playDelayTimer, delta)
             game.gamePadEnabled = !game.gamePadEnabled;
         }
 
+        // If still active then we wait till delay is done
         if (playDelayTimer.active)
         {
             return;
         }
 
         // Start game if play pressed
-        const playPressed = device.keys.isKeyPressed(keyTypes.PLAY_KEY) ||
-                            device.keys.isGamepadButtonPressed(gamepadButtons.START);
+        const playPressed = device.keys.isKeyPressed(keyTypes.PLAY_KEY) || device.keys.isGamepadButtonPressed(gamepadButtons.START);
 
-        if ((game.gamePadEnabled && playPressed) ||
-            (!game.gamePadEnabled && playPressed && game.keyboardTouched))
+        if ((game.gamePadEnabled && playPressed) || (!game.gamePadEnabled && playPressed && game.keyboardTouched))
         {
             game.setGameState(gameStates.PLAY);
         }
@@ -43,91 +44,122 @@ function handleInitState(device, game, playDelayTimer, delta)
 // ---------------------------
 // PLAY STATE HANDLER
 // ---------------------------
-function handlePlayState(device, game, gameClock, delta)
+function handlePlayState(device, game, gameClock, loseSoundDelayTimer, delta)
 {
     try
     {
-        
+        device.audio.setAudioGameState(AudioStates.PLAY);
 
-        if (gameClock.active)
+        // Update game clock
+        if (gameClock.active) gameClock.update(delta);
+
+        // Timer ran out
+        if (gameClock.timeLeft === game.gameConsts.NO_TIME)
         {
-            gameClock.update(delta);
-        }
+            device.audio.requestSound(soundTypes.TIMEOUT, game.gameConsts.PRIORITY_TIMEOUT, [AudioStates.PLAY]);
 
-        if (gameClock.timeLeft === 0)
-        {
-            device.audio.playSound(soundTypes.TIMEOUT);
-
-            if (game.lives === 1)
+            if (game.lives === game.gameConsts.LAST_LIFE)
             {
-                device.audio.playSound(soundTypes.LOSE);
+                device.audio.setAudioGameState(AudioStates.LOSE);
+                device.audio.requestSound(soundTypes.LOSE, game.gameConsts.PRIORITY_LOSE, [AudioStates.LOSE]);
             }
 
             game.decreaseLives();
+            device.audio.setAudioGameState(AudioStates.LOSE);
             game.setGameState(gameStates.LOSE);
             return;
         }
 
         // Update entities
         game.player.update(device, game, delta, soundTypes.MOVE);
-        game.enemyHolder.forEach(e =>
-        {
-            e.update(delta, game, game.player);
-        });
+        game.enemyHolder.forEach(e => e.update(delta, game, game.player));
 
+        // ---------------------------
         // Player collisions
-        if (checkPlayerCollisions(game.enemyHolder, game.player) !== false)
-        {
-            device.audio.stopSound(soundTypes.MOVE);
-            device.audio.playSound(soundTypes.HURT);
+        // ---------------------------
+    
+        const hitIndex = checkPlayerCollisions(game.enemyHolder, game.player);
 
-            if (game.lives === 1)
+        if (hitIndex !== false && !game.player.isDying) 
+        {
+            // Latch death
+            game.player.isDying = true;
+
+            device.audio.stopSound(soundTypes.MOVE);
+
+            // Play HURT once
+            if (!game.player.justHit) 
             {
-                device.audio.stopSound(soundTypes.MOVE);
-                device.audio.playSound(soundTypes.LOSE);
+                device.audio.requestSound(soundTypes.HURT);
+                game.player.justHit = true;
             }
 
-            game.decreaseLives();
-            game.setGameState(gameStates.LOSE);
-            return;
+            // Last life -> delay LOSE sound
+            if (game.lives === game.gameConsts.LAST_LIFE) 
+            {
+                if (!loseSoundDelayTimer.active) 
+                    loseSoundDelayTimer.setAndStart(game.gameConsts.LOSE_SOUND_DELAY_TIME);
+
+                return; // delayed LOSE handled below
+            } 
+            else 
+            {
+                game.decreaseLives();
+                game.setGameState(gameStates.LOSE);
+                return;
+            }
         }
 
-        // Goal pickup
-        if (game.goalHolder.getSize() !== 0)
+        // ---------------------------
+        // Handle delayed LOSE for last life
+        // ---------------------------
+        if (game.player.isDying && game.lives === game.gameConsts.LAST_LIFE)
         {
-            const idx = checkPlayerCollisions(game.goalHolder, game.player);
-
-            if (idx !== false)
+            if (loseSoundDelayTimer.update(delta))
             {
-                device.audio.playSound(soundTypes.PICKUP);
-                game.goalHolder.subObject(idx);
+                device.audio.setAudioGameState(AudioStates.LOSE);
+                device.audio.requestSound(soundTypes.LOSE, game.gameConsts.PRIORITY_LOSE_DELAYED, [AudioStates.LOSE]);
+                game.decreaseLives();
+                game.setGameState(gameStates.LOSE);
+                return;
+            }
+        }
 
-                if (game.increaseScore(game.gameConsts.VALUE_FOR_GETTING_GOAL) > 0)
-                {
-                    device.audio.playSound(soundTypes.LIFE);
-                }
+        // ---------------------------
+        // Goal pickup
+        // ---------------------------
+        if (game.goalHolder.getSize() !== game.gameConsts.NO_LIVES)
+        {
+            const goalIndex = checkPlayerCollisions(game.goalHolder, game.player);
+            if (goalIndex !== false)
+            {
+                device.audio.requestSound(soundTypes.PICKUP);
+                game.goalHolder.subObject(goalIndex);
+
+                if (game.increaseScore(game.gameConsts.VALUE_FOR_GETTING_GOAL) > game.gameConsts.NO_VALUE)
+                    device.audio.requestSound(soundTypes.LIFE);
             }
         }
         else
         {
-            // Level complete becuse all goals have been collected
-            const timeBonus = Math.floor(gameClock.timeLeft * game.gameConsts.VALUE_FOR_UNIT_OF_TIME_LEFT);
+            // Level complete
+            const timeBonus = game.calculateTimeBonus(gameClock.timeLeft);
             const winBonus = game.gameConsts.VALUE_FOR_WINNING_LEVEL;
             const totalLivesGained = game.increaseScore(timeBonus) + game.increaseScore(winBonus);
 
             device.audio.stopSound(soundTypes.MOVE);
 
-            if (totalLivesGained > 0)
-            {
-                device.audio.playSound(soundTypes.LIFE);
-            }
+            if (totalLivesGained > game.gameConsts.NO_VALUE)
+                device.audio.requestSound(soundTypes.LIFE);
 
-            device.audio.playSound(soundTypes.WIN);
+            device.audio.setAudioGameState(AudioStates.WIN);
+            device.audio.requestSound(soundTypes.WIN, game.gameConsts.PRIORITY_WIN, [AudioStates.WIN]);
 
             game.increaseGameLevel();
             game.setGameState(gameStates.WIN);
         }
 
+        // Pause check
         device.keys.checkForPause(game);
 
     }
@@ -163,6 +195,7 @@ function handleWinState(device, game)
             device.keys.isGamepadButtonPressed(gamepadButtons.START))
         {
             device.audio.stopAll();
+            device.audio.setAudioGameState(AudioStates.PLAY);
             game.setGame();
             game.setGameState(gameStates.PLAY);
         }
@@ -183,8 +216,9 @@ function handleLoseState(device, game, playDelayTimer)
         if (device.keys.isKeyPressed(keyTypes.RESET_KEY) ||
             device.keys.isGamepadButtonPressed(gamepadButtons.START))
         {
-            if (game.lives !== 0)
+            if (game.lives !== game.gameConsts.NO_LIVES)
             {
+                device.audio.setAudioGameState(AudioStates.PLAY); // unlock audio
                 game.setGame();
                 game.setGameState(gameStates.PLAY);
             }
@@ -200,3 +234,5 @@ function handleLoseState(device, game, playDelayTimer)
         console.error("LOSE state error:", e);
     }
 }
+
+
