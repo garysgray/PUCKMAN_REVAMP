@@ -1,63 +1,23 @@
 // =======================================================
 // MAIN.js   
 // =======================================================
-// =======================================================
 // GAME LOOP FUNCTIONS 
-// DEBUG TOGGLE W/ DEBUG FUNCTIONS
 // =======================================================
-
 
 // =======================================================
 // GLOBALS
 // =======================================================
-
 let myController;
 let lastTime    = performance.now();
 let accumulator = 0;
 let gameRunning = false;
 let rafId       = null;
 
-
-// ---------------------------
-// FULLSCREEN HELPERS
-// ---------------------------
-
-function toggleFullScreen(canvas) {
-    if (!document.fullscreenElement) {
-        if (canvas.requestFullscreen) canvas.requestFullscreen({ navigationUI: "hide" });
-        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
-        else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
-    }
-}
-
-function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) {
-    if (!canvas) return;
-
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    const scale = Math.min(windowWidth / internalWidth, windowHeight / internalHeight);
-
-    canvas.style.width = internalWidth * scale + "px";
-    canvas.style.height = internalHeight * scale + "px";
-
-    canvas.style.display = "block";
-    canvas.style.marginLeft = "auto";
-    canvas.style.marginRight = "auto";
-    canvas.style.marginTop = ((windowHeight - internalHeight * scale) / 2) + "px";
-    canvas.style.marginBottom = ((windowHeight - internalHeight * scale) / 2) + "px";
-}
-
-
 // =======================================================
 // ENTRY POINT
 // =======================================================
 
 window.addEventListener("load", initControllerAndGame);
-
 
 // =======================================================
 // INIT / PRELOAD
@@ -86,7 +46,6 @@ function initControllerAndGame()
         console.error("Error during init:", e);
     }
 }
-
 
 // =======================================================
 // GAME LOOP STARTUP
@@ -119,7 +78,6 @@ function startLoop()
     lastTime = performance.now();
     requestAnimationFrame(() => requestAnimationFrame(gameLoop));
 }
-
 
 // =======================================================
 // GAME LOOP
@@ -218,105 +176,58 @@ function renderHTMLMessage(game)
 }
 
 // =======================================================
-// DEBUG UI 
+// FULLSCREEN HELPERS
 // =======================================================
 
-// =======================================================
-// DEBUG FLAGS
-// =======================================================
-
-const DEV_MODE = false; // false when shipping
-//const DEV_MODE = true;     // true when dev
-
-let HIT_BOXES  = false;
-let DEBUG_TEXT = DEV_MODE;
-
-let DRAW_DEBUG_TEXT     = DEBUG_TEXT;
-let DRAW_DEBUG_HITBOXES = HIT_BOXES;
-
-
-// =======================================================
-// DEBUG TEXT SYSTEM
-// =======================================================
-
-// Array to hold debug lines dynamically
-const debugLines = [];
-
-function addDebugLine(line)
-{
-    debugLines.push(line);
+function toggleFullScreen(canvas) {
+    if (!document.fullscreenElement) {
+        if (canvas.requestFullscreen) canvas.requestFullscreen({ navigationUI: "hide" });
+        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+        else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
 }
 
-function clearDebugLines() 
-{
-    debugLines.length = 0;
+function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) {
+    if (!canvas) return;
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const scale = Math.min(windowWidth / internalWidth, windowHeight / internalHeight);
+
+    canvas.style.width = internalWidth * scale + "px";
+    canvas.style.height = internalHeight * scale + "px";
+
+    canvas.style.display = "block";
+    canvas.style.marginLeft = "auto";
+    canvas.style.marginRight = "auto";
+    canvas.style.marginTop = ((windowHeight - internalHeight * scale) / 2) + "px";
+    canvas.style.marginBottom = ((windowHeight - internalHeight * scale) / 2) + "px";
 }
-
-function writeDebugText() 
-{
-    const el = document.getElementById("debug-text");
-    if (!el) return;
-    el.textContent = debugLines.join("\n");
-}
-
-
-function updateDebugPanelVisibility()
-{
-    const panel = document.getElementById("debug-panel");
-    if (!panel) return;
-
-    if (DRAW_DEBUG_TEXT)
-        panel.classList.remove("hidden");
-    else
-        panel.classList.add("hidden");
-}
-
-function updateDebugPanelPosition() 
-{
-    const panel  = document.getElementById("debug-panel");
-    const canvas = document.getElementById("canvas");
-
-    if (!panel || !canvas) return;
-
-    const canvasRect = canvas.getBoundingClientRect();
-
-    panel.style.left =
-        (canvasRect.left - panel.offsetWidth - 10) + "px";
-
-    panel.style.top =
-        (canvasRect.top + canvasRect.height / 2 - panel.offsetHeight / 2) + "px";
-}
-
 
 // =======================================================
-// DEBUG INPUT (DEV MODE ONLY)
+// EVENT LISTENERS
 // =======================================================
-
-window.addEventListener("keydown", e =>
-{
-    if (!DEV_MODE) return;
-
-    switch (e.code)
-    {
-        case "Backquote": // `
-            DRAW_DEBUG_TEXT = !DRAW_DEBUG_TEXT;
-            updateDebugPanelVisibility();
-            break;
-
-        case "KeyH": // H
-            DRAW_DEBUG_HITBOXES = !DRAW_DEBUG_HITBOXES;
-            console.log("Hitboxes:", DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
-            break;
+window.addEventListener("keydown", e => {
+    if (e.code === "KeyF") {
+        const canvas = document.getElementById("canvas");
+        toggleFullScreen(canvas);
     }
 });
 
-document.getElementById("debug-panel") ?.classList.toggle("hidden", !DRAW_DEBUG_TEXT);
-
-
-// =======================================================
-// WINDOW EVENTS
-// =======================================================
-
-window.addEventListener("load", updateDebugPanelPosition);
-window.addEventListener("resize", updateDebugPanelPosition);
-
+document.addEventListener("fullscreenchange", () => {
+    const canvas = document.getElementById("canvas");
+    
+    if (document.fullscreenElement) {
+        // Going fullscreen → scale canvas
+        resizeCanvasToFullscreen(canvas);
+    } else {
+        // Exiting fullscreen → restore original arcade size
+        canvas.style.width = "1000px";
+        canvas.style.height = "600px";
+        canvas.style.margin = "0 auto";
+    }
+});
