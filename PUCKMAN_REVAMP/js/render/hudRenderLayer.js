@@ -121,6 +121,19 @@ function renderHUDLayer(device, game)
                     console.error("Error rendering lose HUD:", e);
                 }
                 break;
+                // ==============================
+            // TOP SCORE
+            // ==============================
+            case gameStates.TOP_SCORE:
+                try 
+                {
+                    drawHud(device,game)
+                } 
+                catch (e) 
+                {
+                    console.error("Error rendering win text:", e);
+                }
+                break;
 
             default:
                 console.warn("Unknown game state in HUD layer:", game.gameState);

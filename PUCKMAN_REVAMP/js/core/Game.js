@@ -35,6 +35,7 @@ class Game
     #lives;
     #player;
     #gameLevel;
+    #highScoreAchived;
 
     // -----------------------------
     // Map / Level Generation
@@ -52,6 +53,7 @@ class Game
     #keyboardTouched;
 
     #nextExtraLifeScore;
+    #topScores;
 
     // =======================================================
     // CONSTRUCTOR
@@ -60,6 +62,7 @@ class Game
     {
         try 
         {
+            /// FIXX need to make sure all memebers are private and needed
             // Core systems
             this.#gameConsts = new GameConsts();
             this.#billBoards = new ObjHolder();
@@ -70,6 +73,12 @@ class Game
             this.#goalHolder   = new ObjHolder();
             this.#borderHolder = new ObjHolder();
             this.#mapHolder    = new ObjHolder();
+
+            this.#topScores = JSON.parse(localStorage.getItem("topScores")) || [];
+
+            this.prevButtons = [];
+            this.prevGameState = null;
+            this._stateEntered = {}; // track per-state entry 
         } 
         catch (err) 
         {
@@ -79,6 +88,7 @@ class Game
         // Game state
         this.#gameState = gameStates.INIT;
         this.#score = 0;
+        this.#highScoreAchived = false;
         this.#lives = 0;
         this.#gameLevel = 1; // always start with 1 for HUD
         this.#player = null;
@@ -116,6 +126,7 @@ class Game
 
     get gameState() { return this.#gameState; }
     get score()     { return this.#score; }
+    get highScoreAchived()     { return this.#highScoreAchived; }
     get lives()     { return this.#lives; }
     get gameLevel() { return this.#gameLevel; }
 
@@ -134,11 +145,14 @@ class Game
 
     get nextExtraLifeScore()  { return this.#nextExtraLifeScore; }
 
+    get topScores()  { return this.#topScores; }
+
     // =======================================================
     // SETTERS
     // =======================================================
     set gameState(v) { this.#gameState = v; }
     set score(v)     { this.#score = v; }
+    set highScoreAchived(v)     { this.#highScoreAchived = v; }
     set lives(v)     { this.#lives = v; }
     set gameLevel(v) { this.#gameLevel = v; }
     set player(v)    { this.#player = v; }
@@ -208,6 +222,7 @@ class Game
             this.score     = 0;
             this.lives     = this.gameConsts.GAME_LIVES_START_AMOUNT;
             this.nextExtraLifeScore = this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
+            this.highScoreAchived = false;
         }
 
         // Clear entity holders
@@ -240,7 +255,13 @@ class Game
     // =======================================================
     decreaseLives(a = 1)   { this.lives -= a; }
     increaseGameLevel()     { this.gameLevel++; }
-    setGameState(state)     { this.gameState = state; }
+    //setGameState(state)     { this.gameState = state; }
+
+    setGameState(newState)
+    {
+        this.prevGameState = this.gameState;
+        this.gameState = newState;
+    }
     
     increaseScore(a) 
     {
@@ -268,4 +289,95 @@ class Game
         return Math.floor(timeLeft * this.gameConsts.VALUE_FOR_UNIT_OF_TIME_LEFT);
     }
 
+    addTopScore(name, score) 
+    {
+        this.topScores.push({ name, score });
+        this.topScores.sort((a, b) => b.score - a.score); // descending
+        if (this.topScores.length > 10) this.topScores.pop(); // keep top 10
+        localStorage.setItem("topScores", JSON.stringify(this.topScores)); // persist
+    }
+
+    recordScore(playerName) 
+    {
+        this.addTopScore(playerName, this.score);
+    }
+    
+    ///FIXX either get rid of stuff not needed or move 
+    // =======================================================
+    // GAMEPAD INPUT (FRAME-BASED)
+    // =======================================================
+    isGamepadButtonPressed(buttonIndex)
+    {
+        const gamepads = navigator.getGamepads?.();
+        if (!gamepads) return false;
+
+        const gp = gamepads[0];
+        if (!gp) return false;
+
+        const pressed = gp.buttons[buttonIndex]?.pressed || false;
+        const prev = this.prevButtons[buttonIndex] || false;
+
+        return pressed && !prev;
+    }
+
+    clearGamepadFrameKeys()
+    {
+        const gamepads = navigator.getGamepads?.();
+        if (!gamepads) return;
+
+        const gp = gamepads[0];
+        if (!gp) return;
+
+        gp.buttons.forEach((btn, i) =>
+        {
+            this.prevButtons[i] = btn.pressed;
+        });
+    }
+
+    printTopScores()
+    {
+        console.log("=== TOP SCORES ===");
+
+        this.topScores.forEach((entry, index) =>
+        {
+            console.log(
+                `${index + 1}. ${entry.name} - ${entry.score}`
+            );
+        });
+    }
+
+    isStateEnter(state)
+    {
+        return this.gameState === state && this.prevGameState !== state;
+    }
+
+    setGameState(newState) 
+    {
+        // Update previous state
+        this.prevGameState = this.gameState;
+
+        // Update current state
+        this.gameState = newState;
+
+        // Mark this state as entered
+        this._stateEntered[newState] = false;
+    }
+
+    // Returns true ONLY the first frame you enter the state
+    isStateEnter(state) 
+    {
+        if (this.gameState !== state) return false;          // not current state
+        if (this._stateEntered[state]) return false;         // already fired for this state
+        this._stateEntered[state] = true;                    // mark as fired
+        return true;                                        // first-frame entry
+    }
+
+    // Call this when leaving a state to reset its “entered” flag
+    resetStateEnterFlag(state) 
+    {
+        this._stateEntered[state] = false;
+    }
+
 }
+
+//localStorage.clear(); 

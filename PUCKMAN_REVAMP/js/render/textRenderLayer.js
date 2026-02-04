@@ -132,7 +132,16 @@ function renderTextLayer(device, game)
 
                     const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
 
-                    if (game.lives <= 0) 
+                    if(game.highScoreAchived == true)
+                    {
+                        // FIXX need const for high score
+                        let dieMsg = "HIGH SCORE"; 
+
+                        device.centerTextOnY(dieMsg, ch * layout.winLoseY); 
+                        return;   
+                    }
+
+                    else if (game.lives <= 0) 
                     {
 
                         if (game.gamePadEnabled)
@@ -161,6 +170,7 @@ function renderTextLayer(device, game)
 
                         device.centerTextOnY(outOfTimeMsg, ch * layout.winLoseY); 
                     }
+                    
                     else 
                     {
                         let dieMsg = null; 
@@ -176,17 +186,44 @@ function renderTextLayer(device, game)
                         device.centerTextOnY(dieMsg, ch * layout.winLoseY);    
                     }
                 } 
+                
                 catch (e) 
                 {
                     console.error("Error rendering lose text:", e);
                 }
                 break;
-                
+            // ==============================
+            // TOP SCORE
+            // ==============================
+            case gameStates.TOP_SCORE:
+                try 
+                {
+                    let winMsg = null;
+
+                    if (game.gamePadEnabled)
+                    {
+                        winMsg = gameTexts.WIN.GAMEPAD_MESSAGE;
+                    }
+                    else
+                    {
+                        winMsg = gameTexts.WIN.MESSAGE;
+                    }
+
+                    device.centerTextOnY(winMsg, ch * layout.winLoseY);
+                    
+                } 
+                catch (e) 
+                {
+                    console.error("Error rendering win text:", e);
+                }
+                break;
+
             default:
                 console.warn("Unknown game state in text layer:", game.gameState);
                 break;
             
         }
+        
     } 
     catch (e) 
     {

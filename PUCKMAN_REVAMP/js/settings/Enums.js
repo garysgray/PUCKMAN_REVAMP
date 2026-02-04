@@ -12,7 +12,8 @@ const gameStates =
     PLAY: 1,
     PAUSE: 2,
     WIN: 3,
-    LOSE: 4
+    LOSE: 4,
+    TOP_SCORE: 5,
 };
 
  // These are to help enemy render the right clip for current direction

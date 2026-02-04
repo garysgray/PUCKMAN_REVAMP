@@ -18,9 +18,10 @@ class GameConsts
     #NO_TIME                = 0;
     #NO_VALUE                = 0;
 
-    #LEVEL_MAX_TIME              = 20;
-    #PLAY_PAUSE_DELAY_TIME       = 0.5;
-    #LOSE_SOUND_DELAY_TIME       = 0.1;
+    #LEVEL_MAX_TIME             = 20;
+    #STATE_DELAY_TIME           = 0.5;
+    #HIGE_SCORE_DELAY_TIME      = 4.0;
+    #LOSE_SOUND_DELAY_TIME      = 0.1;
 
     // ---- UI ----
     #DEBUG_TEXT_COLOR = "yellow";
@@ -69,7 +70,8 @@ class GameConsts
     get NO_VALUE()                { return this.#NO_VALUE; }
     
     get LEVEL_MAX_TIME()          { return this.#LEVEL_MAX_TIME; }
-    get PLAY_PAUSE_DELAY_TIME()   { return this.#PLAY_PAUSE_DELAY_TIME; }
+    get STATE_DELAY_TIME()   { return this.#STATE_DELAY_TIME; }
+    get HIGE_SCORE_DELAY_TIME()   { return this.#HIGE_SCORE_DELAY_TIME; }
     get LOSE_SOUND_DELAY_TIME()   { return this.#LOSE_SOUND_DELAY_TIME; }
 
     get PRIORITY_LOSE_DELAYED() { return this.#PRIORITY_LOSE_DELAYED; }

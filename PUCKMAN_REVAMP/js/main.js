@@ -191,6 +191,7 @@ function toggleFullScreen(canvas) {
     }
 }
 
+//FIXX magic nums
 function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) {
     if (!canvas) return;
 

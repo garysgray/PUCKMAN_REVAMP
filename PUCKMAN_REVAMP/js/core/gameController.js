@@ -118,19 +118,15 @@ class Controller
     {
         try
         {
-            // Get timers
-            const gameClock = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
-            const playDelayTimer = game.gameTimers.getObjectByName(timerTypes.PLAY_DELAY.name);
-            const loseSoundDelayTimer = game.gameTimers.getObjectByName(timerTypes.LOSE_DELAY.name);
-
             // State handlers
             const stateHandlers =
             {
-                [gameStates.INIT]:  () => handleInitState(device, game, playDelayTimer, delta),
-                [gameStates.PLAY]:  () => handlePlayState(device, game, gameClock, loseSoundDelayTimer, delta),
-                [gameStates.PAUSE]: () => handlePauseState(device, game),
-                [gameStates.WIN]:   () => handleWinState(device, game),
-                [gameStates.LOSE]:  () => handleLoseState(device, game, playDelayTimer)
+                [gameStates.INIT]:      () => handleInitState(device, game, delta),
+                [gameStates.PLAY]:      () => handlePlayState(device, game, delta),
+                [gameStates.PAUSE]:     () => handlePauseState(device, game),
+                [gameStates.WIN]:       () => handleWinState(device, game),
+                [gameStates.LOSE]:      () => handleLoseState(device, game, delta),
+                [gameStates.TOP_SCORE]: () => handleTopScoreState(device, game), 
             };
 
             const handler = stateHandlers[game.gameState];

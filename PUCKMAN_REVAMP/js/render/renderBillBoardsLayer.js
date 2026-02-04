@@ -116,8 +116,29 @@ function renderBillBoardsLayer(device, game) {
             } 
             break;
 
+            // ==============================
+            // TOP SCORE
+            // ==============================
+            case gameStates.TOP_SCORE:
+            {
+                // Reserved for future win state content
+                // board = game.billBoards.getObjectByName(billBoardTypes.WIN.type);
+                // const splashImg = device.images.getImage(billBoardTypes.WIN.type);
+                // if (board && splashImg) 
+                // {
+                //     try {
+                //         board.render(device, splashImg, yBuff)
+                //     } 
+                //     catch (e) 
+                //     {
+                //         console.error("Failed to render win image:", e);
+                //     }
+                // }
+            } 
+            break;
+
             default:
-                console.warn("Unknown game state:", game.gameState);
+                console.warn("Unknown game state in text layer:", game.gameState);
                 break;
         }
     } 

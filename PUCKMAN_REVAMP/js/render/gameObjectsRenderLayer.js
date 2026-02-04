@@ -71,9 +71,17 @@ function renderGameObjectsLayer(device, game) {
                 }
             } 
             break;
+            // ==============================
+            // TOP SCORE
+            // ==============================
+            case gameStates.TOP_SCORE:
+            {
+                // Reserved for future win state content
+            } 
+            break;
 
             default:
-                console.warn("Unknown game state:", game.gameState);
+            console.warn("Unknown game state:", game.gameState);
                 break;
         }
     } 

@@ -64,7 +64,7 @@ const soundTypes =
 const timerTypes = 
 { 
      GAME_CLOCK:  { name: "gameClock", timerMode: timerModes.COUNTDOWN },  
-     PLAY_DELAY:  { name: "playDelay", timerMode: timerModes.COUNTDOWN },  
+     STATE_DELAY: { name: "stateDelay", timerMode: timerModes.COUNTDOWN },  
      LOSE_DELAY:  { name: "loseDelay", timerMode: timerModes.COUNTDOWN },   
 };
 
