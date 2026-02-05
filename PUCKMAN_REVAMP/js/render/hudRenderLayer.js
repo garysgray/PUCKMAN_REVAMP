@@ -7,47 +7,12 @@
 // No game logic is executed here — this function only handles text rendering.
 // ============================================================================
 
-function drawHud(device, game )
-{
-    const cw = game.gameConsts.SCREEN_WIDTH;
-    const ch = game.gameConsts.SCREEN_HEIGHT;
-        
-    const layout = 
-        {
-            hudScoreX: 0.10,                        // Left-side HUD text (Ammo)
-            hudLivesX: 0.30,                       // Right-side HUD text (Lives)
-            hudClockX: 0.60,                       // Right-side HUD text (Lives)
-            hudLevelX: 0.80,                       // Right-side HUD text (Lives)
-            hudY: .05,                             // HUD vertical placement 1   score, lives
-            //hudY2: .095,                           // HUD vertical placement 2   score
-           // hudY3: .05,                            // HUD vertical placement 3   clock               
-        };
-    const scoreText = gameTexts.HUD.SCORE + game.score;
-    const livesText = gameTexts.HUD.LIVES + game.lives;
-    const levelText = gameTexts.HUD.LEVEL + game.gameLevel;
-    const timer = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
-    
-    device.putText(scoreText, cw * layout.hudScoreX, ch * layout.hudY);
-    device.putText(livesText, cw * layout.hudLivesX, ch * layout.hudY);
-
-    if (timer.timeLeft == 0)
-    {
-        device.putText(`Time: 0:00`, cw * layout.hudClockX, (ch * layout.hudY) );  
-    }
-    else
-    {
-        device.putText(`Time: ${timer.formatted}`, cw * layout.hudClockX, (ch * layout.hudY) );  
-    }
-    
-    device.putText(levelText, cw * layout.hudLevelX, ch * layout.hudY);
-}
-
 function renderHUDLayer(device, game) 
 {
     try 
     {
         // Set default font and color
-        device.setFont(game.gameConsts.FONT_SETTINGS);
+        device.setFont(game.gameConsts.NORM_FONT_SETTINGS);
         device.setTextColor(game.gameConsts.FONT_COLOR);
 
         switch (game.gameState) 
@@ -71,7 +36,7 @@ function renderHUDLayer(device, game)
             case gameStates.PLAY:
                 try
                 {
-                    drawHud(device,game)
+                    Render.renderHud(device,game)
   
                 }
                 catch (e) 
@@ -86,7 +51,7 @@ function renderHUDLayer(device, game)
             case gameStates.PAUSE:
                 try 
                 {
-                    
+                    Render.renderHud(device,game)
                 }  
                 catch (e) 
                 {
@@ -100,7 +65,7 @@ function renderHUDLayer(device, game)
             case gameStates.WIN:
                 try 
                 {
-                    drawHud(device,game)
+                    Render.renderHud(device,game)
                 } 
                 catch (e) 
                 {
@@ -114,7 +79,7 @@ function renderHUDLayer(device, game)
             case gameStates.LOSE:
                 try 
                 {
-                    drawHud(device,game)
+                    Render.renderHud(device,game)
                 } 
                 catch (e) 
                 {
@@ -127,7 +92,7 @@ function renderHUDLayer(device, game)
             case gameStates.TOP_SCORE:
                 try 
                 {
-                    drawHud(device,game)
+                    Render.renderHud(device,game)
                 } 
                 catch (e) 
                 {

@@ -154,13 +154,40 @@ class KeyButtonManager
         this.initKeys();
         this.wasPausePressed = false;
 
-        // Setup gamepad button checker
-        this.isGamepadButtonPressed = function(buttonIndex) 
+        // In KeyButtonManager constructor, REPLACE all the axis stuff with this:
+        this.axisThreshold = 0.5;
+        this.axisPressed = {}; // Track which axes are currently pressed
+
+        this.getGamepadAxis = function(axisIndex) 
         {
             const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-            const gp = gamepads[0]; // first controller only
-            return gp ? gp.buttons[buttonIndex]?.pressed : false;
+            const gp = gamepads[0];
+            return gp ? (gp.axes[axisIndex] || 0) : 0;
         };
+
+        this.wasAxisJustPressed = function(axisIndex, direction) 
+        {
+            const key = `${axisIndex}_${direction}`;
+            const currentValue = this.getGamepadAxis(axisIndex);
+            
+            const isPressed = direction < 0 
+                ? currentValue < -this.axisThreshold 
+                : currentValue > this.axisThreshold;
+            
+            // Check if it JUST became pressed (wasn't pressed before)
+            if (isPressed && !this.axisPressed[key]) {
+                this.axisPressed[key] = true;
+                return true;
+            }
+            
+            // Clear when released
+            if (!isPressed) {
+                this.axisPressed[key] = false;
+            }
+            
+            return false;
+        };
+        
     }
 
     get value() { return this.#value; }
@@ -194,7 +221,13 @@ class KeyButtonManager
     isKeyDown(key) { return !!this.#keysDown[key]; }
     isKeyPressed(key) { return !!this.#keysPressed[key]; }
     isKeyReleased(key) { return !!this.#keysReleased[key]; }
-    clearFrameKeys() { this.#keysPressed = {}; this.#keysReleased = {}; }
+
+    clearFrameKeys() 
+    { 
+        this.#keysPressed = {}; 
+        this.#keysReleased = {};
+        this.lastAxisValues = [0, 0, 0, 0]; // Add this line
+    }
 
     // ------------------------------------------------------------------------
     // Toggle-once utility for frame-safe input

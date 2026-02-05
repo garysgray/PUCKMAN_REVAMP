@@ -1,110 +1,119 @@
-// -----------------------------
+// =======================================================
 // GameConsts.js
-// -----------------------------
-// Purpose:
-// Global game constants exposed via getters
-// -----------------------------
+// -------------------------------------------------------
+// Global game constants - all values are read-only
+// =======================================================
+
 class GameConsts 
 {
-    // ---- Screen ----
+    // =======================================================
+    // SCREEN
+    // =======================================================
     #SCREEN_WIDTH  = 1000;
     #SCREEN_HEIGHT = 600;
     #HUD_BUFFER    = 0.045;
 
-    // ---- Gameplay ----
-    #GAME_LIVES_START_AMOUNT = 3;
-    #LAST_LIFE               = 1;
-    #NO_LIVES                = 0;
-    #NO_TIME                = 0;
-    #NO_VALUE                = 0;
-
-    #LEVEL_MAX_TIME             = 20;
-    #STATE_DELAY_TIME           = 0.5;
-    #HIGE_SCORE_DELAY_TIME      = 4.0;
-    #LOSE_SOUND_DELAY_TIME      = 0.1;
-
-    // ---- UI ----
-    #DEBUG_TEXT_COLOR = "yellow";
-    #FONT_COLOR       = "hsla(49, 100%, 50%, 0.965)";
-    #FONT_SETTINGS    = "bold 20pt VT323";
-
-    // ---- Sound ----
-    #POOLSIZE = 5;
-    #VOLUME   = 1.0;
-
-    #PRIORITY_LOSE_DELAYED = 80;
-
-    #PRIORITY_WIN          = 90;
-    #PRIORITY_LOSE         = 90;
-    #PRIORITY_TIMEOUT      = 95;
-
-    #PRIORITY_LIFE         = 100; // absolute override
-
-    // ---- Map / Level ----
-    #MAP_BUFFER_X                = 60;
-    #MAP_BUFFER_Y                = 70;
-    #NUM_MAP_X_TILES             = 36;
-    #NUM_MAP_Y_TILES             = 20;
-    #MAP_TILE_WIDTH              = MAP_TILE_SIZE.w;
-    #MAP_TILE_HEIGHT             = MAP_TILE_SIZE.h;
-    #MAX_GOAL_PLACEMENT_ATTEMPTS = 25;
-    #EVEN_LEVEL_EMPTY_CHANCE_BONUS = 0.02;
-
-    // ---Scoring------
-    #VALUE_FOR_GETTING_GOAL = 10;
-    #VALUE_FOR_UNIT_OF_TIME_LEFT = 5;
-    #VALUE_FOR_WINNING_LEVEL = 100;
-    #VALUE_WHEN_NEW_LIFE_AWARDED = 1000;
-
-    // ---- Getters ----
-    // Screen
     get SCREEN_WIDTH()  { return this.#SCREEN_WIDTH; }
     get SCREEN_HEIGHT() { return this.#SCREEN_HEIGHT; }
     get HUD_BUFFER()    { return this.#HUD_BUFFER; }
 
-    // Gameplay
+    // =======================================================
+    // GAMEPLAY
+    // =======================================================
+    #GAME_LIVES_START_AMOUNT = 3;
+    #LAST_LIFE = 1;
+    #NO_LIVES  = 0;
+    #NO_TIME   = 0;
+    #NO_VALUE  = 0;
+
     get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT; }
-    get LAST_LIFE()               { return this.#LAST_LIFE; }
-    get NO_LIVES()                { return this.#NO_LIVES; }
-    get NO_TIME()                { return this.#NO_TIME; }
-    get NO_VALUE()                { return this.#NO_VALUE; }
-    
-    get LEVEL_MAX_TIME()          { return this.#LEVEL_MAX_TIME; }
-    get STATE_DELAY_TIME()   { return this.#STATE_DELAY_TIME; }
-    get HIGE_SCORE_DELAY_TIME()   { return this.#HIGE_SCORE_DELAY_TIME; }
-    get LOSE_SOUND_DELAY_TIME()   { return this.#LOSE_SOUND_DELAY_TIME; }
+    get LAST_LIFE() { return this.#LAST_LIFE; }
+    get NO_LIVES()  { return this.#NO_LIVES; }
+    get NO_TIME()   { return this.#NO_TIME; }
+    get NO_VALUE()  { return this.#NO_VALUE; }
 
-    get PRIORITY_LOSE_DELAYED() { return this.#PRIORITY_LOSE_DELAYED; }
+    // =======================================================
+    // TIMING
+    // =======================================================
+    #LEVEL_MAX_TIME        = 20;
+    #STATE_DELAY_TIME      = 0.5;
+    #HIGH_SCORE_DELAY_TIME = 4.0;
+    #LOSE_SOUND_DELAY_TIME = 0.1;
 
-    get PRIORITY_WIN()          { return this.#PRIORITY_WIN; }
-    get PRIORITY_LOSE()         { return this.#PRIORITY_LOSE; }
-    get PRIORITY_TIMEOUT()     { return this.#PRIORITY_TIMEOUT; }
+    get LEVEL_MAX_TIME()        { return this.#LEVEL_MAX_TIME; }
+    get STATE_DELAY_TIME()      { return this.#STATE_DELAY_TIME; }
+    get HIGH_SCORE_DELAY_TIME() { return this.#HIGH_SCORE_DELAY_TIME; }
+    get LOSE_SOUND_DELAY_TIME() { return this.#LOSE_SOUND_DELAY_TIME; }
 
-    get PRIORITY_LIFE()         { return this.#PRIORITY_LIFE; }
+    // =======================================================
+    // UI / FONTS
+    // =======================================================
+    #DEBUG_TEXT_COLOR  = "yellow";
+    #FONT_COLOR        = "hsla(49, 100%, 50%, 0.965)";
+    #HIGHLIGHT_COLOR   = "white";
+    #NORM_FONT_SETTINGS = "bold 20pt VT323";
+    #MID_FONT_SETTINGS  = "bold 90pt VT323";
+    #BIG_FONT_SETTINGS  = "bold 100pt VT323";
 
+    get DEBUG_TEXT_COLOR()   { return this.#DEBUG_TEXT_COLOR; }
+    get FONT_COLOR()         { return this.#FONT_COLOR; }
+    get HIGHLIGHT_COLOR()    { return this.#HIGHLIGHT_COLOR; }
+    get NORM_FONT_SETTINGS() { return this.#NORM_FONT_SETTINGS; }
+    get MID_FONT_SETTINGS()  { return this.#MID_FONT_SETTINGS; }
+    get BIG_FONT_SETTINGS()  { return this.#BIG_FONT_SETTINGS; }
 
-    // UI
-    get DEBUG_TEXT_COLOR() { return this.#DEBUG_TEXT_COLOR; }
-    get FONT_COLOR()       { return this.#FONT_COLOR; }
-    get FONT_SETTINGS()    { return this.#FONT_SETTINGS; }
+    // =======================================================
+    // AUDIO
+    // =======================================================
+    #POOLSIZE = 5;
+    #VOLUME   = 1.0;
 
-    // Sound
+    #PRIORITY_LOSE_DELAYED = 80;
+    #PRIORITY_WIN          = 90;
+    #PRIORITY_LOSE         = 90;
+    #PRIORITY_TIMEOUT      = 95;
+    #PRIORITY_LIFE         = 100;
+
     get POOLSIZE() { return this.#POOLSIZE; }
     get VOLUME()   { return this.#VOLUME; }
 
-    // Map / Level
-    get MAP_BUFFER_X()                { return this.#MAP_BUFFER_X; }
-    get MAP_BUFFER_Y()                { return this.#MAP_BUFFER_Y; }
-    get NUM_MAP_X_TILES()             { return this.#NUM_MAP_X_TILES; }
-    get NUM_MAP_Y_TILES()             { return this.#NUM_MAP_Y_TILES; }
-    get MAP_TILE_WIDTH()              { return this.#MAP_TILE_WIDTH; }
-    get MAP_TILE_HEIGHT()             { return this.#MAP_TILE_HEIGHT; }
+    get PRIORITY_LOSE_DELAYED() { return this.#PRIORITY_LOSE_DELAYED; }
+    get PRIORITY_WIN()          { return this.#PRIORITY_WIN; }
+    get PRIORITY_LOSE()         { return this.#PRIORITY_LOSE; }
+    get PRIORITY_TIMEOUT()      { return this.#PRIORITY_TIMEOUT; }
+    get PRIORITY_LIFE()         { return this.#PRIORITY_LIFE; }
+
+    // =======================================================
+    // MAP / LEVEL
+    // =======================================================
+    #MAP_BUFFER_X  = 60;
+    #MAP_BUFFER_Y  = 70;
+    #NUM_MAP_X_TILES = 36;
+    #NUM_MAP_Y_TILES = 20;
+    #MAP_TILE_WIDTH  = MAP_TILE_SIZE.w;
+    #MAP_TILE_HEIGHT = MAP_TILE_SIZE.h;
+    #MAX_GOAL_PLACEMENT_ATTEMPTS = 25;
+    #EVEN_LEVEL_EMPTY_CHANCE_BONUS = 0.02;
+
+    get MAP_BUFFER_X()  { return this.#MAP_BUFFER_X; }
+    get MAP_BUFFER_Y()  { return this.#MAP_BUFFER_Y; }
+    get NUM_MAP_X_TILES() { return this.#NUM_MAP_X_TILES; }
+    get NUM_MAP_Y_TILES() { return this.#NUM_MAP_Y_TILES; }
+    get MAP_TILE_WIDTH()  { return this.#MAP_TILE_WIDTH; }
+    get MAP_TILE_HEIGHT() { return this.#MAP_TILE_HEIGHT; }
     get MAX_GOAL_PLACEMENT_ATTEMPTS() { return this.#MAX_GOAL_PLACEMENT_ATTEMPTS; }
     get EVEN_LEVEL_EMPTY_CHANCE_BONUS() { return this.#EVEN_LEVEL_EMPTY_CHANCE_BONUS; }
 
-    // ---Scoring------
-    get VALUE_FOR_GETTING_GOAL() { return this.#VALUE_FOR_GETTING_GOAL; }
+    // =======================================================
+    // SCORING
+    // =======================================================
+    #VALUE_FOR_GETTING_GOAL      = 10;
+    #VALUE_FOR_UNIT_OF_TIME_LEFT = 5;
+    #VALUE_FOR_WINNING_LEVEL     = 100;
+    #VALUE_WHEN_NEW_LIFE_AWARDED = 1000;
+
+    get VALUE_FOR_GETTING_GOAL()      { return this.#VALUE_FOR_GETTING_GOAL; }
     get VALUE_FOR_UNIT_OF_TIME_LEFT() { return this.#VALUE_FOR_UNIT_OF_TIME_LEFT; }
+    get VALUE_FOR_WINNING_LEVEL()     { return this.#VALUE_FOR_WINNING_LEVEL; }
     get VALUE_WHEN_NEW_LIFE_AWARDED() { return this.#VALUE_WHEN_NEW_LIFE_AWARDED; }
-    get VALUE_FOR_WINNING_LEVEL() { return this.#VALUE_FOR_WINNING_LEVEL; }
 }

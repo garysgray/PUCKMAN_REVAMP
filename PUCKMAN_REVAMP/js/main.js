@@ -1,72 +1,63 @@
 // =======================================================
 // MAIN.js   
-// =======================================================
-// GAME LOOP FUNCTIONS 
+// Entry point and game loop
 // =======================================================
 
 // =======================================================
 // GLOBALS
 // =======================================================
 let myController;
-let lastTime    = performance.now();
+let lastTime = performance.now();
 let accumulator = 0;
 let gameRunning = false;
-let rafId       = null;
+let rafId = null;
+
+const FIXED_TIMESTEP = 1 / 60;
+const MAX_FRAME_TIME = 0.25;
 
 // =======================================================
 // ENTRY POINT
 // =======================================================
-
 window.addEventListener("load", initControllerAndGame);
 
 // =======================================================
-// INIT / PRELOAD
+// INITIALIZATION
 // =======================================================
-
 function initControllerAndGame() 
 {
     try 
     {
         if (!myController) myController = new Controller();
-    }
-    catch (e) 
-    {
-        console.error("Failed to create Controller:", e);
-        return;
-    }
-
-    try 
-    {
-        updateDebugPanelVisibility();
-        updateDebugPanelPosition();
+        
+        Debug.updateDebugPanelVisibility();
+        Debug.updateDebugPanelPosition();
+        
         safeStartGame();
     }
     catch (e) 
     {
-        console.error("Error during init:", e);
+        console.error("Initialization failed:", e);
     }
 }
-
-// =======================================================
-// GAME LOOP STARTUP
-// =======================================================
 
 function safeStartGame() 
 {
-    if (!readyToStart()) return setTimeout(startGameSafely, 100);
-
-    if (!gameRunning) 
+    if (!readyToStart()) 
     {
-        gameRunning = true;
-
-        if (window.requestIdleCallback)
-            requestIdleCallback(startLoop, { timeout: 200 });
-        else
-            setTimeout(startLoop, 200);
+        setTimeout(safeStartGame, 100);
+        return;
     }
+
+    if (gameRunning) return;
+
+    gameRunning = true;
+
+    if (window.requestIdleCallback)
+        requestIdleCallback(startLoop, { timeout: 200 });
+    else
+        setTimeout(startLoop, 200);
 }
 
-// Temporary canvas safety check
 function readyToStart() 
 {
     const canvas = document.getElementById("canvas");
@@ -82,151 +73,130 @@ function startLoop()
 // =======================================================
 // GAME LOOP
 // =======================================================
-
 function gameLoop() 
 {
-    const fixedStep   = 1 / 60;
-    const frameTimeMax = 0.25;
-
     const now = performance.now();
     let frameTime = (now - lastTime) / 1000;
     lastTime = now;
 
-    if (frameTime > frameTimeMax) frameTime = frameTimeMax;
+    // Clamp frame time to prevent spiral of death
+    if (frameTime > MAX_FRAME_TIME) frameTime = MAX_FRAME_TIME;
 
     accumulator += frameTime;
 
-    while (accumulator >= fixedStep) 
+    // Fixed timestep updates
+    while (accumulator >= FIXED_TIMESTEP) 
     {
         try 
         {
-            myController.callUpdateGame(fixedStep); //// THIS IS WHAT RUNS THE GAME!!!!!
+            myController.callUpdateGame(FIXED_TIMESTEP);
         }
         catch (e) 
         {
-            console.error("updateGame error:", e);
+            console.error("Update error:", e);
         }
 
-        accumulator -= fixedStep;
-
+        accumulator -= FIXED_TIMESTEP;
         myController.device.keys.clearFrameKeys();
     }
 
-    // Updates the message at bottom of screen
-    renderHTMLMessage(myController.game); 
-    
-    // --------------------
-    // DEBUG TEXT
-    // --------------------
-    clearDebugLines();
+    // Render
+    renderHTMLMessage(myController.game);
+    Debug.updateDebugPanel();
 
-    if (DRAW_DEBUG_TEXT)
-    {
-        try 
-        {
-            addDebugLine("PUCKMAN DEBUG");
-            addDebugLine("----------------");
-            addDebugLine(`SafeMargin: ${myController.game.mapSafeMargin}`);
-            addDebugLine(`LaneSpacing: ${myController.game.mapLaneSpacing}`);
-            addDebugLine(`EmptyChance: ${myController.game.mapEmptyChance}`);
-            addDebugLine(`SpawnRadius: ${myController.game.mapSpawnRadius}`);
-            addDebugLine(`GoalCount: ${myController.game.goalCount}`);
-        }
-        catch (e) 
-        {
-            console.error("shit not loaded yet:", e);
-        }
-    }
-
-    writeDebugText();
     rafId = requestAnimationFrame(gameLoop);
 }
 
 // =======================================================
 // HTML MESSAGE HANDLER
 // =======================================================
-
 function renderHTMLMessage(game) 
 {
     const msg = document.getElementById("message");
     if (!msg) return;
 
-    if (game.gameState != gameStates.INIT) 
+    let message;
+
+    if (game.gameState !== gameStates.INIT) 
     {
-        if (game.gamePadEnabled) 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]}</p>`;
-        } 
-        else 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
-        }
+        message = game.gamePadEnabled 
+            ? gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]
+            : gameTexts.INIT.INSTRUCTIONS[4];
     }
     else
     {
-        if (game.gamePadConnected)
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS}</p>`;
-        }
-        else 
-        {
-            msg.innerHTML = `<p>${gameTexts.INIT.INSTRUCTIONS[4]}</p>`;
-        }
+        message = game.gamePadConnected 
+            ? gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS
+            : gameTexts.INIT.INSTRUCTIONS[4];
     }
+
+    msg.innerHTML = `<p>${message}</p>`;
 }
 
 // =======================================================
-// FULLSCREEN HELPERS
+// FULLSCREEN FUNCTIONS
 // =======================================================
-
-function toggleFullScreen(canvas) {
-    if (!document.fullscreenElement) {
-        if (canvas.requestFullscreen) canvas.requestFullscreen({ navigationUI: "hide" });
-        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
-        else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
+function toggleFullScreen(canvas) 
+{
+    if (!document.fullscreenElement) 
+    {
+        if (canvas.requestFullscreen) 
+            canvas.requestFullscreen({ navigationUI: "hide" });
+        else if (canvas.webkitRequestFullscreen) 
+            canvas.webkitRequestFullscreen();
+        else if (canvas.msRequestFullscreen) 
+            canvas.msRequestFullscreen();
+    } 
+    else 
+    {
+        if (document.exitFullscreen) 
+            document.exitFullscreen();
+        else if (document.webkitExitFullscreen) 
+            document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) 
+            document.msExitFullscreen();
     }
 }
 
-//FIXX magic nums
-function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) {
+function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) 
+{
     if (!canvas) return;
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
     const scale = Math.min(windowWidth / internalWidth, windowHeight / internalHeight);
 
-    canvas.style.width = internalWidth * scale + "px";
-    canvas.style.height = internalHeight * scale + "px";
+    const scaledWidth = internalWidth * scale;
+    const scaledHeight = internalHeight * scale;
 
+    canvas.style.width = scaledWidth + "px";
+    canvas.style.height = scaledHeight + "px";
     canvas.style.display = "block";
-    canvas.style.marginLeft = "auto";
-    canvas.style.marginRight = "auto";
-    canvas.style.marginTop = ((windowHeight - internalHeight * scale) / 2) + "px";
-    canvas.style.marginBottom = ((windowHeight - internalHeight * scale) / 2) + "px";
+    canvas.style.margin = `${(windowHeight - scaledHeight) / 2}px auto`;
 }
 
 // =======================================================
-// EVENT LISTENERS
+// FULL SCREEN EVENT LISTENERS
 // =======================================================
-window.addEventListener("keydown", e => {
-    if (e.code === "KeyF") {
+window.addEventListener("keydown", e => 
+{
+    if (e.code === "KeyF") 
+    {
         const canvas = document.getElementById("canvas");
         toggleFullScreen(canvas);
     }
 });
 
-document.addEventListener("fullscreenchange", () => {
+document.addEventListener("fullscreenchange", () => 
+{
     const canvas = document.getElementById("canvas");
     
-    if (document.fullscreenElement) {
-        // Going fullscreen → scale canvas
+    if (document.fullscreenElement) 
+    {
         resizeCanvasToFullscreen(canvas);
-    } else {
-        // Exiting fullscreen → restore original arcade size
+    } 
+    else 
+    {
         canvas.style.width = "1000px";
         canvas.style.height = "600px";
         canvas.style.margin = "0 auto";

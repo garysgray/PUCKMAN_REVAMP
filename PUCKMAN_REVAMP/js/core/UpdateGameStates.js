@@ -1,54 +1,46 @@
 // ============================================================================
-// CONTROLLER UPDATE_GAME STATE HANDLERS
+// GAME STATE HANDLERS
 // ============================================================================
 
-// ---------------------------
-// INIT STATE HANDLER
-// ---------------------------
+// ============================================================================
+// INIT STATE
+// ============================================================================
 function handleInitState(device, game, delta) 
 {
     try 
     {
         const stateDelayTimer = game.gameTimers.getObjectByName(timerTypes.STATE_DELAY.name);
-        // ---------------------------
-        // Run once on entering INIT
-        // ---------------------------
+        
         if (game.isStateEnter(gameStates.INIT)) 
         {
-            // Stop all sounds and reset game entities & timers
             device.audio.stopAll();
             game.setGame();
-            console.log("INIT state entered: game reset");
-
-            // Clear old input frames
             device.keys.clearFrameKeys();
             game.clearGamepadFrameKeys();
+
+            // FIXX make a scoreutility
+            //game.printTopScores();
         }
 
         stateDelayTimer.update(delta);
+        if (stateDelayTimer.active) return;
 
-        // If still active then we wait till delay is done
-        if (stateDelayTimer.active)
-        {
-            return;
-        }
-
-        // ---------------------------
-        // Toggle gamepad on Q (frame-safe)
-        // ---------------------------
+        // Toggle gamepad on Q press
         if (game.gamePadConnected) 
         {
-            const toggleQ = device.keys.toggleOnce(device.keys.isKeyPressed(keyTypes.Q), { value: device.keys.wasQPressed });
+            const toggleQ = device.keys.toggleOnce(
+                device.keys.isKeyPressed(keyTypes.Q), 
+                { value: device.keys.wasQPressed }
+            );
             if (toggleQ) game.gamePadEnabled = !game.gamePadEnabled;
         }
 
-        // ---------------------------
-        // Check start input (keyboard or gamepad)
-        // ---------------------------
-        const startPressed = device.keys.isKeyPressed(keyTypes.PLAY_KEY) || device.keys.isGamepadButtonPressed(gamepadButtons.START);
+        // Check for start input
+        const startPressed = device.keys.isKeyPressed(keyTypes.PLAY_KEY) || 
+                           device.keys.isGamepadButtonPressed(gamepadButtons.START);
 
-        // Accept input based on current control method
-        if ((game.gamePadEnabled && startPressed) || (!game.gamePadEnabled && startPressed && game.keyboardTouched)) 
+        if ((game.gamePadEnabled && startPressed) || 
+            (!game.gamePadEnabled && startPressed && game.keyboardTouched)) 
         {
             game.setGameState(gameStates.PLAY);
         }
@@ -59,9 +51,9 @@ function handleInitState(device, game, delta)
     }
 }
 
-// ---------------------------
-// PLAY STATE HANDLER
-// ---------------------------
+// ============================================================================
+// PLAY STATE
+// ============================================================================
 function handlePlayState(device, game, delta)
 {
     try
@@ -77,10 +69,10 @@ function handlePlayState(device, game, delta)
             device.keys.clearFrameKeys();
         }
 
-        // Update game clock
+        // Update clock
         if (gameClock.active) gameClock.update(delta);
 
-        // Timer ran out
+        // Time expired
         if (gameClock.timeLeft === game.gameConsts.NO_TIME)
         {
             device.audio.requestSound(soundTypes.TIMEOUT, game.gameConsts.PRIORITY_TIMEOUT, [AudioStates.PLAY]);
@@ -101,33 +93,25 @@ function handlePlayState(device, game, delta)
         game.player.update(device, game, delta, soundTypes.MOVE);
         game.enemyHolder.forEach(e => e.update(delta, game, game.player));
 
-        // ---------------------------
-        // Player collisions
-        // ---------------------------
-    
+        // Handle player hit
         const hitIndex = checkPlayerCollisions(game.enemyHolder, game.player);
 
         if (hitIndex !== false && !game.player.isDying) 
         {
-            // Latch death
             game.player.isDying = true;
-
             device.audio.stopSound(soundTypes.MOVE);
 
-            // Play HURT once
             if (!game.player.justHit) 
             {
                 device.audio.requestSound(soundTypes.HURT);
                 game.player.justHit = true;
             }
 
-            // Last life -> delay LOSE sound
             if (game.lives === game.gameConsts.LAST_LIFE) 
             {
                 if (!loseSoundDelayTimer.active) 
                     loseSoundDelayTimer.setAndStart(game.gameConsts.LOSE_SOUND_DELAY_TIME);
-
-                return; // delayed LOSE handled below
+                return;
             } 
             else 
             {
@@ -137,9 +121,7 @@ function handlePlayState(device, game, delta)
             }
         }
 
-        // ---------------------------
         // Handle delayed LOSE for last life
-        // ---------------------------
         if (game.player.isDying && game.lives === game.gameConsts.LAST_LIFE)
         {
             if (loseSoundDelayTimer.update(delta))
@@ -152,10 +134,8 @@ function handlePlayState(device, game, delta)
             }
         }
 
-        // ---------------------------
-        // Goal pickup
-        // ---------------------------
-        if (game.goalHolder.getSize() !== game.gameConsts.NO_LIVES)
+        // Handle goal collection
+        if (game.goalHolder.getSize() !== game.gameConsts.NO_VALUE)
         {
             const goalIndex = checkPlayerCollisions(game.goalHolder, game.player);
             if (goalIndex !== false)
@@ -186,9 +166,8 @@ function handlePlayState(device, game, delta)
             game.setGameState(gameStates.WIN);
         }
 
-        // Pause check
+        // Check for pause
         device.keys.checkForPause(game, keyTypes.PAUSE_KEY_L, gamepadButtons.PAUSE, gameStates.PLAY, gameStates.PAUSE);
-
     }
     catch (e)
     {
@@ -196,24 +175,21 @@ function handlePlayState(device, game, delta)
     }
 }
 
-// ---------------------------
-// PAUSE STATE HANDLER
-// ---------------------------
+// ============================================================================
+// PAUSE STATE
+// ============================================================================
 function handlePauseState(device, game)
 {
     try
     {
-        // Run once on entering PAUSE
         if (game.isStateEnter(gameStates.PAUSE))
         {
-            // Clear frame-based inputs so nothing leaks in
             device.audio.stopAll();
             game.clearGamepadFrameKeys();
             device.keys.clearFrameKeys();
         }
-        // Allow pause toggle using the SAME logic as play
-        device.keys.checkForPause(game, keyTypes.PAUSE_KEY_L, gamepadButtons.PAUSE, gameStates.PLAY, gameStates.PAUSE);
 
+        device.keys.checkForPause(game, keyTypes.PAUSE_KEY_L, gamepadButtons.PAUSE, gameStates.PLAY, gameStates.PAUSE);
     }
     catch (e)
     {
@@ -221,31 +197,25 @@ function handlePauseState(device, game)
     }
 }
 
-// ---------------------------
-// WIN STATE HANDLER
-// ---------------------------
+// ============================================================================
+// WIN STATE
+// ============================================================================
 function handleWinState(device, game) 
 {
     try 
     {
-        // Run once on entering WIN
-        
         if (game.isStateEnter(gameStates.WIN)) 
         {
             device.audio.setAudioGameState(AudioStates.WIN); 
-
-            // Clear previous frame inputs
             game.clearGamepadFrameKeys();
             device.keys.clearFrameKeys();
         }
 
-        // Check inputs per frame safely
         const resetPressed = device.keys.isKeyPressed(keyTypes.RESET_KEY);
         const startPressed = game.isGamepadButtonPressed(gamepadButtons.START);
 
         if (resetPressed || startPressed) 
         {
-            // Stop sounds at start of state
             device.audio.stopAll();
             device.audio.setAudioGameState(AudioStates.PLAY);
             game.setGame();
@@ -258,26 +228,23 @@ function handleWinState(device, game)
     }
 }
 
-// ---------------------------
-// LOSE STATE HANDLER
-// ---------------------------
+// ============================================================================
+// LOSE STATE
+// ============================================================================
 function handleLoseState(device, game, delta) 
 {
     try 
     {
         const stateDelayTimer = game.gameTimers.getObjectByName(timerTypes.STATE_DELAY.name);
 
-        // Run once on entering LOSE
         if (game.isStateEnter(gameStates.LOSE)) 
         {
-            device.audio.setAudioGameState(AudioStates.LOSE); // set lose audio
-            device.keys.clearFrameKeys();                     // clear old keyboard presses
-            game.clearGamepadFrameKeys();                     // clear old gamepad presses
+            device.audio.setAudioGameState(AudioStates.LOSE);
+            device.keys.clearFrameKeys();
+            game.clearGamepadFrameKeys();
         }
 
-        // ----------------------------
-        // Handle restart if still has lives
-        // ----------------------------
+        // Has lives remaining - allow retry
         if (game.lives !== game.gameConsts.NO_LIVES) 
         {
             const resetPressed = device.keys.isKeyPressed(keyTypes.RESET_KEY);
@@ -286,53 +253,44 @@ function handleLoseState(device, game, delta)
             if (resetPressed || startPressed) 
             {
                 stateDelayTimer.setAndStart(game.gameConsts.STATE_DELAY_TIME);
-                device.audio.setAudioGameState(AudioStates.PLAY); // unlock audio
+                device.audio.setAudioGameState(AudioStates.PLAY);
                 game.setGame();
                 game.setGameState(gameStates.PLAY);
             }
         } 
         else 
         {
-            // ----------------------------
-            // High score logic
-            // ----------------------------
-            const lowestScore = game.topScores.length < 10 ? 0 : game.topScores[game.topScores.length - 1].score;
-
-            //if (!stateDelayTimer.active) 
-           
+            // Game over - check for high score
+            const lowestScore = game.topScores.length < 10 
+                ? 0 
+                : game.topScores[game.topScores.length - 1].score;
 
             if (game.score > lowestScore) 
             {
-                // Run once on entering high-score-qualifying LOSE
                 if (!game.highScoreAchived) 
                 {
                     game.highScoreAchived = true;
-                    stateDelayTimer.setAndStart(game.gameConsts.HIGE_SCORE_DELAY_TIME);
+                    stateDelayTimer.setAndStart(game.gameConsts.HIGH_SCORE_DELAY_TIME);
                 }
 
-                    stateDelayTimer.update(delta)
+                stateDelayTimer.update(delta);
 
-                    
                 if (!stateDelayTimer.active)
                 {
-                    game.recordScore("AAA"); // Replace with player input later
                     game.setGameState(gameStates.TOP_SCORE);
                     game.highScoreAchived = false;
-
                     device.keys.clearFrameKeys();
                     game.clearGamepadFrameKeys();
                 }
             } 
             else 
             {
-                // No high score: allow restart safely
                 const resetPressed = device.keys.isKeyPressed(keyTypes.RESET_KEY); 
                 const startPressed = game.isGamepadButtonPressed(gamepadButtons.START);
 
                 if (resetPressed || startPressed) 
                 {
                     game.setGameState(gameStates.INIT);
-                    //playDelayTimer.setAndStart(game.gameConsts.PLAY_PAUSE_DELAY_TIME);
                 }
             }
         }
@@ -343,34 +301,81 @@ function handleLoseState(device, game, delta)
     }
 }
 
-// ---------------------------
-// TOP SCORE STATE HANDLER
-// ---------------------------
+// ============================================================================
+// TOP SCORE STATE
+// ============================================================================
 function handleTopScoreState(device, game) 
 {
     try 
     {
         const stateDelayTimer = game.gameTimers.getObjectByName(timerTypes.STATE_DELAY.name);
-        // Run once on entering TOP_SCORE
+        const initials = game.playerInitials;
+
         if (game.isStateEnter(gameStates.TOP_SCORE)) 
         {
-            console.log("TOP_SCORE active");
-            game.printTopScores();
- 
-            // Clear previous frame buttons so old presses don't carry over
+            //FIXX make a uitlity of debug or scoreutility
+            //game.printTopScores();
+
             game.clearGamepadFrameKeys();
             device.keys.clearFrameKeys();
         }
 
-        // Now check input per frame safely
+        // Keyboard input
+        const upPressed    = device.keys.isKeyPressed(keyTypes.UP);
+        const downPressed  = device.keys.isKeyPressed(keyTypes.DOWN);
+        const leftPressed  = device.keys.isKeyPressed(keyTypes.LEFT);
+        const rightPressed = device.keys.isKeyPressed(keyTypes.RIGHT);
+        const confirmPressed = device.keys.isKeyPressed(keyTypes.ENTER);
+
+        // Gamepad analog input
+        const gpUp    = device.keys.wasAxisJustPressed(1, -1);
+        const gpDown  = device.keys.wasAxisJustPressed(1, 1);
+        const gpLeft  = device.keys.wasAxisJustPressed(0, -1);
+        const gpRight = device.keys.wasAxisJustPressed(0, 1);
+        const gpConfirm = device.keys.isGamepadButtonPressed(gamepadButtons.X);
+
+        // Cycle letter up/down
+        if (upPressed || gpUp)
+        {
+            initials.letters[initials.position] = 
+                game.cycleLetter(initials.letters[initials.position], +1);
+        }
+
+        if (downPressed || gpDown)
+        {
+            initials.letters[initials.position] = 
+                game.cycleLetter(initials.letters[initials.position], -1);
+        }
+
+        // Move cursor left/right
+        if (leftPressed || gpLeft)
+        {
+            initials.position = Math.max(0, initials.position - 1);
+        }
+
+        if (rightPressed || gpRight)
+        {
+            initials.position = Math.min(initials.letters.length - 1, initials.position + 1);
+        }
+
+        // Submit initials
+        if (confirmPressed || gpConfirm)
+        {
+            const name = initials.letters.join('');
+            game.recordScore(name);
+            stateDelayTimer.setAndStart(game.gameConsts.STATE_DELAY_TIME);
+            game.setGameState(gameStates.INIT);
+            return;
+        }
+
+        // Skip to init
         const resetPressed = device.keys.isKeyPressed(keyTypes.RESET_KEY);
-        const startPressed = game.isGamepadButtonPressed(gamepadButtons.START);
+        const startPressed = device.keys.isGamepadButtonPressed(gamepadButtons.START);
 
         if (resetPressed || startPressed) 
         {
             stateDelayTimer.setAndStart(game.gameConsts.STATE_DELAY_TIME);
             game.setGameState(gameStates.INIT);
-            return;
         }
     } 
     catch (e) 
@@ -378,4 +383,3 @@ function handleTopScoreState(device, game)
         console.error("TOP_SCORE state error:", e);
     }
 }
-

@@ -47,7 +47,8 @@ class Sound
 
             audio.volume = this.#volume;
             audio.currentTime = 0;
-            audio.play();
+
+            audio.play().catch(() => {}); // <-- swallow aborts
 
             this.#index = (this.#index + 1) % this.#poolSize;
         } 
@@ -181,6 +182,7 @@ class AudioPlayer
         {
             if (sndDef.path) 
             {
+                
                 device.audio.addSound(
                     sndDef.name,
                     sndDef.path,

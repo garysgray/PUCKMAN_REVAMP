@@ -7,6 +7,7 @@
 
 const keyTypes = 
 {
+    ENTER: "Enter",
     PLAY_KEY: "Space",
     RESET_KEY: "Space",
     PAUSE_KEY_L: "ControlLeft",
@@ -24,7 +25,8 @@ const keyTypes =
 const gamepadButtons = 
 {
      START: 9,  
-     PAUSE: 8 
+     PAUSE: 8,
+     X: 1, 
 };
 
 Object.freeze(keyTypes);

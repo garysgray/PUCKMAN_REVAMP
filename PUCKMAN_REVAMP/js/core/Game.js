@@ -31,11 +31,25 @@ class Game
     // Game State
     // -----------------------------
     #gameState;
-    #score;
+    #prevGameState;
+    #stateEntered; // track per-state entry 
+
+    // -----------------------------
+    // Game Stuff
+    // -----------------------------
     #lives;
     #player;
     #gameLevel;
+    
+    // -----------------------------
+    // Scoring
+    // -----------------------------
+    #score;
+    #nextExtraLifeScore;
     #highScoreAchived;
+    #topScores;
+
+    #playerInitials
 
     // -----------------------------
     // Map / Level Generation
@@ -51,9 +65,7 @@ class Game
     #gamePadConnected;
     #gamePadEnabled;
     #keyboardTouched;
-
-    #nextExtraLifeScore;
-    #topScores;
+    #prevButtons;
 
     // =======================================================
     // CONSTRUCTOR
@@ -74,41 +86,60 @@ class Game
             this.#borderHolder = new ObjHolder();
             this.#mapHolder    = new ObjHolder();
 
-            this.#topScores = JSON.parse(localStorage.getItem("topScores")) || [];
+            // Game state
+            this.#gameState = gameStates.INIT;
+            this.#prevGameState = null;
+            this.#stateEntered = {}; // track per-state entry 
+        
+            this.#lives = 0;
+            this.#gameLevel = 1; // always start with 1 for HUD
+            this.#player = null;
 
-            this.prevButtons = [];
-            this.prevGameState = null;
-            this._stateEntered = {}; // track per-state entry 
+            // Border & map buffers
+            this.#borderHorizontalBuffer = 0;
+            this.#borderVerticalBuffer   = 0;
+
+            // Cached assets
+            this.#cachedBorder      = null;
+            this.#cachedBorderReady = false;
+            this.#cachedMap         = null;
+            this.#cachedMapReady    = false;
+
+            // Input
+            this.#gamePadConnected = false;
+            this.#gamePadEnabled   = false;
+            this.#keyboardTouched  = false;
+            this.#prevButtons = [];
+
+            // Scoring
+            this.#nextExtraLifeScore = this.#gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
+            this.#score = 0;
+            this.#highScoreAchived = false;
+            this.#topScores = JSON.parse(localStorage.getItem("topScores")) ||
+            [
+                { name: "ACE", score: 10000 },
+                { name: "MAX", score: 9000 },
+                { name: "JET", score: 8000 },
+                { name: "ZAP", score: 7000 },
+                { name: "REX", score: 6000 },
+                { name: "SKY", score: 5000 },
+                { name: "FOX", score: 4000 },
+                { name: "RAY", score: 1000 },
+                { name: "VIX", score: 700 },
+                { name: "ROC", score: 300 }
+            ];
+
+            this.#playerInitials = 
+            {
+                letters: ['A', 'A', 'A'], // default starting letters
+                position: 0 // which letter is currently selected (0,1,2)
+            };
+
         } 
         catch (err) 
         {
             console.error("Failed to initialize object holders:", err);
         }
-
-        // Game state
-        this.#gameState = gameStates.INIT;
-        this.#score = 0;
-        this.#highScoreAchived = false;
-        this.#lives = 0;
-        this.#gameLevel = 1; // always start with 1 for HUD
-        this.#player = null;
-
-        // Border & map buffers
-        this.#borderHorizontalBuffer = 0;
-        this.#borderVerticalBuffer   = 0;
-
-        // Cached assets
-        this.#cachedBorder      = null;
-        this.#cachedBorderReady = false;
-        this.#cachedMap         = null;
-        this.#cachedMapReady    = false;
-
-        // Input
-        this.#gamePadConnected = false;
-        this.#gamePadEnabled   = false;
-        this.#keyboardTouched  = false;
-
-        this.#nextExtraLifeScore = this.#gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
     }
 
     // =======================================================
@@ -147,6 +178,14 @@ class Game
 
     get topScores()  { return this.#topScores; }
 
+    get prevGameState()  { return this.#prevGameState; }
+
+    get stateEntered()  { return this.#stateEntered; }
+
+    get prevButtons()  { return this.#prevButtons; }
+
+    get playerInitials()  { return this.#playerInitials; }
+
     // =======================================================
     // SETTERS
     // =======================================================
@@ -171,6 +210,8 @@ class Game
     set keyboardTouched(v)  { this.#keyboardTouched = v; }
 
     set nextExtraLifeScore(v)  { this.#nextExtraLifeScore = v; }
+
+    set prevGameState(v)  { this.#prevGameState = v; }
 
     // =======================================================
     // INITIALIZATION
@@ -223,6 +264,8 @@ class Game
             this.lives     = this.gameConsts.GAME_LIVES_START_AMOUNT;
             this.nextExtraLifeScore = this.gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
             this.highScoreAchived = false;
+            this.#playerInitials.letters = ['A', 'A', 'A'];
+            this.#playerInitials.position = 0;
         }
 
         // Clear entity holders
@@ -360,23 +403,37 @@ class Game
         this.gameState = newState;
 
         // Mark this state as entered
-        this._stateEntered[newState] = false;
+        this.stateEntered[newState] = false;
     }
 
     // Returns true ONLY the first frame you enter the state
     isStateEnter(state) 
     {
         if (this.gameState !== state) return false;          // not current state
-        if (this._stateEntered[state]) return false;         // already fired for this state
-        this._stateEntered[state] = true;                    // mark as fired
+        if (this.stateEntered[state]) return false;         // already fired for this state
+        this.stateEntered[state] = true;                    // mark as fired
         return true;                                        // first-frame entry
     }
 
     // Call this when leaving a state to reset its “entered” flag
     resetStateEnterFlag(state) 
     {
-        this._stateEntered[state] = false;
+        this.stateEntered[state] = false;
     }
+
+    cycleLetter(letter, dir)
+    {
+        const A = 'A'.charCodeAt(0);
+        const Z = 'Z'.charCodeAt(0);
+
+        let code = letter.charCodeAt(0) + dir;
+
+        if (code > Z) code = A;
+        if (code < A) code = Z;
+
+        return String.fromCharCode(code);
+    }
+
 
 }
 

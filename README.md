@@ -148,8 +148,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Timers are centrally managed and updated via the main game loop
 - Used for:
   - State transition delays
-  - Cooldowns
-  - One-shot and repeating events
+  - Game clock
 - Prevents timing drift and state-related race conditions
 - Makes timing behavior explicit and debuggable
 

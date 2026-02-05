@@ -1,121 +1,134 @@
-//***************************************************************
-// Rendering Functions for Game
-//***************************************************************
+// =======================================================
+// RENDER UTILITIES
+// =======================================================
 
-function renderClipSprite(device, sprite, imageKey, frame)
+const Render = 
 {
-    try
+    // Sprite rendering
+    renderClipSprite(device, sprite, imageKey, frame)
     {
-        const image = device.images.getImage(imageKey);
-
-        if (!image)
+        try
         {
-            console.warn("Sprite image missing:", imageKey);
+            const image = device.images.getImage(imageKey);
+            if (!image)
+            {
+                console.warn("Sprite image missing:", imageKey);
+            }
+            device.renderClip(
+                image,
+                sprite.posX,
+                sprite.posY,
+                sprite.width,
+                sprite.height,
+                frame
+            );
+            if (Debug.DRAW_DEBUG_HITBOXES) this.renderHitBoxs(device, sprite);
         }
-
-        device.renderClip(
-            image,
-            sprite.posX,
-            sprite.posY,
-            sprite.width,
-            sprite.height,
-            frame
+        catch (e)
+        {
+            console.error("Error in renderClipSprite:", e);
+        }
+    },
+    
+    renderPlayer(device, game)
+    {
+        this.renderClipSprite(
+            device,
+            game.player,
+            playerSpriteTypes.PLAYER.type,
+            game.player.playerState
         );
-
-        if (DRAW_DEBUG_HITBOXES) renderHitBoxs(device, sprite);
-    }
-    catch (e)
+    },
+    
+    renderStateSprite(device, sprite)
     {
-        console.error("Error in renderClipSprite:", e);
-    }
-}
-
-function renderPlayer(device, game)
-{
-    renderClipSprite(
-        device,
-        game.player,
-        playerSpriteTypes.PLAYER.type,
-        game.player.playerState
-    );
-}
-function renderStateSprite(device, sprite)
-{
-    renderClipSprite(
-        device,
-        sprite,
-        sprite.name,
-        sprite.state
-    );
-}
-
-function renderBorder(device, game)
-{
-    // build cache if needed
-    if (!game.cachedBorderReady)
+        this.renderClipSprite(
+            device,
+            sprite,
+            sprite.name,
+            sprite.state
+        );
+    },
+    
+    renderBorder(device, game)
     {
-        createRenderCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady");
-    }
-
-    // draw the cached border as one image
-    device.ctx.drawImage(game.cachedBorder, 0, 0);
-}
-
-function renderMap(device, game)
-{
-    // build cache if needed
-    if (!game.cachedMapReady)
+        if (!game.cachedBorderReady)
+        {
+            this.createRenderCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady");
+        }
+        device.ctx.drawImage(game.cachedBorder, 0, 0);
+    },
+    
+    renderMap(device, game)
     {
-        createRenderCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady");
-    }
-
-    // draw the cached border as one image
-    device.ctx.drawImage(game.cachedMap, 0, 0);
-}
-
-
-//---------------------------------------------------------------
-// Render HITBOXES if DRAW_DEBUG_HITBOXES == true
-//---------------------------------------------------------------
-function renderHitBoxs(device, tempObj) 
-{
-    try 
+        if (!game.cachedMapReady)
+        {
+            this.createRenderCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady");
+        }
+        device.ctx.drawImage(game.cachedMap, 0, 0);
+    },
+    
+    // Debug hitboxes
+    renderHitBoxs(device, tempObj) 
     {
-        const x = tempObj.posX - tempObj.halfWidth;
-        const y = tempObj.posY - tempObj.halfHeight;
-        const w = tempObj.width;
-        const h = tempObj.height;
-
-        device.ctx.strokeStyle = "lime";
-        device.ctx.strokeRect(x, y, w, h);
-    } 
-    catch (e)
+        try 
+        {
+            const x = tempObj.posX - tempObj.halfWidth;
+            const y = tempObj.posY - tempObj.halfHeight;
+            const w = tempObj.width;
+            const h = tempObj.height;
+            device.ctx.strokeStyle = "lime";
+            device.ctx.strokeRect(x, y, w, h);
+        } 
+        catch (e)
+        {
+            console.error("Error in renderHitBoxs:", e);
+        }
+    },
+    
+    // Render cache
+    createRenderCache(device, game, holder, cacheKey, readyKey)
     {
-        console.error("Error in renderHitBoxs:", e);
-    }
-}
+        const canvas = document.createElement("canvas");
+        canvas.width  = game.gameConsts.SCREEN_WIDTH;
+        canvas.height = game.gameConsts.SCREEN_HEIGHT;
+        const ctx = canvas.getContext("2d");
+        
+        for (let i = 0; i < holder.getSize(); i++)
+        {
+            const obj = holder.getIndex(i);
+            const img = device.images.getImage(obj.name);
+            if (!img) continue;
+            ctx.drawImage(img, obj.posX, obj.posY, obj.width, obj.height);
+        }
+        
+        game[cacheKey] = canvas;
+        game[readyKey] = true;
+    },
 
-// ---------------------------------------------------
-// Render Cache
-// ---------------------------------------------------
-function createRenderCache(device, game, holder, cacheKey, readyKey)
-{
-    const canvas = document.createElement("canvas");
-    canvas.width  = game.gameConsts.SCREEN_WIDTH;
-    canvas.height = game.gameConsts.SCREEN_HEIGHT;
-
-    const ctx = canvas.getContext("2d");
-
-    for (let i = 0; i < holder.getSize(); i++)
+    renderHud(device, game)
     {
-        const obj = holder.getIndex(i);
-        const img = device.images.getImage(obj.name);
-        if (!img) continue;
-
-        ctx.drawImage(img, obj.posX, obj.posY, obj.width, obj.height);
+        const cw = game.gameConsts.SCREEN_WIDTH;
+        const ch = game.gameConsts.SCREEN_HEIGHT;
+        const hudY = ch * 0.05;
+        
+        // HUD element positions - evenly spaced
+        const scoreX = cw * 0.15;
+        const livesX = cw * 0.38;
+        const clockX = cw * 0.62;
+        const levelX = cw * 0.85;
+        
+        const scoreText = gameTexts.HUD.SCORE + game.score;
+        const livesText = gameTexts.HUD.LIVES + game.lives;
+        const levelText = gameTexts.HUD.LEVEL + game.gameLevel;
+        const timer = game.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
+        const timeText = timer.timeLeft === 0 ? "Time: 0:00" : `Time: ${timer.formatted}`;
+        
+        // Center-align all HUD text
+        device.ctx.textAlign = "center";
+        device.putText(scoreText, scoreX, hudY);
+        device.putText(livesText, livesX, hudY);
+        device.putText(timeText, clockX, hudY);
+        device.putText(levelText, levelX, hudY);
     }
-
-    game[cacheKey] = canvas;
-    game[readyKey] = true;
-}
-
+};

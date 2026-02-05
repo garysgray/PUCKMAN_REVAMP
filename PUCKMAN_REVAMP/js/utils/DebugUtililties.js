@@ -1,107 +1,107 @@
 // =======================================================
-//DEBUG UTILITIES.js  
+// DEBUG UTILITIES
 // =======================================================
-// =======================================================
-// DEBUG TOGGLE W/ DEBUG FUNCTIONS  & DEBUG UI
-// =======================================================
-
-
-// =======================================================
-// DEBUG FLAGS
-// =======================================================
-
-const DEV_MODE = false; // false when shipping
-//const DEV_MODE = true;     // true when dev
-
-let HIT_BOXES  = false;
-let DEBUG_TEXT = DEV_MODE;
-
-let DRAW_DEBUG_TEXT     = DEBUG_TEXT;
-let DRAW_DEBUG_HITBOXES = HIT_BOXES;
-
-
-// =======================================================
-// DEBUG TEXT SYSTEM
-// =======================================================
-
-// Array to hold debug lines dynamically
-const debugLines = [];
-
-function addDebugLine(line)
+const Debug = 
 {
-    debugLines.push(line);
-}
+    // Flags
+    DEV_MODE: false, // false when shipping, true when dev
 
-function clearDebugLines() 
-{
-    debugLines.length = 0;
-}
+    DRAW_DEBUG_TEXT: null,
+    DRAW_DEBUG_HITBOXES: null,
+    
+    // Internal
+    debugLines: [],
+    
+    // Text system
+    addDebugLine(line) 
+    {
+        this.debugLines.push(line);
+    },
+    
+    clearDebugLines() 
+    {
+        this.debugLines.length = 0;
+    },
+    
+    writeDebugText() 
+    {
+        const el = document.getElementById("debug-text");
+        if (!el) return;
+        el.textContent = this.debugLines.join("\n");
+    },
+    
+    // Panel
+    updateDebugPanel() 
+    {
+        this.clearDebugLines();
+        if (!this.DRAW_DEBUG_TEXT) return;
+        
+        try 
+        {
+            this.addDebugLine("PUCKMAN DEBUG");
+            this.addDebugLine("----------------");
+            this.addDebugLine(`Game Score: ${myController.game.score}`);
+            this.addDebugLine(`Game lives: ${myController.game.lives}`);
+            
+            this.writeDebugText();
+        }
+        catch (e) 
+        {
+            console.error("Debug panel error:", e);
+        }
+    },
+    
+    updateDebugPanelVisibility() 
+    {
+        const panel = document.getElementById("debug-panel");
+        if (!panel) return;
+        
+        if (this.DRAW_DEBUG_TEXT)
+            panel.classList.remove("hidden");
+        else
+            panel.classList.add("hidden");
+    },
+    
+    updateDebugPanelPosition() 
+    {
+        const panel = document.getElementById("debug-panel");
+        const canvas = document.getElementById("canvas");
+        if (!panel || !canvas) return;
+        
+        const canvasRect = canvas.getBoundingClientRect();
+        panel.style.left = (canvasRect.left - panel.offsetWidth - 10) + "px";
+        panel.style.top = (canvasRect.top + canvasRect.height / 2 - panel.offsetHeight / 2) + "px";
+    }
+};
 
-function writeDebugText() 
-{
-    const el = document.getElementById("debug-text");
-    if (!el) return;
-    el.textContent = debugLines.join("\n");
-}
-
-
-function updateDebugPanelVisibility()
-{
-    const panel = document.getElementById("debug-panel");
-    if (!panel) return;
-
-    if (DRAW_DEBUG_TEXT)
-        panel.classList.remove("hidden");
-    else
-        panel.classList.add("hidden");
-}
-
-function updateDebugPanelPosition() 
-{
-    const panel  = document.getElementById("debug-panel");
-    const canvas = document.getElementById("canvas");
-
-    if (!panel || !canvas) return;
-
-    const canvasRect = canvas.getBoundingClientRect();
-
-    panel.style.left =
-        (canvasRect.left - panel.offsetWidth - 10) + "px";
-
-    panel.style.top =
-        (canvasRect.top + canvasRect.height / 2 - panel.offsetHeight / 2) + "px";
-}
+// Initialize debug flags based on DEV_MODE
+Debug.DRAW_DEBUG_TEXT = Debug.DEV_MODE;
+Debug.DRAW_DEBUG_HITBOXES = Debug.DEV_MODE;
 
 // =======================================================
 // DEBUG INPUT (DEV MODE ONLY)
 // =======================================================
-
-window.addEventListener("keydown", e =>
+window.addEventListener("keydown", e => 
 {
-    if (!DEV_MODE) return;
-
-    switch (e.code)
+    if (!Debug.DEV_MODE) return;
+    
+    switch (e.code) 
     {
         case "Backquote": // `
-            DRAW_DEBUG_TEXT = !DRAW_DEBUG_TEXT;
-            updateDebugPanelVisibility();
+            Debug.DRAW_DEBUG_TEXT = !Debug.DRAW_DEBUG_TEXT;
+            Debug.updateDebugPanelVisibility();
             break;
-
+            
         case "KeyH": // H
-            DRAW_DEBUG_HITBOXES = !DRAW_DEBUG_HITBOXES;
-            console.log("Hitboxes:", DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
+            Debug.DRAW_DEBUG_HITBOXES = !Debug.DRAW_DEBUG_HITBOXES;
+            console.log("Hitboxes:", Debug.DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
             break;
     }
 });
 
-document.getElementById("debug-panel") ?.classList.toggle("hidden", !DRAW_DEBUG_TEXT);
-
-
 // =======================================================
-// DEBUG WINDOW EVENTS
+// INITIALIZATION
 // =======================================================
-
-window.addEventListener("load", updateDebugPanelPosition);
-window.addEventListener("resize", updateDebugPanelPosition);
-
-
+document.getElementById("debug-panel")?.classList.toggle("hidden", !Debug.DRAW_DEBUG_TEXT);
+window.addEventListener("load", () => Debug.updateDebugPanelPosition());
+window.addEventListener("resize", () => Debug.updateDebugPanelPosition());
