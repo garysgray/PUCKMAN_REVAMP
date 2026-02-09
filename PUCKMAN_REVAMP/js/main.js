@@ -9,7 +9,6 @@
 let myController;
 let lastTime = performance.now();
 let accumulator = 0;
-let gameRunning = false;
 let rafId = null;
 
 const FIXED_TIMESTEP = 1 / 60;
@@ -18,16 +17,16 @@ const MAX_FRAME_TIME = 0.25;
 // =======================================================
 // ENTRY POINT
 // =======================================================
-window.addEventListener("load", initControllerAndGame);
+window.addEventListener("load", init);
 
 // =======================================================
 // INITIALIZATION
 // =======================================================
-function initControllerAndGame() 
+function init() 
 {
     try 
     {
-        if (!myController) myController = new Controller();
+        myController = new Controller();
         
         Debug.updateDebugPanelVisibility();
         Debug.updateDebugPanelPosition();
@@ -47,10 +46,6 @@ function safeStartGame()
         setTimeout(safeStartGame, 100);
         return;
     }
-
-    if (gameRunning) return;
-
-    gameRunning = true;
 
     if (window.requestIdleCallback)
         requestIdleCallback(startLoop, { timeout: 200 });
@@ -89,7 +84,19 @@ function gameLoop()
     {
         try 
         {
+            // Update game logic
             myController.callUpdateGame(FIXED_TIMESTEP);
+
+            // Update HTML message cycle timer
+            const cycleTimer = myController.game.gameTimers.getObjectByName(timerTypes.MESS_DELAY.name);
+            if (cycleTimer && cycleTimer.active) 
+            {
+                cycleTimer.update(FIXED_TIMESTEP);
+            }
+            else
+            {
+                cycleTimer.setAndStart(myController.game.gameConsts.HTML_MESS_DELAY_TIME);
+            }
         }
         catch (e) 
         {
@@ -100,41 +107,19 @@ function gameLoop()
         myController.device.keys.clearFrameKeys();
     }
 
-    // Render
-    renderHTMLMessage(myController.game);
+    // Render HTML overlay (if not fullscreen)
+    if (!myController.game.isGameFullscreen)
+    {
+        myController.renderHTMLMessage(myController.game);
+    }
+
     Debug.updateDebugPanel();
 
     rafId = requestAnimationFrame(gameLoop);
 }
 
 // =======================================================
-// HTML MESSAGE HANDLER
-// =======================================================
-function renderHTMLMessage(game) 
-{
-    const msg = document.getElementById("message");
-    if (!msg) return;
-
-    let message;
-
-    if (game.gameState !== gameStates.INIT) 
-    {
-        message = game.gamePadEnabled 
-            ? gameTexts.INIT.GAMEPAD_INSTRUCTIONS[4]
-            : gameTexts.INIT.INSTRUCTIONS[4];
-    }
-    else
-    {
-        message = game.gamePadConnected 
-            ? gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS
-            : gameTexts.INIT.INSTRUCTIONS[4];
-    }
-
-    msg.innerHTML = `<p>${message}</p>`;
-}
-
-// =======================================================
-// FULLSCREEN FUNCTIONS
+// FULLSCREEN MANAGEMENT
 // =======================================================
 function toggleFullScreen(canvas) 
 {
@@ -158,12 +143,14 @@ function toggleFullScreen(canvas)
     }
 }
 
-function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight = 600) 
+function resizeCanvasToFullscreen(canvas, game) 
 {
     if (!canvas) return;
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
+    const internalWidth = game.gameConsts.SCREEN_WIDTH;
+    const internalHeight = game.gameConsts.SCREEN_HEIGHT;
     const scale = Math.min(windowWidth / internalWidth, windowHeight / internalHeight);
 
     const scaledWidth = internalWidth * scale;
@@ -176,7 +163,7 @@ function resizeCanvasToFullscreen(canvas, internalWidth = 1000, internalHeight =
 }
 
 // =======================================================
-// FULL SCREEN EVENT LISTENERS
+// EVENT LISTENERS
 // =======================================================
 window.addEventListener("keydown", e => 
 {
@@ -190,15 +177,20 @@ window.addEventListener("keydown", e =>
 document.addEventListener("fullscreenchange", () => 
 {
     const canvas = document.getElementById("canvas");
+    if (!myController || !myController.game) return;
+    
+    const game = myController.game;
     
     if (document.fullscreenElement) 
     {
-        resizeCanvasToFullscreen(canvas);
+        resizeCanvasToFullscreen(canvas, game);
+        game.isGameFullscreen = true;
     } 
     else 
     {
-        canvas.style.width = "1000px";
-        canvas.style.height = "600px";
+        canvas.style.width = game.gameConsts.SCREEN_WIDTH + "px";
+        canvas.style.height = game.gameConsts.SCREEN_HEIGHT + "px";
         canvas.style.margin = "0 auto";
+        game.isGameFullscreen = false;
     }
 });

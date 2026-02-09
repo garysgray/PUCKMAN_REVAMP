@@ -20,7 +20,6 @@ function renderBillBoardsLayer(device, game) {
         {
             case gameStates.INIT: 
             {
-                
                 board = game.billBoards.getObjectByName(billBoardTypes.SPLASH.type);
                 const splashImg = device.images.getImage(billBoardTypes.SPLASH.type);
                 if (board && splashImg) 
@@ -121,19 +120,7 @@ function renderBillBoardsLayer(device, game) {
             // ==============================
             case gameStates.TOP_SCORE:
             {
-                // Reserved for future win state content
-                // board = game.billBoards.getObjectByName(billBoardTypes.WIN.type);
-                // const splashImg = device.images.getImage(billBoardTypes.WIN.type);
-                // if (board && splashImg) 
-                // {
-                //     try {
-                //         board.render(device, splashImg, yBuff)
-                //     } 
-                //     catch (e) 
-                //     {
-                //         console.error("Failed to render win image:", e);
-                //     }
-                // }
+                //nothing to see
             } 
             break;
 

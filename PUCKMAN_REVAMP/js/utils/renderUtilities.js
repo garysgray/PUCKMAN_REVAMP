@@ -130,5 +130,76 @@ const Render =
         device.putText(livesText, livesX, hudY);
         device.putText(timeText, clockX, hudY);
         device.putText(levelText, levelX, hudY);
+    },
+
+      renderHTMLMessage(game) 
+{
+    if (game.isGameFullscreen) return; // skip messages in fullscreen
+
+    const msg = document.getElementById("message");
+    if (!msg) return;
+
+    let messages = [];
+
+    // ---------------------------------------------------
+    // Build messages FIRST
+    // ---------------------------------------------------
+    if (game.gameState === gameStates.INIT) 
+    {
+        if (game.gamePadEnabled && game.gamePadConnected)
+        {
+            messages.push(...gameTexts.INIT.GAMEPAD_INSTRUCTIONS);
+        }
+        else if (!game.gamePadEnabled && game.gamePadConnected)
+        {
+            messages.push(gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS);
+        }
+        else
+        {
+            messages.push(...gameTexts.INIT.INSTRUCTIONS);
+        }
     }
+
+    // ------------------------
+    // PAUSE message (if player is paused)
+    // ------------------------
+    if (game.gameState === gameStates.PAUSE)
+    {
+        if (game.gamePadEnabled && game.gamePadConnected)
+        {
+            messages.push(gameTexts.PAUSE.GAMEPAD_MESSAGE);
+        }
+        else
+        {
+            messages.push(gameTexts.PAUSE.MESSAGE);
+        }
+    }
+
+    // Filter out controller-only messages if controller is disconnected
+    if (!game.gamePadConnected)
+    {
+        messages = messages.filter(msg =>
+            !msg.toLowerCase().includes("gamepad") &&
+            !msg.toLowerCase().includes("controller")
+        );
+    }
+
+    // Timer / Random message
+    if (game.htmlMessageIndex == null)
+    {
+        game.htmlMessageIndex = 0;
+        game.htmlMessageTimer = 0;
+    }
+
+    game.htmlMessageTimer++;
+    if (game.htmlMessageTimer > 180)
+    {
+        game.htmlMessageTimer = 0;
+        game.htmlMessageIndex = Math.floor(Math.random() * messages.length);
+    }
+
+    const message = messages[game.htmlMessageIndex];
+    msg.innerHTML = `<p>${message}</p>`;
+}
+
 };

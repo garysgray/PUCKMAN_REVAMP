@@ -10,13 +10,17 @@ gameTexts =
 {
     INIT: 
     {
-        INSTRUCTIONS: 
+        KEYBOARD_INSTRUCTIONS: 
         [
                 "GET ALL THE FRUIT ",
                 "DON'T RUN OUT OF TIME",
                 "USE ARROW KEYS TO MOVE", 
                 "PRESS SPACE-BAR TO START",
                 "PRESS CTRL TO PAUSE",
+                "PRESS F FOR FULLSCREEN",
+                "1000 POINTS = NEW LIFE",
+                "100 POINTS TO CLEAR LEVEL",
+                "5 POINTS FOR EVERY SECOND LEFT ON CLOCK",
         ],
 
         GAMEPAD_INSTRUCTIONS: 
@@ -26,6 +30,10 @@ gameTexts =
                 "USE LEFT ANALOG TO MOVE", 
                 "PRESS START BUTTON TO BEGIN",
                 "PRESS SELECT BUTTON TO PAUSE",
+                "PRESS F FOR FULLSCREEN",
+                "1000 POINTS = NEW LIFE",
+                "100 POINTS TO CLEAR LEVEL",
+                "5 POINTS FOR EVERY SECOND LEFT ON CLOCK",
         ],
 
         HTML_DEFAULT_INSTRUCTIONS: "PRESS Q TO ENABLE/DISABLE GAMEPAD",
@@ -62,7 +70,30 @@ gameTexts =
 
         HIGH_SCORE: "NEW HIGH SCORE!!!",
         INITIALS_REQUEST:   "ENTER YOUR INITIALS",
+    },
+
+    HIGH_SCORE: 
+    {
+        KEYBOARD_INSTRUCTIONS: 
+        [ 
+                "UP & DOWN ARROWS TO CHANGE INITIALS",
+                "LEFT & RIGHT ARROWS TO CHANGE POSITION",
+                "ENTER KEY TO SUBMIT, SPACE-BAR TO SKIP",
+        ],
+
+        GAMEPAD_INSTRUCTIONS: 
+        [
+                "UP & DOWN ANALOG TO CHANGE INITIALS",
+                "LEFT & RIGHT ANALOG TO CHANGE POSITION",
+                "ACTION BUTTON TO SUBMIT, START TO SKIP"
+        ],
+
+        TOP_SCORE_TITLE: "TOP SCORES",
+    
     }
 };
 
 Object.freeze(gameTexts);
+
+
+

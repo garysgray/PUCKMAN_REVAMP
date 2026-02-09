@@ -39,11 +39,13 @@ class GameConsts
     #STATE_DELAY_TIME      = 0.5;
     #HIGH_SCORE_DELAY_TIME = 4.0;
     #LOSE_SOUND_DELAY_TIME = 0.1;
+    #HTML_MESS_DELAY_TIME  = 2.0;
 
     get LEVEL_MAX_TIME()        { return this.#LEVEL_MAX_TIME; }
     get STATE_DELAY_TIME()      { return this.#STATE_DELAY_TIME; }
     get HIGH_SCORE_DELAY_TIME() { return this.#HIGH_SCORE_DELAY_TIME; }
     get LOSE_SOUND_DELAY_TIME() { return this.#LOSE_SOUND_DELAY_TIME; }
+    get HTML_MESS_DELAY_TIME() { return this.#HTML_MESS_DELAY_TIME; }
 
     // =======================================================
     // UI / FONTS
@@ -54,6 +56,8 @@ class GameConsts
     #NORM_FONT_SETTINGS = "bold 20pt VT323";
     #MID_FONT_SETTINGS  = "bold 90pt VT323";
     #BIG_FONT_SETTINGS  = "bold 100pt VT323";
+    #SCORE_TITLE_FONT = "bold 30pt VT323";
+    #SCORE_LIST_FONT =  "bold 18pt VT323";
 
     get DEBUG_TEXT_COLOR()   { return this.#DEBUG_TEXT_COLOR; }
     get FONT_COLOR()         { return this.#FONT_COLOR; }
@@ -61,6 +65,9 @@ class GameConsts
     get NORM_FONT_SETTINGS() { return this.#NORM_FONT_SETTINGS; }
     get MID_FONT_SETTINGS()  { return this.#MID_FONT_SETTINGS; }
     get BIG_FONT_SETTINGS()  { return this.#BIG_FONT_SETTINGS; }
+
+    get SCORE_TITLE_FONT()  { return this.#SCORE_TITLE_FONT; }
+    get SCORE_LIST_FONT()  { return this.#SCORE_LIST_FONT; }
 
     // =======================================================
     // AUDIO

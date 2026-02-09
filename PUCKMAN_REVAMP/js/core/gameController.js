@@ -1,25 +1,21 @@
 // ============================================================================
-// Controller Class (Test-Friendly Version)
+// Controller Class
 // ----------------------------------------------------------------------------
-// Works with real Game/Device or with fake/mock classes for Jasmine tests
+// Manages the game loop, device, and rendering layers
 // ============================================================================
 class Controller 
 {
-    #device;    // Manages canvas and input
-    #game;      // Holds core game state and logic
-    #layers;    // Array of Layer instances (render order matters)
+    #device;            // Manages canvas and input
+    #game;              // Holds core game state and logic
+    #layers;            // Array of Layer instances (render order matters)
+    #htmlMessageIndex;  // Keeps track of HTML message to be displayed when not in FULL SCREEN
 
-    // Fake constructor with fake objects for testing
-    constructor(GameClass = null, DeviceClass = null, canvasEl = null) 
+    constructor() 
     {
-        // Use real classes if not provided
-        const GameCtor = GameClass || (typeof Game !== 'undefined' ? Game : class { initGame() {} });
-        const DeviceCtor = DeviceClass || (typeof Device !== 'undefined' ? Device : class {});
-
         // Initialize Game Object
         try 
         {
-            this.#game = new GameCtor();
+            this.#game = new Game();
         } 
         catch (error) 
         {
@@ -31,7 +27,7 @@ class Controller
         // Initialize Device Object
         try 
         {
-            this.#device = new DeviceCtor(this.game.gameConsts.SCREEN_WIDTH, this.game.gameConsts.SCREEN_HEIGHT, canvasEl);
+            this.#device = new Device(this.game.gameConsts.SCREEN_WIDTH, this.game.gameConsts.SCREEN_HEIGHT);
         } 
         catch (error) 
         {
@@ -43,8 +39,10 @@ class Controller
         // Initialize layers
         this.#layers = [];
 
-        // Initialize the Game Obj wich will start the game init proccess
+        // Initialize the Game Object which will start the game init process
         this.initGameObj();
+
+        this.#htmlMessageIndex = 0;
     }
 
     // ------------------------------------------------------------------------
@@ -53,9 +51,15 @@ class Controller
     get device() { return this.#device; }
     get game() { return this.#game; }
     get layers() { return this.#layers; }
+    get htmlMessageIndex() { return this.#htmlMessageIndex; }
 
     // ------------------------------------------------------------------------
-    // Initialize the Game Obj wich will start the actual game init proccess
+    // Setters
+    // ------------------------------------------------------------------------
+    set htmlMessageIndex(v) { this.#htmlMessageIndex = v; }
+
+    // ------------------------------------------------------------------------
+    // Initialize the Game Object which will start the actual game init process
     // ------------------------------------------------------------------------
     initGameObj() 
     {
@@ -63,12 +67,12 @@ class Controller
         {
             this.game.initGame(this.device);
 
-            // Layers have to be rendered in this order
-            if (typeof billBoardsLayer !== 'undefined')  Layer.addRenderLayer(billBoardsLayer, this.layers);      // game backgrounds
-            if (typeof hudRenderLayer !== 'undefined')   Layer.addRenderLayer(hudRenderLayer, this.layers);       // game HUD
-            if (typeof textRenderLayer !== 'undefined')  Layer.addRenderLayer(textRenderLayer, this.layers);      // game text
-            if (typeof gameObjectsLayer !== 'undefined') Layer.addRenderLayer(gameObjectsLayer, this.layers);     // game objects
-            
+            // Layers must be rendered in this order
+            Layer.addRenderLayer(backgroundRenderLayer, this.layers);  // FIRST
+            Layer.addRenderLayer(billBoardsLayer, this.layers);
+            Layer.addRenderLayer(gameObjectsLayer, this.layers);
+            Layer.addRenderLayer(hudRenderLayer, this.layers);
+            Layer.addRenderLayer(textRenderLayer, this.layers);        // LAST
         }
         catch (error) 
         {
@@ -86,8 +90,8 @@ class Controller
 
         try
         {
-            // independent function UpdateGame.js that updates everything game related from Game.js 
-            // except rendering, thats done in each layer affiliated
+            // Independent function UpdateGame.js that updates everything game related from Game.js 
+            // except rendering, that's done in each layer
             this.updateGame(this.device, this.game, delta);
 
             // Render each layer
@@ -139,7 +143,6 @@ class Controller
             {
                 console.warn("Unknown game state:", game.gameState);
             }
-
         }
         catch (e)
         {
@@ -147,4 +150,87 @@ class Controller
         }
     }
 
+    // ------------------------------------------------------------------------
+    // HTML Message Cycler
+    // ------------------------------------------------------------------------
+    // Displays rotating instruction messages in the HTML overlay during INIT state.
+    // Messages cycle based on timer and adapt to gamepad connection status.
+    // ------------------------------------------------------------------------
+    renderHTMLMessage(game) 
+    {
+        // Get message container element
+        const msg = document.getElementById("message");
+        if (!msg || game.isGameFullscreen) return;
+        
+        // Track gamepad connection state changes
+        if (game.prevGamePadConnected === undefined) 
+        {
+            game.prevGamePadConnected = game.gamePadConnected;
+        }
+        
+        // Build messages array based on input method
+        const messages = this.buildMessages(game);
+        
+        // Initialize cycling state
+        if (this.htmlMessageIndex === undefined) this.htmlMessageIndex = 0;
+        
+        // Reset display when gamepad connects
+        if (game.gamePadConnected && !game.prevGamePadConnected) 
+        {
+            this.htmlMessageIndex = 0;
+        }
+        
+        // Update connection state for next frame
+        game.prevGamePadConnected = game.gamePadConnected;
+        
+        // Ensure index stays within bounds
+        if (this.htmlMessageIndex >= messages.length) 
+        {
+            this.htmlMessageIndex = 0;
+        }
+        
+        // Cycle to next message when timer finishes
+        const cycleTimer = game.gameTimers.getObjectByName(timerTypes.MESS_DELAY.name);
+        if (cycleTimer && cycleTimer.finished)
+        {
+            this.htmlMessageIndex = (this.htmlMessageIndex + 1) % messages.length;
+        }
+
+        // Display current message
+        const message = messages[this.htmlMessageIndex];
+        
+        if (message) 
+        {
+            msg.innerHTML = `<p>${message}</p>`;
+        }
+    }
+
+    buildMessages(game)
+    {
+        // Build messages array based on input method
+        let messages = [];
+        
+        if (game.gamePadEnabled && game.gamePadConnected) 
+        {
+            // Gamepad is connected and enabled
+            messages.push(...gameTexts.INIT.GAMEPAD_INSTRUCTIONS);
+        }
+        else if (game.gamePadConnected && !game.gamePadEnabled) 
+        {
+            // Gamepad connected but not enabled - show toggle hint + keyboard controls
+            messages.push(gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS);
+            messages.push(...gameTexts.INIT.KEYBOARD_INSTRUCTIONS);
+        }
+        else 
+        {
+            // No gamepad or disconnected - show keyboard controls only
+            messages.push(...gameTexts.INIT.KEYBOARD_INSTRUCTIONS);
+        }
+        
+        // Remove any invalid entries
+        messages = messages.filter(m => m !== undefined && m !== null && m !== "");
+        if (messages.length === 0) return;
+
+        return messages;
+    }
 }

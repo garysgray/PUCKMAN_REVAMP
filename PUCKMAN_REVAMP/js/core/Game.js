@@ -67,6 +67,9 @@ class Game
     #keyboardTouched;
     #prevButtons;
 
+    #isGameFullscreen;
+    
+
     // =======================================================
     // CONSTRUCTOR
     // =======================================================
@@ -111,6 +114,8 @@ class Game
             this.#keyboardTouched  = false;
             this.#prevButtons = [];
 
+            this.#isGameFullscreen = false;
+
             // Scoring
             this.#nextExtraLifeScore = this.#gameConsts.VALUE_WHEN_NEW_LIFE_AWARDED;
             this.#score = 0;
@@ -121,10 +126,10 @@ class Game
                 { name: "MAX", score: 9000 },
                 { name: "JET", score: 8000 },
                 { name: "ZAP", score: 7000 },
-                { name: "REX", score: 6000 },
-                { name: "SKY", score: 5000 },
-                { name: "FOX", score: 4000 },
-                { name: "RAY", score: 1000 },
+                { name: "REX", score: 5000 },
+                { name: "SKY", score: 3000 },
+                { name: "FOX", score: 1000 },
+                { name: "RAY", score: 900 },
                 { name: "VIX", score: 700 },
                 { name: "ROC", score: 300 }
             ];
@@ -186,6 +191,8 @@ class Game
 
     get playerInitials()  { return this.#playerInitials; }
 
+    get isGameFullscreen() { return this.#isGameFullscreen; }
+
     // =======================================================
     // SETTERS
     // =======================================================
@@ -212,6 +219,8 @@ class Game
     set nextExtraLifeScore(v)  { this.#nextExtraLifeScore = v; }
 
     set prevGameState(v)  { this.#prevGameState = v; }
+
+    set isGameFullscreen(v)  { this.#isGameFullscreen = v; }
 
     // =======================================================
     // INITIALIZATION
