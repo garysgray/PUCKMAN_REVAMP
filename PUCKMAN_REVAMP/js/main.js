@@ -17,6 +17,8 @@ const SAFE_START_VALUE = 100;
 const TIME_OUT_VALUE = 200;
 const ONE_THOUSAND = 1000;
 
+//const gameConsts = new GameConsts();
+
 // =======================================================
 // ENTRY POINT
 // =======================================================
@@ -76,7 +78,7 @@ function gameLoop()
     const now = performance.now();
     
     let frameTime = (now - lastTime) / ONE_THOUSAND;
-    
+
     lastTime = now;
 
     // Clamp frame time to prevent spiral of death
@@ -101,7 +103,7 @@ function gameLoop()
             }
             else
             {
-                cycleTimer.setAndStart(myController.game.gameConsts.HTML_MESS_DELAY_TIME);
+                cycleTimer.setAndStart(myController.gameConsts.HTML_MESS_DELAY_TIME);
             }
         }
         catch (e) 

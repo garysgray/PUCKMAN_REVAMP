@@ -176,7 +176,7 @@ class Game
             });
 
             // Audio
-            AudioPlayer.loadSounds(device, this, soundTypes);
+            AudioPlayer.loadSounds(device, this.gameConsts.POOLSIZE, soundTypes);
 
             // Timers
             Timer.loadTimers(this.gameTimers, timerTypes);
@@ -211,7 +211,7 @@ class Game
         this.borderHolder.clearObjects();
         this.mapHolder.clearObjects();
 
-        const mapBuilder = new MapBuilder();
+        const mapBuilder = new MapBuilder(this.gameConsts);
 
         mapBuilder.setMapValues(this);
 
@@ -219,8 +219,9 @@ class Game
         mapBuilder.buildBorder(this, randSprite.type, randSprite.w, randSprite.h);
         mapBuilder.buildMap(this);
 
-        Player.buildPlayer(this);
-        Enemy.spawnEnemies(this, characterSpriteTypes, this.enemyHolder);
+        this.player = Player.buildPlayer( this.gameConsts.SCREEN_WIDTH, this.borderVerticalBuffer, this.gameConsts.MAP_BUFFER_Y);
+
+        Enemy.spawnEnemies(characterSpriteTypes, this.enemyHolder, this.gameConsts.SCREEN_WIDTH, this.gameConsts.SCREEN_HEIGHT);
 
         const gameClock = this.gameTimers.getObjectByName(timerTypes.GAME_CLOCK.name);
         gameClock.setAndStart(this.#gameConsts.LEVEL_MAX_TIME);

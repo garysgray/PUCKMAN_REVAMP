@@ -176,17 +176,16 @@ class AudioPlayer
         this.addSound(name, src, poolSize, volume);
     }
 
-    static loadSounds(device, game, soundTypes) 
+    static loadSounds(device, poolSize, soundTypes) 
     {
         Object.values(soundTypes).forEach(sndDef => 
         {
             if (sndDef.path) 
             {
-                
                 device.audio.addSound(
                     sndDef.name,
                     sndDef.path,
-                    game.gameConsts.POOLSIZE,
+                    poolSize,
                     sndDef.volume ?? 1
                 );
             }

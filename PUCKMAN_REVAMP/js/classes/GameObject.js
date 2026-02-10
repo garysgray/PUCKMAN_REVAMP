@@ -187,24 +187,24 @@ class GameObject
         return false;
     }
 
-    enforceBorderBounds(game) 
+    enforceBorderBounds(horizonBuffer, vertBuff, screenWidth, screenHeight, aHudBuffer ) 
     {
         try 
         {
-            const hudBuffer = game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER;
-            const leftSide = this.width + game.borderHorizontalBuffer;
-            const rightSide = this.width + game.borderHorizontalBuffer;
-            const topSide = this.height + game.borderVerticalBuffer + hudBuffer
-            const bottomSide = this.height + game.borderVerticalBuffer;
+            const hudBuffer = screenHeight * aHudBuffer;
+            const leftSide = this.width + horizonBuffer;
+            const rightSide = this.width + horizonBuffer;
+            const topSide = this.height + horizonBuffer + hudBuffer
+            const bottomSide = this.height + vertBuff;
 
             if (this.posX - this.halfWidth < leftSide) 
             {
                 this.posX = leftSide + this.halfWidth;
             }
 
-            if (this.posX + this.halfWidth > game.gameConsts.SCREEN_WIDTH - rightSide) 
+            if (this.posX + this.halfWidth > screenWidth - rightSide) 
             {
-                this.posX = game.gameConsts.SCREEN_WIDTH - (this.halfWidth + rightSide);
+                this.posX = screenWidth - (this.halfWidth + rightSide);
             }
 
             if (this.posY - this.halfHeight < topSide)
@@ -212,9 +212,9 @@ class GameObject
                  this.posY = this.halfHeight + topSide;
             }
 
-            if (this.posY + this.halfHeight > game.gameConsts.SCREEN_HEIGHT - bottomSide) 
+            if (this.posY + this.halfHeight > screenHeight - bottomSide) 
             {
-                this.posY = (game.gameConsts.SCREEN_HEIGHT) - (this.halfHeight + bottomSide);
+                this.posY = (screenHeight) - (this.halfHeight + bottomSide);
             }
         }  
         catch (e) 
@@ -224,50 +224,4 @@ class GameObject
     }
 }
 
-
-
-// // --------------------------------------------
-// // BillBoard
-// // --------------------------------------------
-// // Static or decorative background object
-// // Currently does nothing, but could support parallax or animation
-// // --------------------------------------------
-// class BillBoard extends GameObject 
-// {
-//     #isCenter = true;
-
-//     constructor(name, width, height, x, y, speed, isCenter = true) 
-//     {
-//         super(name, width, height, x, y, speed);
-
-//         this.#isCenter = isCenter;
-//     }
-
-//     get isCenter() { return this.#isCenter; }
-
-//     centerObjectInWorld(screenW, screenH) 
-//     {
-//         if (this.#isCenter)
-//         {
-//             try 
-//             {
-//                 this.posX = (screenW - this.width) * 0.5;
-//                 this.posY = (screenH - this.height) * 0.5;
-//             } 
-//             catch (e) 
-//             {
-//                 console.error("BillBoard centerObjectInWorld error:", e);
-//             }
-//         }
-        
-//     }
-//     update(device, delta) 
-//     {
-//         // Optional: BillBoard scrolling/animation
-//     }
-//     render(device, image, yBuff)
-//     {
-//         device.renderImage(image, this.posX, this.posY - yBuff);
-//     }
-// }
 

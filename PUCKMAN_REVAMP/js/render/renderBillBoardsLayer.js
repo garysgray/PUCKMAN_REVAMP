@@ -2,136 +2,78 @@
 // BillBoards Render Layer
 // ----------------------------------------------------------------------------
 // Handles rendering of all core game visuals (background, splash, objects, player, UI overlays). 
-// Called by the Controller during the main update cycle
-// Responsible only for drawing (no game logic here)
-// Uses game state to decide what to render
+// Purely visual; no game logic here. Called by the controller during main update cycle.
 // ============================================================================
-
-function renderBillBoardsLayer(device, game) {   
-    try 
+function renderBillBoardsLayer(device, game, opts) 
+{   
+    try
     {
-        const yBuff = game.gameConsts.HUD_BUFFER * game.gameConsts.SCREEN_HEIGHT;
+        // Destructure needed options
+        const { screenWidth, screenHeight, hudBuff } = opts;
+        const yBuff = hudBuff * screenHeight;
 
-        device.ctx.fillStyle = 'black'; // You can also use '#000000' or 'rgb(0, 0, 0)'
-        device.ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Clear background
+        device.ctx.fillStyle = 'black';
+        device.ctx.fillRect(0, 0, screenWidth, screenHeight);
 
-        // === Render Based on Game State ===
+        let board, img;
+
+        // === Render based on current game state ===
         switch (game.gameState) 
         {
-            case gameStates.INIT: 
-            {
+            case gameStates.INIT:
                 board = game.billBoards.getObjectByName(billBoardTypes.SPLASH.type);
-                const splashImg = device.images.getImage(billBoardTypes.SPLASH.type);
-                if (board && splashImg) 
-                {
-                    try 
-                    {
-
-                        board.render(device, splashImg, yBuff)
-                    } 
-                    catch (e) 
-                    {
-                        console.error("Failed to render splash image:", e);
-                    }
-                }
-            } 
-            break;
-
-            case gameStates.PLAY: 
-            {
-            }
-            break;
+                img = device.images.getImage(billBoardTypes.SPLASH.type);
+                break;
 
             case gameStates.PAUSE:
-            {
                 board = game.billBoards.getObjectByName(billBoardTypes.PAUSE.type);
-                const pauseImg = device.images.getImage(billBoardTypes.PAUSE.type);           
-                if (board && pauseImg) 
-                {
-                    try 
-                    {
-                        board.render(device, pauseImg, yBuff)
-                    } 
-                    catch (e) 
-                    {
-                        console.error("Failed to render pause screen:", e);
-                    }
-                }
-            } 
-            break;
+                img = device.images.getImage(billBoardTypes.PAUSE.type);
+                break;
 
-            case gameStates.WIN: 
-            {
-                // Reserved for future win state content
+            case gameStates.WIN:
                 board = game.billBoards.getObjectByName(billBoardTypes.WIN.type);
-                const splashImg = device.images.getImage(billBoardTypes.WIN.type);
-                if (board && splashImg) 
-                {
-                    try {
-                        board.render(device, splashImg, yBuff)
-                    } 
-                    catch (e) 
-                    {
-                        console.error("Failed to render win image:", e);
-                    }
-                }
-            } 
-            break;
+                img = device.images.getImage(billBoardTypes.WIN.type);
+                break;
 
-            case gameStates.LOSE: 
-            { 
-                if (game.lives == 0)
+            case gameStates.LOSE:
+                if (game.lives === 0) 
                 {
                     board = game.billBoards.getObjectByName(billBoardTypes.LOSE.type);
-                    const dieImg = device.images.getImage(billBoardTypes.LOSE.type);
-                    if (board && dieImg) 
-                    {
-                        try 
-                        {
-                            board.render(device, dieImg, yBuff)     
-                        } 
-                        catch (e) 
-                        {
-                            console.error("Failed to render lose screen:", e);
-                        }
-                    }
-                }
-                else
-                {
+                    img = device.images.getImage(billBoardTypes.LOSE.type);
+                } else {
                     board = game.billBoards.getObjectByName(billBoardTypes.FAIL.type);
-                    const dieImg = device.images.getImage(billBoardTypes.FAIL.type);
-                    if (board && dieImg) 
-                    {
-                        try 
-                        {
-                            board.render(device, dieImg, yBuff)     
-                        } 
-                        catch (e) 
-                        {
-                            console.error("Failed to render fail screen:", e);
-                        }
-                    }
-                }                
-            } 
-            break;
+                    img = device.images.getImage(billBoardTypes.FAIL.type);
+                }
+                break;
 
-            // ==============================
-            // TOP SCORE
-            // ==============================
+            case gameStates.PLAY:
             case gameStates.TOP_SCORE:
-            {
-                //nothing to see
-            } 
-            break;
+                // Nothing special to render for these states
+                return;
 
             default:
-                console.warn("Unknown game state in text layer:", game.gameState);
-                break;
+                console.warn("Unknown game state in BillBoards layer:", game.gameState);
+                return;
         }
+
+        // Render the board if both the object and image exist
+        if (board && img) 
+        {
+            try 
+            {
+                board.render(device, img, yBuff);
+            } 
+            catch (e) 
+            {
+                console.error(`Failed to render ${game.gameState} image:`, e);
+            }
+        }
+
     } 
     catch (e) 
     {
-        console.error("Unexpected error in renderGameObjectsLayer:", e);
+        console.error("Unexpected error in renderBillBoardsLayer:", e);
     }
 }
 

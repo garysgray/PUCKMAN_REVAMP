@@ -2,17 +2,17 @@
 // Text Rendering Layer
 // ----------------------------------------------------------------------------
 // Handles all on-screen text rendering (instructions, pause/win/lose messages,
-// high scores, etc). Purely visual, no game logic.
+// high scores, etc). Purely visual; no game logic here.
 // ============================================================================
-function renderTextLayer(device, game) 
+function renderTextLayer(device, game, opts) 
 {
     try 
     {
-        const cw = game.gameConsts.SCREEN_WIDTH;
-        const ch = game.gameConsts.SCREEN_HEIGHT;
+        // Destructure passed options
+        const { screenWidth: cw, screenHeight: ch, hudBuff, normFont, midFont, bigFont, highlightColor, fontColor } = opts;
         const chw = cw / 2;
 
-        // Layout positions
+        // Layout positions for different text elements
         const layout = 
         {
             initTextY: [0.60, 0.67, 0.74, 0.81, 0.88],
@@ -31,24 +31,21 @@ function renderTextLayer(device, game)
                 maxDisplay: 10,
                 splitAt: 5
             },
-
             pauseY: 0.62,
-
             winLoseY: 0.62,
-
             topScoreEntry: { scoreY: 0.30, initialsY: 0.40, initialsOffset: 0.8 }
         };
 
-        // Default text settings
-        device.setFont(game.gameConsts.NORM_FONT_SETTINGS);
-        device.setTextColor(game.gameConsts.FONT_COLOR);
+        // Set default text style
+        device.setFont(normFont);
+        device.setTextColor(fontColor);
         device.ctx.textAlign = "center";
 
         const mode = TextUtil.getInputMode(device);
 
         switch (game.gameState) 
         {
-            case gameStates.INIT:
+            case gameStates.INIT: 
             {
                 const instructions = TextUtil.buildInitInstructions(device);
                 TextUtil.renderInstructions(device, chw, ch, layout, instructions);
@@ -57,34 +54,37 @@ function renderTextLayer(device, game)
             }
 
             case gameStates.PLAY:
-                break; // No text during gameplay
+                // No text overlay during gameplay
+                break;
 
-            case gameStates.PAUSE:
+            case gameStates.PAUSE: 
             {
                 const msg = TextUtil.getStateMessage(game, mode);
                 if (msg) device.putText(msg, chw, ch * layout.winLoseY);
 
-                // Render high scores for PAUSE / LOSE
-                if (game.gameState !== gameStates.WIN)
+                // Optional high scores display
+                if (game.gameState !== gameStates.WIN) 
+                {
                     TextUtil.renderHighScores(device, game, chw, ch, cw, layout);
+                }
                 break;
             }
-            
+
             case gameStates.WIN:
-            case gameStates.LOSE:
+            case gameStates.LOSE: {
                 const msg = TextUtil.getStateMessage(game, mode);
                 if (msg) device.putText(msg, chw, ch * layout.winLoseY);
                 break;
-            
+            }
 
-            case gameStates.TOP_SCORE:
+            case gameStates.TOP_SCORE: 
             {
-                // Score display
-                device.setFont(game.gameConsts.MID_FONT_SETTINGS);
+                // Render score
+                device.setFont(midFont);
                 device.putText(game.score, chw, ch * layout.topScoreEntry.scoreY);
 
-                // Player initials
-                device.setFont(game.gameConsts.BIG_FONT_SETTINGS);
+                // Render player initials
+                device.setFont(bigFont);
                 const initials = game.scoreManager.playerInitials;
                 const sampleMetrics = device.ctx.measureText(initials.letters[0]);
                 const textWidth = sampleMetrics.width;
@@ -93,14 +93,14 @@ function renderTextLayer(device, game)
 
                 for (let i = 0; i < initials.letters.length; i++) 
                 {
-                    device.setTextColor(i === initials.position ? game.gameConsts.HIGHLIGHT_COLOR : game.gameConsts.FONT_COLOR);
+                    device.setTextColor(i === initials.position ? highlightColor : fontColor);
                     const x = chw + (i - 1) * textWidth;
                     device.putText(initials.letters[i], x, baseY);
                 }
 
-                // Instructions
-                device.setFont(game.gameConsts.NORM_FONT_SETTINGS);
-                device.setTextColor(game.gameConsts.FONT_COLOR);
+                // Render high score instructions
+                device.setFont(normFont);
+                device.setTextColor(fontColor);
                 const instructions = TextUtil.buildHighScoreInstructions(device);
                 TextUtil.renderInstructions(device, chw, ch, layout, instructions);
                 break;
@@ -109,12 +109,11 @@ function renderTextLayer(device, game)
             default:
                 console.warn("Unknown game state in text layer:", game.gameState);
         }
-    } 
-    catch (e) 
-    {
+
+    } catch (e) {
         console.error("Unexpected error in renderTextLayer:", e);
     }
 }
-// Wrap in Layer object for controller integration
-const textRenderLayer = new Layer("HUD/Text", renderTextLayer);
 
+// === Layer Registration ===
+const textRenderLayer = new Layer("HUD/Text", renderTextLayer);

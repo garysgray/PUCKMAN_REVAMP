@@ -10,7 +10,9 @@
 
 class MapBuilder
 {
-    constructor()
+    #gameConsts
+
+    constructor(gameConst)
     {
         // Runtime map configuration (owned by MapBuilder)
         this.config =
@@ -21,6 +23,8 @@ class MapBuilder
             spawnRadius: 0,   // player safe zone radius
             goalCount: 0      // number of goals to spawn
         };
+
+        this.#gameConsts = gameConst;
     }
 
     // ---------------------------------------------------
@@ -54,7 +58,7 @@ class MapBuilder
         // Small per-level variation
         if (level % 2 === 0)
         {
-            c.emptyChance += game.gameConsts.EVEN_LEVEL_EMPTY_CHANCE_BONUS;
+            c.emptyChance += this.#gameConsts.EVEN_LEVEL_EMPTY_CHANCE_BONUS;
             c.goalCount++;
         }
 
@@ -82,10 +86,10 @@ class MapBuilder
     {
         try
         {
-            let maxWidth = Math.floor(game.gameConsts.SCREEN_WIDTH / width);
+            let maxWidth = Math.floor(this.#gameConsts.SCREEN_WIDTH / width);
             let maxHeight = Math.floor(
-                (game.gameConsts.SCREEN_HEIGHT -
-                 game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER) / height
+                (this.#gameConsts.SCREEN_HEIGHT -
+                 this.#gameConsts.SCREEN_HEIGHT * this.#gameConsts.HUD_BUFFER) / height
             );
 
             // Keep borders symmetrical
@@ -94,11 +98,11 @@ class MapBuilder
 
             // Compute centering offsets
             game.borderHorizontalBuffer =
-                (game.gameConsts.SCREEN_WIDTH - maxWidth * width) * 0.5;
+                (this.#gameConsts.SCREEN_WIDTH - maxWidth * width) * 0.5;
 
             game.borderVerticalBuffer =
-                (game.gameConsts.SCREEN_HEIGHT -
-                (game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
+                (this.#gameConsts.SCREEN_HEIGHT -
+                (this.#gameConsts.SCREEN_HEIGHT * this.#gameConsts.HUD_BUFFER + maxHeight * height)) * 0.5;
 
             // Top & Bottom borders
             for (let i = 0; i < maxWidth; i++)
@@ -108,7 +112,7 @@ class MapBuilder
                         name, width, height,
                         i * width + game.borderHorizontalBuffer,
                         game.borderVerticalBuffer +
-                        game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER
+                        this.#gameConsts.SCREEN_HEIGHT * this.#gameConsts.HUD_BUFFER
                     )
                 );
 
@@ -116,7 +120,7 @@ class MapBuilder
                     new GameObject(
                         name, width, height,
                         i * width + game.borderHorizontalBuffer,
-                        game.gameConsts.SCREEN_HEIGHT - (game.borderVerticalBuffer + height)
+                        this.#gameConsts.SCREEN_HEIGHT - (game.borderVerticalBuffer + height)
                     )
                 );
             }
@@ -130,17 +134,17 @@ class MapBuilder
                         game.borderHorizontalBuffer,
                         i * height +
                         game.borderVerticalBuffer +
-                        game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER
+                        this.#gameConsts.SCREEN_HEIGHT * this.#gameConsts.HUD_BUFFER
                     )
                 );
 
                 game.borderHolder.addObject(
                     new GameObject(
                         name, width, height,
-                        game.gameConsts.SCREEN_WIDTH - (game.borderHorizontalBuffer + width),
+                        this.#gameConsts.SCREEN_WIDTH - (game.borderHorizontalBuffer + width),
                         i * height +
                         game.borderVerticalBuffer +
-                        game.gameConsts.SCREEN_HEIGHT * game.gameConsts.HUD_BUFFER
+                        this.#gameConsts.SCREEN_HEIGHT * this.#gameConsts.HUD_BUFFER
                     )
                 );
             }
@@ -184,8 +188,8 @@ class MapBuilder
     // Precomputed values reused across map steps
     mapContext(game)
     {
-        const tilesX = game.gameConsts.NUM_MAP_X_TILES;
-        const tilesY = game.gameConsts.NUM_MAP_Y_TILES;
+        const tilesX = this.#gameConsts.NUM_MAP_X_TILES;
+        const tilesY = this.#gameConsts.NUM_MAP_Y_TILES;
 
         return {
             game,
@@ -213,12 +217,12 @@ class MapBuilder
             if (grid[y][x] !== tileType.TILE_WALL) continue;
 
             const screenX =
-                game.gameConsts.MAP_BUFFER_X +
-                x * game.gameConsts.MAP_TILE_WIDTH;
+                this.#gameConsts.MAP_BUFFER_X +
+                x * this.#gameConsts.MAP_TILE_WIDTH;
 
             const screenY =
-                game.gameConsts.MAP_BUFFER_Y +
-                y * game.gameConsts.MAP_TILE_HEIGHT;
+                this.#gameConsts.MAP_BUFFER_Y +
+                y * this.#gameConsts.MAP_TILE_HEIGHT;
 
             // Color shift based on distance from center
             const dx = Math.abs(x - cx);
@@ -236,8 +240,8 @@ class MapBuilder
             game.mapHolder.addObject(
                 new GameObject(
                     tile.type,
-                    game.gameConsts.MAP_TILE_WIDTH,
-                    game.gameConsts.MAP_TILE_HEIGHT,
+                    this.#gameConsts.MAP_TILE_WIDTH,
+                    this.#gameConsts.MAP_TILE_HEIGHT,
                     screenX,
                     screenY
                 )
@@ -257,7 +261,7 @@ class MapBuilder
         {
             let placed = false;
 
-            for (let i = 0; i < game.gameConsts.MAX_GOAL_PLACEMENT_ATTEMPTS && !placed; i++)
+            for (let i = 0; i < this.#gameConsts.MAX_GOAL_PLACEMENT_ATTEMPTS && !placed; i++)
             {
                 const x = Math.floor(Math.random() * tilesX);
                 const y = Math.floor(Math.random() * tilesY);
@@ -275,10 +279,10 @@ class MapBuilder
 
                 const goal = new GameObject(
                     goals[Math.floor(Math.random() * goals.length)].type,
-                    game.gameConsts.MAP_TILE_WIDTH,
-                    game.gameConsts.MAP_TILE_HEIGHT,
-                    game.gameConsts.MAP_BUFFER_X + x * game.gameConsts.MAP_TILE_WIDTH,
-                    game.gameConsts.MAP_BUFFER_Y + y * game.gameConsts.MAP_TILE_HEIGHT
+                    this.#gameConsts.MAP_TILE_WIDTH,
+                    this.#gameConsts.MAP_TILE_HEIGHT,
+                    this.#gameConsts.MAP_BUFFER_X + x * this.#gameConsts.MAP_TILE_WIDTH,
+                    this.#gameConsts.MAP_BUFFER_Y + y * this.#gameConsts.MAP_TILE_HEIGHT
                 );
 
                 // Avoid overlaps

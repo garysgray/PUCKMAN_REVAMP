@@ -1,89 +1,78 @@
 // ============================================================================
 // GameObjects Render Layer
 // ----------------------------------------------------------------------------
-// Handles rendering of all core game visuals (background, splash, objects, player, UI overlays). 
-// Called by the Controller during the main update cycle
-// Responsible only for drawing (no game logic here)
-// Uses game state to decide what to render
+// Handles rendering of core game visuals: borders, map, goals, player, enemies.
+// Purely visual — no game logic here. Called during the main update cycle.
 // ============================================================================
-function renderGameObjectsLayer(device, game) {   
+function renderGameObjectsLayer(device, game, opts) 
+{
     try 
     {
+        const { screenWidth, screenHeight } = opts;
+
         // === Render Based on Game State ===
         switch (game.gameState) 
         {
-            case gameStates.INIT: 
-            {
-                // no game objects at this time to render
-            } 
-            break;
+            case gameStates.INIT:
+                // No game objects to render in INIT state
+                break;
 
-            case gameStates.PLAY: 
-            {
-                try
-                {
-                    RenderUtil.renderBorder(device, game);
-                    RenderUtil.renderMap(device, game);
-
-                    // Render each goal
-                    game.goalHolder.forEach(element => 
-                    {
-                         RenderUtil.renderStateSprite(device, element );
-                    });
-
-                    RenderUtil.renderPlayer(device, game);
-
-                    // Render each enemy
-                    game.enemyHolder.forEach(element => 
-                    {
-                        RenderUtil.renderStateSprite(device, element );
-                    });
-
-                } 
-                catch (e) 
-                {
-                    console.error("Error rendering gameplay objects:", e);
-                }
-            }
-            break;
-
-            case gameStates.PAUSE:
-            {
-                
-            } 
-            break;
-
-            case gameStates.WIN: 
-            {
-                // Reserved for future win state content
-            } 
-            break;
-
-            case gameStates.LOSE: 
-            {
+            case gameStates.PLAY:
                 try 
                 {
-                    //renderPlayer(device, game);
+                    // Core map elements
+                    RenderUtil.renderBorder(device, game, screenWidth, screenHeight);
+                    RenderUtil.renderMap(device, game, screenWidth, screenHeight);
+
+                    // Goals
+                    game.goalHolder.forEach(element => 
+                    {
+                        RenderUtil.renderStateSprite(device, element);
+                    });
+
+                    // Player
+                    RenderUtil.renderPlayer(device, game);
+
+                    // Enemies
+                    game.enemyHolder.forEach(element => 
+                    {
+                        RenderUtil.renderStateSprite(device, element);
+                    });
+
+                } catch (e) {
+                    console.error("Error rendering gameplay objects:", e);
+                }
+                break;
+
+            case gameStates.PAUSE:
+                // Optional: overlay paused visuals if needed
+                break;
+
+            case gameStates.WIN:
+                // Reserved for future win state content
+                break;
+
+            case gameStates.LOSE:
+                try 
+                {
+                    // Optional: render player or other effects on lose screen
+                    // RenderUtil.renderPlayer(device, game);
                 } 
                 catch (e) 
                 {
                     console.error("Failed to render player on lose screen:", e);
                 }
-            } 
-            break;
-            // ==============================
-            // TOP SCORE
-            // ==============================
+                break;
+
             case gameStates.TOP_SCORE:
-            {
-                // Reserved for future win state content
-            } 
-            break;
+                // Reserved for top score visuals
+                break;
 
             default:
-            console.warn("Unknown game state:", game.gameState);
+                console.warn("Unknown game state:", game.gameState);
                 break;
         }
+
     } 
     catch (e) 
     {
@@ -91,5 +80,5 @@ function renderGameObjectsLayer(device, game) {
     }
 }
 
-// === Layer Registration ===
+// Wrap it in a Layer object for controller integration
 const gameObjectsLayer = new Layer("GameObjects", renderGameObjectsLayer);

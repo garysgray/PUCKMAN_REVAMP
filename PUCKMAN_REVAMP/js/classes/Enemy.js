@@ -17,7 +17,8 @@ class Enemy extends GameObject
     get behaveState() { return this.#behaveState; }
     set behaveState(v) { this.#behaveState = v; }
 
-    update(delta, game, target) 
+    update(delta, game, target, screenWidth, screenHeight, hudBuff) 
+    //update(device, game, delta, sound, screenWidth, screenHeight, hudBuff)
     {
         try 
         {
@@ -36,7 +37,7 @@ class Enemy extends GameObject
                     break;
             }
 
-            this.enforceBorderBounds(game);
+            this.enforceBorderBounds(game.borderHorizontalBuffer, game.borderVerticalBuffer, screenWidth, screenHeight, hudBuff);
 
         } 
         catch (e) 
@@ -134,7 +135,7 @@ class Enemy extends GameObject
         if (dist > aDist) this.behaveState = behaveStates.FOLLOW;
     }
 
-    static spawnEnemies(game, types, holder)
+    static spawnEnemies(types, holder, screenWidth, screenHeight)
     {
         Object.values(types).forEach(spriteDef =>
         {
@@ -142,8 +143,8 @@ class Enemy extends GameObject
                 spriteDef.type,
                 spriteDef.w,
                 spriteDef.h,        
-                game.gameConsts.SCREEN_WIDTH * 0.5,
-                game.gameConsts.SCREEN_HEIGHT * 0.5,
+                screenWidth * 0.5,
+                screenHeight * 0.5,
                 spriteDef.s
             );
 

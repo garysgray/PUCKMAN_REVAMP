@@ -1,23 +1,24 @@
 // ============================================================================
 // HUD Rendering Layer
 // ----------------------------------------------------------------------------
-// Responsible for drawing HUD elements (score, lives, etc)
-// No game logic — render only
+// Responsible for drawing HUD elements (score, lives, etc).
+// Purely visual — no game logic here.
 // ============================================================================
-
-function renderHUDLayer(device, game) 
+function renderHUDLayer(device, game, opts) 
 {
     try 
     {
-        device.setFont(game.gameConsts.NORM_FONT_SETTINGS);
-        device.setTextColor(game.gameConsts.FONT_COLOR);
+        const { screenWidth, screenHeight, hudBuff, normFont, highlightColor, fontColor } = opts;
 
-        // No HUD in INIT
-        if (game.gameState === gameStates.INIT)
-            return;
+        device.setFont(normFont);
+        device.setTextColor(fontColor);
 
-        // HUD visible in all other states
-        RenderUtil.renderHud(device, game);
+        // Skip HUD in INIT state
+        if (game.gameState === gameStates.INIT) return;
+
+        // Render HUD for all other states
+        RenderUtil.renderHud(device, game, screenWidth, screenHeight);
+
     } 
     catch (e) 
     {
@@ -25,5 +26,5 @@ function renderHUDLayer(device, game)
     }
 }
 
-// Layer registration
+// Wrap it in a Layer object
 const hudRenderLayer = new Layer("HUD", renderHUDLayer);

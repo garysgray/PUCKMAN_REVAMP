@@ -34,11 +34,12 @@ class Player extends GameObject
     // Update player each frame
 
 
-    update(device, game, delta, sound)
+    update(device, game, delta, sound, screenWidth, screenHeight, hudBuff)
     {
-        try {
+        try 
+        {
             
-            this.enforceBorderBounds(game);
+            this.enforceBorderBounds(game.borderHorizontalBuffer, game.borderVerticalBuffer, screenWidth, screenHeight, hudBuff);
 
             const moved = this.checkForKeyBoardMoveInput(device, game, delta);
 
@@ -131,21 +132,23 @@ class Player extends GameObject
     }
 
 
-    static buildPlayer(game)
+    static buildPlayer(screenWidth, borderVerticalBuffer, mapBufferY)
     {
         try 
         {
-            game.player = new Player(
+            const player = new Player(
                 playerSpriteTypes.PLAYER.w,
                 playerSpriteTypes.PLAYER.h,
-                game.gameConsts.SCREEN_WIDTH * 0.5,
-                game.borderVerticalBuffer + game.gameConsts.MAP_BUFFER_Y,
+                screenWidth * 0.5,
+                borderVerticalBuffer + mapBufferY,
                 playerSpriteTypes.PLAYER.s
             );
+            return player;
         } 
         catch (err) 
         {
             console.error("Failed to initialize player:", err);
         }
+        
     }
 }

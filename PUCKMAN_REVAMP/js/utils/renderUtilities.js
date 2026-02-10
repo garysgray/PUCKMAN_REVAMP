@@ -50,20 +50,20 @@ const RenderUtil =
         );
     },
     
-    renderBorder(device, game)
+    renderBorder(device, game, screenWidth, screenHeight)
     {
         if (!game.cachedBorderReady)
         {
-            this.createRenderCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady");
+            this.createRenderCache(device, game, game.borderHolder, "cachedBorder", "cachedBorderReady", screenWidth, screenHeight);
         }
         device.ctx.drawImage(game.cachedBorder, 0, 0);
     },
     
-    renderMap(device, game)
+    renderMap(device, game, screenWidth, screenHeight)
     {
         if (!game.cachedMapReady)
         {
-            this.createRenderCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady");
+            this.createRenderCache(device, game, game.mapHolder, "cachedMap", "cachedMapReady", screenWidth, screenHeight);
         }
         device.ctx.drawImage(game.cachedMap, 0, 0);
     },
@@ -87,11 +87,11 @@ const RenderUtil =
     },
     
     // Render cache
-    createRenderCache(device, game, holder, cacheKey, readyKey)
+    createRenderCache(device, game, holder, cacheKey, readyKey, screenWidth, screenHeight)
     {
         const canvas = document.createElement("canvas");
-        canvas.width  = game.gameConsts.SCREEN_WIDTH;
-        canvas.height = game.gameConsts.SCREEN_HEIGHT;
+        canvas.width  = screenWidth;
+        canvas.height = screenHeight;
         const ctx = canvas.getContext("2d");
         
         for (let i = 0; i < holder.getSize(); i++)
@@ -106,10 +106,10 @@ const RenderUtil =
         game[readyKey] = true;
     },
 
-    renderHud(device, game)
+    renderHud(device, game, screenWidth, screenHeight)
     {
-        const cw = game.gameConsts.SCREEN_WIDTH;
-        const ch = game.gameConsts.SCREEN_HEIGHT;
+        const cw = screenWidth;
+        const ch = screenHeight;
         const hudY = ch * 0.05;
         
         // HUD element positions - evenly spaced

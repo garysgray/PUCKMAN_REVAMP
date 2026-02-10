@@ -9,13 +9,17 @@ class Controller
     #game;              // Holds core game state and logic
     #layers;            // Array of Layer instances (render order matters)
     #htmlMessageIndex;  // Keeps track of HTML message to be displayed when not in FULL SCREEN
+
+    #gameConsts;
     
-    constructor() 
+    constructor(gameConsts = new GameConsts()) 
     {
         // Initialize Game Object
         try 
         {
             this.#game = new Game();
+
+            this.#gameConsts = gameConsts;
         } 
         catch (error) 
         {
@@ -27,7 +31,7 @@ class Controller
         // Initialize Device Object
         try 
         {
-            this.#device = new Device(this.game.gameConsts.SCREEN_WIDTH, this.game.gameConsts.SCREEN_HEIGHT);
+            this.#device = new Device(this.#gameConsts.SCREEN_WIDTH, this.#gameConsts.SCREEN_HEIGHT);
         } 
         catch (error) 
         {
@@ -52,6 +56,8 @@ class Controller
     get game() { return this.#game; }
     get layers() { return this.#layers; }
     get htmlMessageIndex() { return this.#htmlMessageIndex; }
+
+    get gameConsts() { return this.#gameConsts; }
 
     // ------------------------------------------------------------------------
     // Setters
@@ -89,38 +95,43 @@ class Controller
     // Update + Render
     // ------------------------------------------------------------------------
     callUpdateGame(delta) 
-    {
-        if (typeof delta !== "number" || delta <= 0) delta = this.game.gameConsts.FALLBACK_DELTA; // fallback ~60fps
-
-        try
-        {
-            // Independent function UpdateGame.js that updates everything game related from Game.js 
-            // except rendering, that's done in each layer
-            this.updateGame(this.device, this.game, delta);
-
-            // Render each layer
-            for (const layer of this.layers) 
-            {
-                try 
-                { 
-                    layer.render(this.device, this.game); 
-                } 
-                catch (renderError) 
-                { 
-                    console.error(`Error rendering layer:`, renderError.message); 
-                }
-            }
-
-            // Clear per-frame input
-            this.device.keys.clearFrameKeys();
-
-        } 
-        catch (error)
-        {
-            console.error("Game update error:", error.message);
-            alert("An error occurred during the game update. Please restart.");
-        }
+{
+    // Ensure delta is valid
+    if (typeof delta !== "number" || delta <= 0) {
+        delta = this.#gameConsts.FALLBACK_DELTA; // fallback ~60fps
     }
+
+    try {
+        // Update all game logic (separate from rendering)
+        this.updateGame(this.device, this.game, delta);
+
+        // Pack all constants into a single options object
+        const renderOpts = {
+            screenWidth: this.gameConsts.SCREEN_WIDTH,
+            screenHeight: this.gameConsts.SCREEN_HEIGHT,
+            hudBuff: this.gameConsts.HUD_BUFFER,
+            normFont: this.gameConsts.NORM_FONT_SETTINGS,
+            midFont: this.gameConsts.MID_FONT_SETTINGS,
+            bigFont: this.gameConsts.BIG_FONT_SETTINGS,
+            highlightColor: this.gameConsts.HIGHLIGHT_COLOR,
+            fontColor: this.gameConsts.FONT_COLOR
+        };
+
+        // Render all layers in order
+        for (const layer of this.layers) {
+            layer.render(this.device, this.game, renderOpts);
+        }
+
+        // Clear per-frame input
+        this.device.keys.clearFrameKeys();
+
+    } catch (error) {
+        console.error("Game update error:", error);
+        alert("An error occurred during the game update. Please restart.");
+    }
+}
+
+
 
     updateGame(device, game, delta)
     {

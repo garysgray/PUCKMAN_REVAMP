@@ -2,11 +2,11 @@
 
 # PUCKMAN (Revamped)
 
-A rebuild of the classic HTML5 **PUCKMAN** game.
+A modern rebuild of the classic HTML5 **PUCKMAN** game.  
 
-Focuses on **modular architecture, deterministic collision handling, procedural level generation, and flexible input systems**, while keeping the original arcade gameplay intact.
+Focuses on **modular architecture, deterministic collision handling, procedural level generation, and flexible input systems**, while preserving the original arcade gameplay.
 
-Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks or build steps required. Runs directly in modern browsers.
+Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, bundlers, or build steps required. Runs directly in modern browsers.
 
 ---
 
@@ -22,7 +22,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 ## Core Systems & Features
 
 ### 1. Procedural Map & Level Generation
-- Grid-based procedural map system with **walkable paths**
+- Grid-based procedural maps with **walkable paths**
 - Walls placed safely without overlapping player spawns or goals
 - Difficulty scales with **level tiers**
 - Configurable generation parameters:
@@ -30,7 +30,6 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - `mapLaneSpacing` – controls wall spacing
   - `mapEmptyChance` – balance of open space vs walls
   - `mapSpawnRadius` – protected area around player
-- Optional tile color variation based on distance from map center
 - Map and borders cached after generation for efficiency
 - Ensures all goals are reachable
 - Safe initialization prevents overlap with player, enemies, or map edges
@@ -47,13 +46,13 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 ---
 
 ### 3. Goals & Objectives
-- Configurable goal count per level
+- Configurable number of goals per level
 - Placement avoids walls, enemies, and player spawns
 - Goal collection:
-  - Increases score
+  - Increases score via `scoreManager`
   - Plays audio feedback
   - Advances game state
-- Fully collision-aware with map and entity holders
+- Fully collision-aware
 - Supports dynamic repositioning if blocked
 
 ---
@@ -64,7 +63,6 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Gamepad support via HTML5 Gamepad API
 - Smooth movement with diagonal normalization
 - Collision-aware movement prevents tunneling
-- Shooting with cooldown support
 - Interactions:
   - Goals → score and state update
   - Enemies → life reduction
@@ -79,18 +77,17 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - `FOLLOW`
   - `STOP`
 - Integrated with collision system
-- Designed for easy extension with additional behaviors
 - Movement respects map layout and player position
-- Avoids goal and spawn conflicts
+- Avoids goals and spawn conflicts
+- Designed for easy extension with additional behaviors
 
 ---
 
 ### 6. Input System
 - Unified input for **keyboard + gamepad**
-- Gamepad via HTML5 Gamepad API
-- Per-frame input clearing to prevent stuck or repeated actions
+- Per-frame input clearing prevents stuck/repeated actions
 - Clean separation between held inputs and one-shot presses
-- Supports pause, state switching, and runtime toggle
+- Supports pause, state switching, and runtime toggling
 - Prevents accidental browser scrolling or focus issues
 
 ---
@@ -101,13 +98,27 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - `PAUSE` – paused state
 - `WIN` – level complete
 - `LOSE` – game over
+- `TOP_SCORE` – high score entry screen
 - Each state manages its own update loop and rendering rules
 - State transitions are deterministic and reset properly
 - Guards prevent double-entry and timing race conditions
 
 ---
 
-### 8. Collision System
+### 8. Score & High Score Management
+- `scoreManager` tracks score, bonuses, and extra lives
+- Automatic calculation of:
+  - Goal rewards
+  - Time bonuses
+  - Win bonuses
+- Tracks high scores in a top-10 table
+- Handles player initials entry at high score screen
+- High score persistence ready for local storage integration
+- HUD displays current score and remaining lives
+
+---
+
+### 9. Collision System
 - `GameObject` provides:
   - `getHitbox()`
   - `tryMoveWithCollision()`
@@ -119,42 +130,45 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 - Handles collisions with map, player, enemies, and goals
 - Optimized for performance
 - Prevents tunneling and overlap glitches
-- Works with both static and moving objects
 
 ---
 
-### 9. HUD & Rendering
+### 10. HUD & Rendering
 - Dynamic HUD placement based on canvas size
 - Rendering pipeline:
-  - Billboards / splash screens
+  - Background / splash screens
   - Game objects (map, player, enemies, goals)
   - HUD (score, lives, level)
   - Text overlays
 - Map and borders rendered once per level for efficiency
 - Optional debug overlay shows hitboxes, entity positions, and runtime info
-- Flexible layering allows easy addition of effects
+- Flexible layering allows easy addition of visual effects
 
 ---
 
-### 10. Audio
+### 11. Audio
 - Audio pooling prevents playback issues
 - Fully integrated with game state changes
-- Designed for easy future expansion
+- Supports per-event sounds:
+  - Goal pickup
+  - Hurt
+  - Life gained
+  - Win/lose
 
 ---
 
-### 11. Timers & Timing Control
-- Custom game timer system replaces ad-hoc `setTimeout`
-- Timers are centrally managed and updated via the main game loop
-- Used for:
+### 12. Timers & Timing Control
+- Centralized timer system replaces ad-hoc `setTimeout`
+- Timers used for:
   - State transition delays
   - Game clock
+  - Last-life lose delay
 - Prevents timing drift and state-related race conditions
 - Makes timing behavior explicit and debuggable
 
 ---
 
-### 12. Fullscreen & Display Handling
+### 13. Fullscreen & Display Handling
 - Optional fullscreen mode
 - Canvas dynamically resizes with window and fullscreen changes
 - Maintains correct aspect ratio and HUD positioning
@@ -162,7 +176,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 
 ---
 
-### 13. Project Structure & Modularity
+### 14. Project Structure & Modularity
 - Code split into focused files by responsibility:
   - Game loop
   - State handlers
@@ -171,19 +185,19 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
   - Collision
   - Timers
   - Rendering
+  - Score & high score management
 - Reduces coupling between systems
-- Makes debugging and refactoring safer
 - Supports gradual evolution toward a lightweight game engine
+- Easier debugging and refactoring
 
 ---
 
-### 14. Debug & Development
+### 15. Debug & Development
 - Optional on-screen debug panel
 - Hitbox visualization
 - Safe initialization checks prevent race conditions
 - Fixed-step game loop ensures consistent updates
 - Console logging for debugging
-- Modular structure allows replacing core systems without breaking others
 
 ---
 
@@ -200,9 +214,4 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas**, with no frameworks 
 ## Future Work
 - Expanded enemy AI behaviors
 - Power-ups and modifiers
-- High Score screen
 
----
-
-## Notes
-This project serves as both a **modernized PUCKMAN game** and a **testing environment for engine-level concepts**, including procedural generation, deterministic collisions, explicit state management, centralized timers, and dynamic fullscreen handling.
