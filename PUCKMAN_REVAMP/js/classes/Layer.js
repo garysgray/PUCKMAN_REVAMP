@@ -44,5 +44,26 @@ class Layer
             alert("An error occurred while adding a render layer.");
         }
     }
+    // ------------------------------------------------------------------------
+    // Add multiple render layers at once
+    // ------------------------------------------------------------------------
+    static addRenderLayers(layers, holder) 
+    {
+        try
+        {
+            if (!Array.isArray(layers)) throw new Error("Layers must be an array.");
+            
+            layers.forEach(layer => 
+            {
+                if (!layer) throw new Error("Layer is undefined or null.");
+                holder.push(layer);
+            });
+        } 
+        catch (error)
+        {
+            console.error("Error adding layers:", error.message);
+            alert("An error occurred while adding render layers.");
+        }
+    }
 
 }

@@ -22,21 +22,21 @@ function renderGameObjectsLayer(device, game) {
             {
                 try
                 {
-                    Render.renderBorder(device, game);
-                    Render.renderMap(device, game);
+                    RenderUtil.renderBorder(device, game);
+                    RenderUtil.renderMap(device, game);
 
                     // Render each goal
                     game.goalHolder.forEach(element => 
                     {
-                         Render.renderStateSprite(device, element );
+                         RenderUtil.renderStateSprite(device, element );
                     });
 
-                    Render.renderPlayer(device, game);
+                    RenderUtil.renderPlayer(device, game);
 
                     // Render each enemy
                     game.enemyHolder.forEach(element => 
                     {
-                        Render.renderStateSprite(device, element );
+                        RenderUtil.renderStateSprite(device, element );
                     });
 
                 } 

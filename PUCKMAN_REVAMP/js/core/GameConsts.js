@@ -25,21 +25,23 @@ class GameConsts
     #NO_LIVES  = 0;
     #NO_TIME   = 0;
     #NO_VALUE  = 0;
+    #LEVEL_1   = 1;
 
     get GAME_LIVES_START_AMOUNT() { return this.#GAME_LIVES_START_AMOUNT; }
     get LAST_LIFE() { return this.#LAST_LIFE; }
     get NO_LIVES()  { return this.#NO_LIVES; }
     get NO_TIME()   { return this.#NO_TIME; }
     get NO_VALUE()  { return this.#NO_VALUE; }
+    get LEVEL_1()  { return this.#LEVEL_1; }
 
     // =======================================================
     // TIMING
     // =======================================================
     #LEVEL_MAX_TIME        = 20;
     #STATE_DELAY_TIME      = 0.5;
-    #HIGH_SCORE_DELAY_TIME = 4.0;
+    #HIGH_SCORE_DELAY_TIME = 2.0;
     #LOSE_SOUND_DELAY_TIME = 0.1;
-    #HTML_MESS_DELAY_TIME  = 2.0;
+    #HTML_MESS_DELAY_TIME  = 4.0;
 
     get LEVEL_MAX_TIME()        { return this.#LEVEL_MAX_TIME; }
     get STATE_DELAY_TIME()      { return this.#STATE_DELAY_TIME; }

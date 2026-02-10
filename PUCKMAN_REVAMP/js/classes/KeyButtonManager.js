@@ -7,18 +7,31 @@ class KeyButtonManager
     #keysDown;       // currently held keys
     #keysPressed;    // keys pressed this frame
     #keysReleased;   // keys released this frame
+    #prevButtons;    // previous frame gamepad button states
     #value = false;  // persistent toggle flag (e.g., pause)
+    
+    // Gamepad state
+    #gamePadConnected;
+    #gamePadEnabled;
+    #prevGamePadConnected;
 
     constructor() 
     {
         this.#keysDown = {};
         this.#keysPressed = {};
         this.#keysReleased = {};
+        this.#prevButtons = [];
+        
+        // Gamepad state
+        this.#gamePadConnected = false;
+        this.#gamePadEnabled = false;
+        this.#prevGamePadConnected = false;
+
 
         this.initKeys();
         this.wasPausePressed = false;
 
-        // In KeyButtonManager constructor, REPLACE all the axis stuff with this:
+        // Axis tracking for analog sticks
         this.axisThreshold = 0.5;
         this.axisPressed = {}; // Track which axes are currently pressed
 
@@ -51,11 +64,21 @@ class KeyButtonManager
             
             return false;
         };
-        
     }
 
     get value() { return this.#value; }
     set value(v) { this.#value = v; }
+    
+    get gamePadConnected() { return this.#gamePadConnected; }
+    set gamePadConnected(v) { this.#gamePadConnected = v; }
+    
+    get gamePadEnabled() { return this.#gamePadEnabled; }
+    set gamePadEnabled(v) { this.#gamePadEnabled = v; }
+
+    get prevGamePadConnected() { return this.#prevGamePadConnected; }
+    set prevGamePadConnected(v) { this.#prevGamePadConnected = v; }
+
+
 
     // ------------------------------------------------------------------------
     // Initialize keyboard events
@@ -80,17 +103,53 @@ class KeyButtonManager
     }
 
     // ------------------------------------------------------------------------
-    // Query methods
+    // Query methods - Keyboard
     // ------------------------------------------------------------------------
     isKeyDown(key) { return !!this.#keysDown[key]; }
     isKeyPressed(key) { return !!this.#keysPressed[key]; }
     isKeyReleased(key) { return !!this.#keysReleased[key]; }
 
+    // ------------------------------------------------------------------------
+    // Query methods - Gamepad
+    // ------------------------------------------------------------------------
+    isGamepadButtonPressed(buttonIndex)
+    {
+        const gamepads = navigator.getGamepads?.();
+        if (!gamepads) return false;
+
+        const gp = gamepads[0];
+        if (!gp) return false;
+
+        const pressed = gp.buttons[buttonIndex]?.pressed || false;
+        const prev = this.#prevButtons[buttonIndex] || false;
+
+        return pressed && !prev;
+    }
+
+    // ------------------------------------------------------------------------
+    // Clear per-frame input state
+    // IMPORTANT: This should be called AFTER all input checks are done
+    // ------------------------------------------------------------------------
     clearFrameKeys() 
     { 
         this.#keysPressed = {}; 
         this.#keysReleased = {};
-        this.lastAxisValues = [0, 0, 0, 0]; // Add this line
+        this.#clearGamepadFrameKeys();
+    }
+
+    #clearGamepadFrameKeys()
+    {
+        const gamepads = navigator.getGamepads?.();
+        if (!gamepads) return;
+
+        const gp = gamepads[0];
+        if (!gp) return;
+
+        // Update previous button states for next frame
+        gp.buttons.forEach((btn, i) =>
+        {
+            this.#prevButtons[i] = btn.pressed;
+        });
     }
 
     // ------------------------------------------------------------------------
@@ -111,7 +170,6 @@ class KeyButtonManager
 
         return false;
     }
-
 
     // ------------------------------------------------------------------------
     // Pause handling (works for keyboard + gamepad)
@@ -147,14 +205,14 @@ class KeyButtonManager
         }
     }
 
-
     // ------------------------------------------------------------------------
     // Setup canvas key prevention and focus
     // ------------------------------------------------------------------------
-    addEventListeners(game, keyTypes)
+    addEventListeners(keyTypes)
     {
-        window.addEventListener("gamepadconnected", () => game.gamePadConnected = true);
-        window.addEventListener("gamepaddisconnected", () => game.gamePadConnected = false);
+        // Gamepad connection events
+        window.addEventListener("gamepadconnected", () => this.gamePadConnected = true);
+        window.addEventListener("gamepaddisconnected", () => this.gamePadConnected = false);
 
         const canvas = document.getElementById("canvas");
         canvas.tabIndex = 0; // make focusable
@@ -171,11 +229,6 @@ class KeyButtonManager
             ];
             if (blockedKeys.includes(e.code)) e.preventDefault();
         });
-
-        canvas.addEventListener("keydown", () => 
-        {
-            if (!game.keyboardTouched) game.keyboardTouched = true;
-        });
     }
 
     // ------------------------------------------------------------------------
@@ -185,14 +238,11 @@ class KeyButtonManager
     {
         this.initKeys();
         this.wasPausePressed = false;
+    }
 
-        // Ensure gamepad function is attached
-        this.isGamepadButtonPressed = function(buttonIndex) 
-        {
-            const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-            const gp = gamepads[0]; // first controller only
-            return gp ? gp.buttons[buttonIndex]?.pressed : false;
-        };
+    updateGamepadState()
+    {
+        const gp = navigator.getGamepads?.()[0];
+        this.#gamePadConnected = !!gp;
     }
 }
-

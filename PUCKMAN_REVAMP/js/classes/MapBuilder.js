@@ -283,9 +283,9 @@ class MapBuilder
 
                 // Avoid overlaps
                 if (
-                    overlapsAny(goal, game.mapHolder) ||
-                    overlapsAny(goal, game.goalHolder) ||
-                    overlapsAny(goal, game.enemyHolder)
+                    Collision.overlapsAny(goal, game.mapHolder) ||
+                    Collision.overlapsAny(goal, game.goalHolder) ||
+                    Collision.overlapsAny(goal, game.enemyHolder)
                 ) continue;
 
                 game.goalHolder.addObject(goal);

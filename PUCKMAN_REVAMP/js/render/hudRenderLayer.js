@@ -17,7 +17,7 @@ function renderHUDLayer(device, game)
             return;
 
         // HUD visible in all other states
-        Render.renderHud(device, game);
+        RenderUtil.renderHud(device, game);
     } 
     catch (e) 
     {

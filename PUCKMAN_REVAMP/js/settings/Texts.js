@@ -12,31 +12,31 @@ gameTexts =
     {
         KEYBOARD_INSTRUCTIONS: 
         [
-                "GET ALL THE FRUIT ",
-                "DON'T RUN OUT OF TIME",
-                "USE ARROW KEYS TO MOVE", 
-                "PRESS SPACE-BAR TO START",
-                "PRESS CTRL TO PAUSE",
-                "PRESS F FOR FULLSCREEN",
-                "1000 POINTS = NEW LIFE",
-                "100 POINTS TO CLEAR LEVEL",
-                "5 POINTS FOR EVERY SECOND LEFT ON CLOCK",
+            "USE ARROW KEYS TO MOVE", 
+            "PRESS SPACE-BAR TO START",
+            "PRESS CTRL TO PAUSE",
         ],
 
         GAMEPAD_INSTRUCTIONS: 
         [
-                "GET ALL THE FRUIT ",
-                "DON'T RUN OUT OF TIME",
-                "USE LEFT ANALOG TO MOVE", 
-                "PRESS START BUTTON TO BEGIN",
-                "PRESS SELECT BUTTON TO PAUSE",
-                "PRESS F FOR FULLSCREEN",
-                "1000 POINTS = NEW LIFE",
-                "100 POINTS TO CLEAR LEVEL",
-                "5 POINTS FOR EVERY SECOND LEFT ON CLOCK",
+            "USE LEFT ANALOG TO MOVE", 
+            "PRESS START BUTTON TO BEGIN",
+            "PRESS SELECT BUTTON TO PAUSE",
         ],
 
-        HTML_DEFAULT_INSTRUCTIONS: "PRESS Q TO ENABLE/DISABLE GAMEPAD",
+        DEFAULT_INSTRUCTIONS:
+        [
+            "GET ALL THE FRUIT ",
+            "DON'T RUN OUT OF TIME",
+            "PRESS F FOR FULLSCREEN",
+            "10 POINTS FOR EVERY FRUIT",
+            "100 POINTS TO CLEAR LEVEL",
+            "5 POINTS FOR EVERY SECOND LEFT ON CLOCK",
+            "1000 POINTS = NEW LIFE",
+        ],  
+
+        HTML_DEFAULT_INSTRUCTIONS: "PRESS Q TO ENABLE GAMEPAD",
+
     },
 
     HUD: 

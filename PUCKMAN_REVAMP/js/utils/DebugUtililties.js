@@ -1,7 +1,7 @@
 // =======================================================
 // DEBUG UTILITIES
 // =======================================================
-const Debug = 
+const DebugUtil = 
 {
     // Flags
     DEV_MODE: false, // false when shipping, true when dev
@@ -75,26 +75,26 @@ const Debug =
 };
 
 // Initialize debug flags based on DEV_MODE
-Debug.DRAW_DEBUG_TEXT = Debug.DEV_MODE;
-Debug.DRAW_DEBUG_HITBOXES = Debug.DEV_MODE;
+DebugUtil.DRAW_DEBUG_TEXT = DebugUtil.DEV_MODE;
+DebugUtil.DRAW_DEBUG_HITBOXES = DebugUtil.DEV_MODE;
 
 // =======================================================
 // DEBUG INPUT (DEV MODE ONLY)
 // =======================================================
 window.addEventListener("keydown", e => 
 {
-    if (!Debug.DEV_MODE) return;
+    if (!DebugUtil.DEV_MODE) return;
     
     switch (e.code) 
     {
         case "Backquote": // `
-            Debug.DRAW_DEBUG_TEXT = !Debug.DRAW_DEBUG_TEXT;
-            Debug.updateDebugPanelVisibility();
+            DebugUtil.DRAW_DEBUG_TEXT = !DebugUtil.DRAW_DEBUG_TEXT;
+            DebugUtil.updateDebugPanelVisibility();
             break;
             
         case "KeyH": // H
-            Debug.DRAW_DEBUG_HITBOXES = !Debug.DRAW_DEBUG_HITBOXES;
-            console.log("Hitboxes:", Debug.DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
+            DebugUtil.DRAW_DEBUG_HITBOXES = !DebugUtil.DRAW_DEBUG_HITBOXES;
+            console.log("Hitboxes:", DebugUtil.DRAW_DEBUG_HITBOXES ? "ON" : "OFF");
             break;
     }
 });
@@ -102,6 +102,6 @@ window.addEventListener("keydown", e =>
 // =======================================================
 // INITIALIZATION
 // =======================================================
-document.getElementById("debug-panel")?.classList.toggle("hidden", !Debug.DRAW_DEBUG_TEXT);
-window.addEventListener("load", () => Debug.updateDebugPanelPosition());
-window.addEventListener("resize", () => Debug.updateDebugPanelPosition());
+document.getElementById("debug-panel")?.classList.toggle("hidden", !DebugUtil.DRAW_DEBUG_TEXT);
+window.addEventListener("load", () => DebugUtil.updateDebugPanelPosition());
+window.addEventListener("resize", () => DebugUtil.updateDebugPanelPosition());

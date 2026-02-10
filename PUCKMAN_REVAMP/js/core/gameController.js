@@ -9,7 +9,7 @@ class Controller
     #game;              // Holds core game state and logic
     #layers;            // Array of Layer instances (render order matters)
     #htmlMessageIndex;  // Keeps track of HTML message to be displayed when not in FULL SCREEN
-
+    
     constructor() 
     {
         // Initialize Game Object
@@ -68,11 +68,15 @@ class Controller
             this.game.initGame(this.device);
 
             // Layers must be rendered in this order
-            Layer.addRenderLayer(backgroundRenderLayer, this.layers);  // FIRST
-            Layer.addRenderLayer(billBoardsLayer, this.layers);
-            Layer.addRenderLayer(gameObjectsLayer, this.layers);
-            Layer.addRenderLayer(hudRenderLayer, this.layers);
-            Layer.addRenderLayer(textRenderLayer, this.layers);        // LAST
+            Layer.addRenderLayers(
+            [
+                backgroundRenderLayer,
+                billBoardsLayer,
+                gameObjectsLayer,
+                hudRenderLayer,
+                textRenderLayer
+            ], 
+            this.layers);
         }
         catch (error) 
         {
@@ -127,7 +131,7 @@ class Controller
             {
                 [gameStates.INIT]:      () => handleInitState(device, game, delta),
                 [gameStates.PLAY]:      () => handlePlayState(device, game, delta),
-                [gameStates.PAUSE]:     () => handlePauseState(device, game),
+                [gameStates.PAUSE]:     () => handlePauseState(device, game, delta),
                 [gameStates.WIN]:       () => handleWinState(device, game),
                 [gameStates.LOSE]:      () => handleLoseState(device, game, delta),
                 [gameStates.TOP_SCORE]: () => handleTopScoreState(device, game), 
@@ -156,32 +160,32 @@ class Controller
     // Displays rotating instruction messages in the HTML overlay during INIT state.
     // Messages cycle based on timer and adapt to gamepad connection status.
     // ------------------------------------------------------------------------
-    renderHTMLMessage(game) 
+    renderHTMLMessage(device, game) 
     {
         // Get message container element
         const msg = document.getElementById("message");
         if (!msg || game.isGameFullscreen) return;
         
         // Track gamepad connection state changes
-        if (game.prevGamePadConnected === undefined) 
+        if (device.keys.prevGamePadConnected === undefined) 
         {
-            game.prevGamePadConnected = game.gamePadConnected;
+            device.keys.prevGamePadConnected = device.keys.gamePadConnected;
         }
         
         // Build messages array based on input method
-        const messages = this.buildMessages(game);
+        const messages = this.buildMessages(device, game);
         
         // Initialize cycling state
         if (this.htmlMessageIndex === undefined) this.htmlMessageIndex = 0;
         
         // Reset display when gamepad connects
-        if (game.gamePadConnected && !game.prevGamePadConnected) 
+        if (device.keys.gamePadConnected && !device.keys.prevGamePadConnected) 
         {
             this.htmlMessageIndex = 0;
         }
         
         // Update connection state for next frame
-        game.prevGamePadConnected = game.gamePadConnected;
+        device.keys.prevGamePadConnected = device.keys.gamePadConnected;
         
         // Ensure index stays within bounds
         if (this.htmlMessageIndex >= messages.length) 
@@ -205,26 +209,31 @@ class Controller
         }
     }
 
-    buildMessages(game)
+    buildMessages(device)
     {
+        const SPLICE_INDEX = 2;
+
         // Build messages array based on input method
         let messages = [];
+
+        // give it the defaults
+        messages.push(...gameTexts.INIT.DEFAULT_INSTRUCTIONS);
         
-        if (game.gamePadEnabled && game.gamePadConnected) 
+        if (device.keys.gamePadEnabled && device.keys.gamePadConnected) 
         {
-            // Gamepad is connected and enabled
-            messages.push(...gameTexts.INIT.GAMEPAD_INSTRUCTIONS);
+            // Gamepad connected and enabled
+            messages.splice(SPLICE_INDEX, 0, ...gameTexts.INIT.GAMEPAD_INSTRUCTIONS);
         }
-        else if (game.gamePadConnected && !game.gamePadEnabled) 
+        else if (device.keys.gamePadConnected && !device.keys.gamePadEnabled) 
         {
             // Gamepad connected but not enabled - show toggle hint + keyboard controls
-            messages.push(gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS);
-            messages.push(...gameTexts.INIT.KEYBOARD_INSTRUCTIONS);
+            messages.splice(SPLICE_INDEX, 0, ...gameTexts.INIT.GAMEPAD_INSTRUCTIONS);
+            messages.unshift(gameTexts.INIT.HTML_DEFAULT_INSTRUCTIONS);
         }
         else 
         {
             // No gamepad or disconnected - show keyboard controls only
-            messages.push(...gameTexts.INIT.KEYBOARD_INSTRUCTIONS);
+            messages.unshift(...gameTexts.INIT.KEYBOARD_INSTRUCTIONS);
         }
         
         // Remove any invalid entries

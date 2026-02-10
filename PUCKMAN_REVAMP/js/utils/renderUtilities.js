@@ -2,7 +2,7 @@
 // RENDER UTILITIES
 // =======================================================
 
-const Render = 
+const RenderUtil = 
 {
     // Sprite rendering
     renderClipSprite(device, sprite, imageKey, frame)
@@ -22,7 +22,7 @@ const Render =
                 sprite.height,
                 frame
             );
-            if (Debug.DRAW_DEBUG_HITBOXES) this.renderHitBoxs(device, sprite);
+            if (DebugUtil.DRAW_DEBUG_HITBOXES) this.renderHitBoxs(device, sprite);
         }
         catch (e)
         {
