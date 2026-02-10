@@ -1,16 +1,22 @@
 Key Points of the Folder Structure:
-- The root contains an `index.html` file that serves as the entry point to the game.
+- The root contains an `index.html` file that serves as the entry point to the game
 - The `js` directory holds all JavaScript files organized into subdirectories based on functionality:
-  - core: Contains foundational controller functions and handling of the game operations.
-  - classes: Holds game object definitions, such as Player, and other entities.
-  - render: Includes rendering functions and layers that manage the drawing of game objects and UI.
+  - core: Contains foundational controller functions and handling of the game operations
+  - classes: Holds game object definitions, such as Player, and other entities
+  - render: Includes rendering functions and layers that manage the drawing of game objects and UI
   - settings: Contains enums, types, definitions for game elements
-  - utils: Contains utility classes and functions that support various functionalities (like sound management and drawing).
-- The `css` directory contains the stylesheet for styling the game's UI.
+  - utils: Contains utility classes and functions that support various functionalities (like sound management and drawing)
+  - Main.js: Called from index.html holds the main game loop that updates Game.js via GameController.js
+- The `css` directory contains the stylesheet for styling the game's UI
 
 Folder Structure:
 
 PUCKMAN_REVAMP/
+
+|
+├── assets/
+│   ├── sounds                         # Sound files for the game
+│   └── sprites                        # Graphic images for the game
 |
 ├── css/
 │   └── style.css                      # Stylesheets for the game
@@ -29,6 +35,7 @@ PUCKMAN_REVAMP/
 │   │   ├── MapBuilder.js              # Map construction and procedural generation
 │   │   ├── ObjectHolder.js            # Holds and manages game objects
 │   │   ├── Player.js                  # Player character management
+│   │   ├── ScoreManager.js            # High Score and other score management
 │   │   ├── Sprite.js                  # Image handling for sprites
 │   │   └── Timer.js                   # Timer functionality for the game
 │   │   
@@ -44,6 +51,7 @@ PUCKMAN_REVAMP/
 │   │   ├── GameObjectsRenderLayer.js  # Handles rendering of game objects
 │   │   ├── HudRenderLayer.js          # HUD rendering layer (score, lives, etc.)
 │   │   ├── RenderBillBoardsLayer.js   # Renders background and decorative items
+│   │   ├── RenderBackGroundLayer.js   # Renders black screen for transitions
 │   │   └── TextRenderLayer.js         # Renders text elements during gaming
 |   |
 │   ├── settings/                      # Configuration files for game settings
@@ -57,9 +65,12 @@ PUCKMAN_REVAMP/
 │   ├── utils/                         # Utility functions
 │   │   │ 
 │   │   ├── CollisionUtilities.js      # Collision detection utilities
-│   │   └── RenderUtilities.js         # Rendering helper functions
+│   │   ├── DebugUtilities.js          # Debug utilities
+│   │   ├── FullScreenUtilities.js     # FullScreen events & utilities
+│   │   ├── RenderUtilities.js         # Rendering helper utilities
+│   │   └── TextUtilities.js           # Text render helper functions
 |   |
-|   └── Main.js                        # Starting point for code from index.HTML
+|   └── Main.js                        # Game loop starting point from index.HTML  
 |   
 ├── index.html                         # Main HTML file for the game
 |   
