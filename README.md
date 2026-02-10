@@ -173,6 +173,7 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, b
 - Canvas dynamically resizes with window and fullscreen changes
 - Maintains correct aspect ratio and HUD positioning
 - Supports both embedded arcade layout and fullscreen play
+- Supports both embedded arcade layout and fullscreen play
 
 ---
 
@@ -192,7 +193,14 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, b
 
 ---
 
-### 15. Debug & Development
+### 15. Game Instructions 
+- Instructions for Keyboard and Gamepad users
+- Better basic gameplay instructions added
+- Arcade like message system on rotation in real time
+
+---
+
+### 16. Debug & Development
 - Optional on-screen debug panel
 - Hitbox visualization
 - Safe initialization checks prevent race conditions
