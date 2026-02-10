@@ -151,3 +151,12 @@ p
 #debug-panel.hidden {
     display: none;
 }
+
+#message .message-text {
+    opacity: 1;
+    transition: opacity 0.35s ease-in-out;
+}
+
+#message .message-text.fade-out {
+    opacity: 0;
+}

@@ -196,7 +196,8 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, b
 ### 15. Game Instructions 
 - Instructions for Keyboard and Gamepad users
 - Better basic gameplay instructions added
-- Arcade like message system on rotation in real time
+- Arcade like message system using HTML and CSS
+- Instructions fade in and out on rotation when not in Full Screen
 
 ---
 

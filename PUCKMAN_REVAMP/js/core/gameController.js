@@ -10,6 +10,8 @@ class Controller
     #layers;            // Array of Layer instances (render order matters)
     #htmlMessageIndex;  // Keeps track of HTML message to be displayed when not in FULL SCREEN
 
+    #htmlMessagePhase;
+
     #gameConsts;
     
     constructor(gameConsts = new GameConsts()) 
@@ -47,6 +49,8 @@ class Controller
         this.initGameObj();
 
         this.#htmlMessageIndex = 0;
+        this.htmlMessagePhase = "visible"; // visible | fading
+
     }
 
     // ------------------------------------------------------------------------
@@ -56,6 +60,7 @@ class Controller
     get game() { return this.#game; }
     get layers() { return this.#layers; }
     get htmlMessageIndex() { return this.#htmlMessageIndex; }
+    get htmlMessagePhase() { return this.#htmlMessagePhase; }
 
     get gameConsts() { return this.#gameConsts; }
 
@@ -63,6 +68,7 @@ class Controller
     // Setters
     // ------------------------------------------------------------------------
     set htmlMessageIndex(v) { this.#htmlMessageIndex = v; }
+    set htmlMessagePhase(v) { this.#htmlMessagePhase = v; }
 
     // ------------------------------------------------------------------------
     // Initialize the Game Object which will start the actual game init process
@@ -95,43 +101,41 @@ class Controller
     // Update + Render
     // ------------------------------------------------------------------------
     callUpdateGame(delta) 
-{
-    // Ensure delta is valid
-    if (typeof delta !== "number" || delta <= 0) {
-        delta = this.#gameConsts.FALLBACK_DELTA; // fallback ~60fps
-    }
-
-    try {
-        // Update all game logic (separate from rendering)
-        this.updateGame(this.device, this.game, delta);
-
-        // Pack all constants into a single options object
-        const renderOpts = {
-            screenWidth: this.gameConsts.SCREEN_WIDTH,
-            screenHeight: this.gameConsts.SCREEN_HEIGHT,
-            hudBuff: this.gameConsts.HUD_BUFFER,
-            normFont: this.gameConsts.NORM_FONT_SETTINGS,
-            midFont: this.gameConsts.MID_FONT_SETTINGS,
-            bigFont: this.gameConsts.BIG_FONT_SETTINGS,
-            highlightColor: this.gameConsts.HIGHLIGHT_COLOR,
-            fontColor: this.gameConsts.FONT_COLOR
-        };
-
-        // Render all layers in order
-        for (const layer of this.layers) {
-            layer.render(this.device, this.game, renderOpts);
+    {
+        // Ensure delta is valid
+        if (typeof delta !== "number" || delta <= 0) {
+            delta = this.#gameConsts.FALLBACK_DELTA; // fallback ~60fps
         }
 
-        // Clear per-frame input
-        this.device.keys.clearFrameKeys();
+        try {
+            // Update all game logic (separate from rendering)
+            this.updateGame(this.device, this.game, delta);
 
-    } catch (error) {
-        console.error("Game update error:", error);
-        alert("An error occurred during the game update. Please restart.");
+            // Pack all constants into a single options object
+            const renderOpts = {
+                screenWidth: this.gameConsts.SCREEN_WIDTH,
+                screenHeight: this.gameConsts.SCREEN_HEIGHT,
+                hudBuff: this.gameConsts.HUD_BUFFER,
+                normFont: this.gameConsts.NORM_FONT_SETTINGS,
+                midFont: this.gameConsts.MID_FONT_SETTINGS,
+                bigFont: this.gameConsts.BIG_FONT_SETTINGS,
+                highlightColor: this.gameConsts.HIGHLIGHT_COLOR,
+                fontColor: this.gameConsts.FONT_COLOR
+            };
+
+            // Render all layers in order
+            for (const layer of this.layers) {
+                layer.render(this.device, this.game, renderOpts);
+            }
+
+            // Clear per-frame input
+            this.device.keys.clearFrameKeys();
+
+        } catch (error) {
+            console.error("Game update error:", error);
+            alert("An error occurred during the game update. Please restart.");
+        }
     }
-}
-
-
 
     updateGame(device, game, delta)
     {
@@ -173,50 +177,46 @@ class Controller
     // ------------------------------------------------------------------------
     renderHTMLMessage(device, game) 
     {
-        // Get message container element
-        const msg = document.getElementById("message");
-        if (!msg || game.isGameFullscreen) return;
-        
-        // Track gamepad connection state changes
-        if (device.keys.prevGamePadConnected === undefined) 
-        {
-            device.keys.prevGamePadConnected = device.keys.gamePadConnected;
-        }
-        
-        // Build messages array based on input method
-        const messages = this.buildMessages(device, game);
-        
-        // Initialize cycling state
-        if (this.htmlMessageIndex === undefined) this.htmlMessageIndex = 0;
-        
-        // Reset display when gamepad connects
-        if (device.keys.gamePadConnected && !device.keys.prevGamePadConnected) 
-        {
-            this.htmlMessageIndex = 0;
-        }
-        
-        // Update connection state for next frame
-        device.keys.prevGamePadConnected = device.keys.gamePadConnected;
-        
-        // Ensure index stays within bounds
-        if (this.htmlMessageIndex >= messages.length) 
-        {
-            this.htmlMessageIndex = 0;
-        }
-        
-        // Cycle to next message when timer finishes
-        const cycleTimer = game.gameTimers.getObjectByName(timerTypes.MESS_DELAY.name);
-        if (cycleTimer && cycleTimer.finished)
-        {
-            this.htmlMessageIndex = (this.htmlMessageIndex + 1) % messages.length;
+        const container = document.getElementById("message");
+        if (!container || game.isGameFullscreen) return;
+
+        let textEl = container.querySelector(".message-text");
+        if (!textEl) {
+            textEl = document.createElement("p");
+            textEl.className = "message-text";
+            container.appendChild(textEl);
         }
 
-        // Display current message
-        const message = messages[this.htmlMessageIndex];
-        
-        if (message) 
+        const messages = this.buildMessages(device, game);
+        if (!messages || messages.length === 0) return;
+
+        if (this.htmlMessageIndex === undefined) this.htmlMessageIndex = 0;
+        if (this.htmlMessagePhase === undefined) this.htmlMessagePhase = "visible";
+
+        const cycleTimer = game.gameTimers.getObjectByName(timerTypes.MESS_DELAY.name);
+        if (!cycleTimer) return;
+
+        const progress = cycleTimer.progress; // 0 → 1
+
+        // Fade OUT during last 25% of timer
+        if (progress > 0.9 && this.htmlMessagePhase === "visible")  
         {
-            msg.innerHTML = `<p>${message}</p>`;
+            textEl.classList.add("fade-out");
+            this.htmlMessagePhase = "fading";
+        }
+
+        // Timer finished → swap + fade IN
+        if (cycleTimer.finished) {
+            this.htmlMessageIndex = (this.htmlMessageIndex + 1) % messages.length;
+            textEl.textContent = messages[this.htmlMessageIndex];
+
+            textEl.classList.remove("fade-out");
+            this.htmlMessagePhase = "visible";
+        }
+
+        // Initial draw
+        if (!textEl.textContent) {
+            textEl.textContent = messages[this.htmlMessageIndex];
         }
     }
 
