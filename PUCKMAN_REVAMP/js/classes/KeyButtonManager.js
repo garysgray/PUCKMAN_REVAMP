@@ -245,4 +245,31 @@ class KeyButtonManager
         const gp = navigator.getGamepads?.()[0];
         this.#gamePadConnected = !!gp;
     }
+
+    getMovementVector()
+    {
+        let dx = 0;
+        let dy = 0;
+
+        // Keyboard
+        if (this.isKeyDown(keyTypes.DOWN)  || this.isKeyDown(keyTypes.S)) dy += 1;
+        if (this.isKeyDown(keyTypes.UP)    || this.isKeyDown(keyTypes.W)) dy -= 1;
+        if (this.isKeyDown(keyTypes.RIGHT) || this.isKeyDown(keyTypes.D)) dx += 1;
+        if (this.isKeyDown(keyTypes.LEFT)  || this.isKeyDown(keyTypes.A)) dx -= 1;
+
+        // Gamepad
+        const gp = navigator.getGamepads?.()[0];
+        if (gp)
+        {
+            const deadzone = 0.2;
+            const ax = Math.abs(gp.axes[0]) > deadzone ? gp.axes[0] : 0;
+            const ay = Math.abs(gp.axes[1]) > deadzone ? gp.axes[1] : 0;
+
+            dx += ax;
+            dy += ay;
+        }
+
+        return { dx, dy };
+    }
+
 }
