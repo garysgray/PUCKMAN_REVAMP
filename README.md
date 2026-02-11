@@ -115,6 +115,8 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, b
 - Handles player initials entry at high score screen
 - High score persistence ready for local storage integration
 - HUD displays current score and remaining lives
+- Shimmer effect on High Score list!!
+
 
 ---
 
