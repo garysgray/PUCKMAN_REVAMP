@@ -5,6 +5,8 @@
 class Enemy extends GameObject
 {
     #behaveState;
+    #deltaX;
+    #deltaY;
 
     constructor(name, width, height, x, y, speed) 
     {
@@ -12,16 +14,28 @@ class Enemy extends GameObject
         this.behaveState = behaveStates.ROAM;
         this.roamTimer = 0;
         this.roamDirection = { x: 0, y: 0 };
+        this.deltaX = 0;
+        this.deltaY = 0;
     }
 
     get behaveState() { return this.#behaveState; }
     set behaveState(v) { this.#behaveState = v; }
 
-    update(delta, game, target, screenWidth, screenHeight, hudBuff) 
-    //update(device, game, delta, sound, screenWidth, screenHeight, hudBuff)
+    get deltaX() { return this.#deltaX; }
+    set deltaX(v) { this.#deltaX = v; }
+
+    get deltaY() { return this.#deltaY; }
+    set deltaY(v) { this.#deltaY = v; }
+
+    update(delta, game, target) 
     {
         try 
         {
+            // Reset deltas
+            this.deltaX = 0;
+            this.deltaY = 0;
+
+            // Execute behavior (calculates deltaX/deltaY)
             switch (this.behaveState) 
             {
                 case behaveStates.ROAM:
@@ -36,9 +50,6 @@ class Enemy extends GameObject
                     this.stop(target, 1);
                     break;
             }
-
-            this.enforceBorderBounds(game.borderHorizontalBuffer, game.borderVerticalBuffer, screenWidth, screenHeight, hudBuff);
-
         } 
         catch (e) 
         {
@@ -46,7 +57,7 @@ class Enemy extends GameObject
         }
     }
 
-    follow(delta, game, target, stopFollowDistance = 300) 
+    follow(delta, game, target, stopFollowDistance = 900) 
     {
         if (!target || !target.alive) {
             this.behaveState = behaveStates.ROAM;
@@ -72,17 +83,16 @@ class Enemy extends GameObject
         dx /= dist;
         dy /= dist;
 
-        const moveX = dx * this.speed * delta;
-        const moveY = dy * this.speed * delta;
-
-        // Move with collision
-        this.tryMoveWithCollision(game.mapHolder, moveX, moveY);
+        // Calculate desired movement (don't apply yet)
+        this.deltaX = dx * this.speed * delta;
+        this.deltaY = dy * this.speed * delta;
 
         // Update sprite direction
         if (Math.abs(dx) > Math.abs(dy)) 
         {
             this.state = dx > 0 ? enemyPlayStates.RIGHT : enemyPlayStates.LEFT;
-        } else 
+        } 
+        else 
         {
             this.state = dy > 0 ? enemyPlayStates.DOWN : enemyPlayStates.UP;
         }
@@ -99,11 +109,9 @@ class Enemy extends GameObject
 
         this.roamTimer -= delta;
 
-        const moveX = this.roamDirection.x * this.speed * delta;
-        const moveY = this.roamDirection.y * this.speed * delta;
-
-        // Move with collision
-        this.tryMoveWithCollision(game.mapHolder, moveX, moveY);
+        // Calculate desired movement (don't apply yet)
+        this.deltaX = this.roamDirection.x * this.speed * delta;
+        this.deltaY = this.roamDirection.y * this.speed * delta;
 
         // Update sprite direction
         if (Math.abs(this.roamDirection.x) > Math.abs(this.roamDirection.y)) 

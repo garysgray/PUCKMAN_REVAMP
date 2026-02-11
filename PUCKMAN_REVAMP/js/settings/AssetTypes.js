@@ -15,11 +15,11 @@ const playerSpriteTypes =
 
 const characterSpriteTypes =  
 {
-    RED_GHOST:    { type: "red_ghost",       ...MAP_TILE_SIZE, s: 150, path: "assets/sprites/ghosts/red_ghosts.png" },
-    BLUE_GHOST:    { type: "blue_ghost",     ...MAP_TILE_SIZE, s: 140,  path: "assets/sprites/ghosts/blue_ghosts.png" },
-    GREEN_GHOST:    { type: "green_ghost",   ...MAP_TILE_SIZE, s: 130, path: "assets/sprites/ghosts/green_ghosts.png" },
-    ORANGE_GHOST:    { type: "orange_ghost", ...MAP_TILE_SIZE, s: 120, path: "assets/sprites/ghosts/orange_ghosts.png" },
-    PINK_GHOST:    { type: "pink_ghost",     ...MAP_TILE_SIZE, s: 100, path: "assets/sprites/ghosts/pink_ghosts.png" },
+    RED_GHOST:    { type: "red_ghost",       ...MAP_TILE_SIZE, s: 155, path: "assets/sprites/ghosts/red_ghosts.png" },
+    BLUE_GHOST:    { type: "blue_ghost",     ...MAP_TILE_SIZE, s: 143,  path: "assets/sprites/ghosts/blue_ghosts.png" },
+    GREEN_GHOST:    { type: "green_ghost",   ...MAP_TILE_SIZE, s: 133, path: "assets/sprites/ghosts/green_ghosts.png" },
+    ORANGE_GHOST:    { type: "orange_ghost", ...MAP_TILE_SIZE, s: 123, path: "assets/sprites/ghosts/orange_ghosts.png" },
+    PINK_GHOST:    { type: "pink_ghost",     ...MAP_TILE_SIZE, s: 113, path: "assets/sprites/ghosts/pink_ghosts.png" },
 };
 
 const mapSpriteTypes = 

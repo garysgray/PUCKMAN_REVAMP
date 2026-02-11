@@ -201,7 +201,15 @@ Built entirely with **vanilla JavaScript and HTML5 Canvas** — no frameworks, b
 
 ---
 
-### 16. Debug & Development
+### 16. Game Demo Mode 
+- Animation loop plays while in INIT state
+- Player gets to watch while in INIT untill button press
+- Puck-man gets chased by ghosts as he picks up fruit
+- Random fruit are spawned on each loop
+
+---
+
+### 17. Debug & Development
 - Optional on-screen debug panel
 - Hitbox visualization
 - Safe initialization checks prevent race conditions

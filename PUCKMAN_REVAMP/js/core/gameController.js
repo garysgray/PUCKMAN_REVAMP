@@ -9,9 +9,7 @@ class Controller
     #game;              // Holds core game state and logic
     #layers;            // Array of Layer instances (render order matters)
     #htmlMessageIndex;  // Keeps track of HTML message to be displayed when not in FULL SCREEN
-
     #htmlMessagePhase;
-
     #gameConsts;
     
     constructor(gameConsts = new GameConsts()) 
@@ -177,6 +175,8 @@ class Controller
     // ------------------------------------------------------------------------
     renderHTMLMessage(device, game) 
     {
+        const fadeTimeValue = 0.9;
+
         const container = document.getElementById("message");
         if (!container || game.isGameFullscreen) return;
 
@@ -199,14 +199,15 @@ class Controller
         const progress = cycleTimer.progress; // 0 → 1
 
         // Fade OUT during last 25% of timer
-        if (progress > 0.9 && this.htmlMessagePhase === "visible")  
+        if (progress > fadeTimeValue && this.htmlMessagePhase === "visible")  
         {
             textEl.classList.add("fade-out");
             this.htmlMessagePhase = "fading";
         }
 
         // Timer finished → swap + fade IN
-        if (cycleTimer.finished) {
+        if (cycleTimer.finished) 
+        {
             this.htmlMessageIndex = (this.htmlMessageIndex + 1) % messages.length;
             textEl.textContent = messages[this.htmlMessageIndex];
 

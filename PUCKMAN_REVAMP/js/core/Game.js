@@ -24,6 +24,7 @@ class Game
     #borderHolder;
     #mapHolder;
     #goalHolder;
+    #demoGoalHolder;
 
     // -----------------------------
     // Border & Map Buffers
@@ -55,6 +56,13 @@ class Game
     // -----------------------------
     #isGameFullscreen;
 
+
+    //-----------------------------
+    // Demo
+    // -----------------------------
+    #attractModeStarted;
+    #attractModeEnemiesFollowing;
+
     // =======================================================
     // CONSTRUCTOR
     // =======================================================
@@ -74,6 +82,8 @@ class Game
             this.#borderHolder = new ObjHolder();
             this.#mapHolder    = new ObjHolder();
 
+            this.#demoGoalHolder   = new ObjHolder();
+
             // Game state
             this.#gameState     = gameStates.INIT;
             this.#prevGameState = null;
@@ -90,6 +100,10 @@ class Game
 
             // Fullscreen
             this.#isGameFullscreen = false;
+
+            this.attractModeStarted = false;
+            this.attractModeEnemiesFollowing = false;
+
         } 
         catch (err) 
         {
@@ -110,6 +124,8 @@ class Game
     get mapHolder()    { return this.#mapHolder; }
     get goalHolder()   { return this.#goalHolder; }
 
+    get demoGoalHolder()   { return this.#demoGoalHolder; }
+
     get player()    { return this.#player; }
     get lives()     { return this.#lives; }
     get gameLevel() { return this.#gameLevel; }
@@ -122,6 +138,9 @@ class Game
     get borderVerticalBuffer()   { return this.#borderVerticalBuffer; }
 
     get isGameFullscreen() { return this.#isGameFullscreen; }
+
+    get attractModeStarted() { return this.#attractModeStarted; }
+    get attractModeEnemiesFollowing()   { return this.#attractModeEnemiesFollowing; }
 
     // -----------------------------
     // Score delegation
@@ -147,6 +166,12 @@ class Game
 
     set isGameFullscreen(v) { this.#isGameFullscreen = v; }
     set highScoreAchived(v) { this.#scoreManager.highScoreAchieved = v; }
+
+    set demoGoalHolder(v) { this.#demoGoalHolder = v; }
+
+    set attractModeStarted(v) { this.#attractModeStarted = v; }
+    set attractModeEnemiesFollowing(v) { this.#attractModeEnemiesFollowing = v; }
+
 
     // =======================================================
     // INITIALIZATION
@@ -253,5 +278,112 @@ class Game
     resetStateEnterFlag(state) 
     {
         this.stateEntered[state] = false;
+    }
+
+    clearAllObjects()
+    {   
+        this.enemyHolder.clearObjects();
+        this.borderHolder.clearObjects();
+        this.mapHolder.clearObjects();
+        this.demoGoalHolder.clearObjects();
+        this.player.kill();
+    }
+
+    // ------------------------------------------------------------------------
+    // ATTRACT MODE ANIMATION
+    // ------------------------------------------------------------------------
+    runLevelCompleteAnimation(delta) 
+    {
+        const player = this.player;
+        const enemies = this.enemyHolder;
+        const yBuff = this.gameConsts.SCREEN_HEIGHT / 35;
+        const widthHalf = this.gameConsts.SCREEN_WIDTH / 2;
+        const heightHalf = this.gameConsts.SCREEN_HEIGHT / 2;
+        const playerDemoSpeed = 172;
+
+        if (!this.attractModeStarted) 
+        {
+            this.attractModeStarted = true;
+            this.attractModeEnemiesFollowing = true;
+
+            const fruits = Object.values(goalsSpriteTypes);
+            this.demoGoalHolder = this.buildRandomFruitHolder(fruits, fruits.length, widthHalf, heightHalf + yBuff, MAP_TILE_SIZE.w * 2);
+
+            this.player.movePos(-(MAP_TILE_SIZE.h / 2), heightHalf + yBuff);
+            this.player.playerState = playStates.RIGHT;
+            this.player.speed = playerDemoSpeed;
+
+            this.enemyHolder.forEach(enemy => 
+            {
+                enemy.movePos(-(MAP_TILE_SIZE.w * 2), heightHalf + yBuff);
+                enemy.behaveState = behaveStates.FOLLOW;
+            });
+        }
+
+        // Check fruit collisions
+        this.demoGoalHolder.forEach(aFruit => 
+        {
+            if (aFruit && aFruit.alive && Collision.checkSingleCollisions(aFruit, player)) aFruit.kill();
+        });
+
+        player.posX += player.speed * delta;
+
+        if (player.posX >= this.gameConsts.SCREEN_WIDTH + player.width) 
+        {
+            player.posX = -player.width;
+
+            enemies.forEach(enemy => 
+            {
+                enemy.movePos(-(MAP_TILE_SIZE.w * 2), heightHalf + MAP_TILE_SIZE.h);
+                enemy.behaveState = behaveStates.FOLLOW;
+            });
+
+            // Pick new fruits every loop
+            const fruits = Object.values(goalsSpriteTypes);
+            this.demoGoalHolder = this.buildRandomFruitHolder(fruits, fruits.length, widthHalf, heightHalf + yBuff, MAP_TILE_SIZE.w * 2);
+        }
+
+        enemies.forEach(enemy => 
+        {
+            enemy.update(delta, this, player);
+            enemy.posX += enemy.deltaX;
+            enemy.posY += enemy.deltaY;
+        });
+
+        return false;
+    }
+
+    // ------------------------------------------------------------------------
+    // BUILD RANDOM FRUIT HOLDER
+    // ------------------------------------------------------------------------
+    buildRandomFruitHolder(fruits, numFruit, fixedPosX, fixedPosY, offSetX) 
+    {
+        const tempFruitHolder = new ObjHolder();
+        if (!fruits || fruits.length === 0) return tempFruitHolder;
+
+        numFruit = Math.max(1, Math.min(numFruit, fruits.length));
+        const used = [];
+        const centerOffset = (numFruit - 1) / 2;
+
+        while (used.length < numFruit) 
+        {
+            const fruit = fruits[Math.floor(Math.random() * fruits.length)];
+            if (used.includes(fruit)) continue;
+            used.push(fruit);
+
+            const index = used.length - 1;
+            const demoFruit = new GameObject
+            (
+                fruit.type,
+                fruit.w,
+                fruit.h,
+                fixedPosX + ((index - centerOffset) * offSetX),
+                fixedPosY,
+                0
+            );
+            tempFruitHolder.addObject(demoFruit);
+        }
+
+        return tempFruitHolder;
     }
 }

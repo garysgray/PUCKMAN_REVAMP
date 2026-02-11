@@ -14,7 +14,36 @@ function renderGameObjectsLayer(device, game, opts)
         switch (game.gameState) 
         {
             case gameStates.INIT:
-                // No game objects to render in INIT state
+                try 
+                {
+                    // Player
+                    if(game.player.alive)
+                    {
+                        RenderUtil.renderPlayer(device, game);
+                    }
+
+                    // Enemies
+                    game.enemyHolder.forEach(element => 
+                    {
+                        RenderUtil.renderStateSprite(device, element);
+                    });
+
+                    // Fruit/Goals
+                    game.demoGoalHolder.forEach(fruit => 
+                    {
+                        if(fruit.alive)
+                        {
+                            RenderUtil.renderStateSprite(device, fruit);
+                        }        
+                    });
+                    
+                    break;
+
+                } 
+                catch (e) 
+                {
+                    console.error("Error rendering init objects:", e);
+                }
                 break;
 
             case gameStates.PLAY:
@@ -39,15 +68,15 @@ function renderGameObjectsLayer(device, game, opts)
                         RenderUtil.renderStateSprite(device, element);
                     });
 
-                } catch (e) {
+                } 
+                catch (e) 
+                {
                     console.error("Error rendering gameplay objects:", e);
                 }
                 break;
 
             case gameStates.PAUSE:
-                // Optional: overlay paused visuals if needed
                 break;
-
             case gameStates.WIN:
                 // Reserved for future win state content
                 break;
@@ -57,6 +86,7 @@ function renderGameObjectsLayer(device, game, opts)
                 {
                     // Optional: render player or other effects on lose screen
                     // RenderUtil.renderPlayer(device, game);
+                    
                 } 
                 catch (e) 
                 {
@@ -72,7 +102,6 @@ function renderGameObjectsLayer(device, game, opts)
                 console.warn("Unknown game state:", game.gameState);
                 break;
         }
-
     } 
     catch (e) 
     {

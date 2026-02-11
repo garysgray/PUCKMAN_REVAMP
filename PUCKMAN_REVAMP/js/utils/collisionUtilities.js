@@ -37,6 +37,17 @@ const Collision =
         return false;
     },
 
+    checkSingleCollisions(obj, player) 
+    {
+        if (this.roughNear(player, obj) && this.rectsCollide(player.getHitbox(), obj.getHitbox())) 
+        {
+            return obj;
+        }
+        
+        return false;
+    },
+
+
     // Used only during map/goal spawning
      overlapsAny(obj, holder) 
     {

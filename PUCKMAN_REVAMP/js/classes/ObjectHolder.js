@@ -54,3 +54,4 @@ class ObjHolder
         if (typeof cb === "function") this.#objects.forEach(cb); 
     }
 }
+

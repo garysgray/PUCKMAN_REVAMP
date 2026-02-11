@@ -55,11 +55,11 @@ class GameConsts
     #DEBUG_TEXT_COLOR  = "yellow";
     #FONT_COLOR        = "hsla(49, 100%, 50%, 0.965)";
     #HIGHLIGHT_COLOR   = "white";
-    #NORM_FONT_SETTINGS = "bold 20pt VT323";
-    #MID_FONT_SETTINGS  = "bold 90pt VT323";
-    #BIG_FONT_SETTINGS  = "bold 100pt VT323";
-    #SCORE_TITLE_FONT = "bold 30pt VT323";
-    #SCORE_LIST_FONT =  "bold 18pt VT323";
+    #NORM_FONT_SETTINGS = "bold 22pt VT323";
+    #MID_FONT_SETTINGS  = "bold 92pt VT323";
+    #BIG_FONT_SETTINGS  = "bold 102pt VT323";
+    #SCORE_TITLE_FONT = "bold 32pt VT323";
+    #SCORE_LIST_FONT =  "bold 20pt VT323";
 
     get DEBUG_TEXT_COLOR()   { return this.#DEBUG_TEXT_COLOR; }
     get FONT_COLOR()         { return this.#FONT_COLOR; }
