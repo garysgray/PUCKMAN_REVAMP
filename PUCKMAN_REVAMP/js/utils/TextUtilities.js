@@ -117,12 +117,12 @@ const TextUtil =
         const LIST_SHIMMER_AMPLITUDE = 150;    // brightness swing for yellow
         const LIST_LINE_OFFSET = 0.8;          // phase offset between lines
         const BASE_YELLOW = { r: 255, g: 255, b: 0 }; // base color for high score list
+        const RIGHT_COLUMN_NUDGE = 35;         // tiny fix for right column alignment
 
         // -------------------------------
         // Draw the high score title
         // -------------------------------
         device.setFont(game.gameConsts.SCORE_TITLE_FONT);
-
         const shimmerTime = performance.now() * 0.002; // unified time for both title & list
 
         // Rainbow shimmer for the title
@@ -143,10 +143,18 @@ const TextUtil =
             const name = score.name;
             const scoreValue = score.score;
 
-            // Determine column and position
+            // -------------------------------
+            // Column and position
+            // -------------------------------
             const isLeftColumn = idx < layout.highScores.splitAt;
-            const baseX = cw * (isLeftColumn ? layout.highScores.leftColumnX : layout.highScores.rightColumnX);
-            const x = baseX + layout.highScores.columnOffset;
+            let x = cw * (isLeftColumn ? layout.highScores.leftColumnX : layout.highScores.rightColumnX);
+
+            // tiny adjustment for right column
+            if (!isLeftColumn) x += RIGHT_COLUMN_NUDGE;
+
+            // Apply existing column offset
+            x += layout.highScores.columnOffset;
+
             const y = ch * (layout.highScores.startY + (idx % layout.highScores.splitAt) * layout.highScores.lineHeight);
 
             // -------------------------------

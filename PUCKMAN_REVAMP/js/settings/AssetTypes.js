@@ -66,7 +66,8 @@ const timerTypes =
      GAME_CLOCK:       { name: "gameClock", timerMode: timerModes.COUNTDOWN },  
      STATE_DELAY:      { name: "stateDelay", timerMode: timerModes.COUNTDOWN },  
      LOSE_DELAY:       { name: "loseDelay", timerMode: timerModes.COUNTDOWN }, 
-     MESS_DELAY:       { name: "messDelay", timerMode: timerModes.COUNTDOWN },   
+     MESS_DELAY:       { name: "messDelay", timerMode: timerModes.COUNTDOWN }, 
+     SPAWN_DELAY:      { name: "spawnDelay", timerMode: timerModes.COUNTDOWN },    
 };
 
 const AudioStates = 

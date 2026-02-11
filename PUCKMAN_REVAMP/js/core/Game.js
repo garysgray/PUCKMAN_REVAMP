@@ -294,13 +294,24 @@ class Game
     // ------------------------------------------------------------------------
     runLevelCompleteAnimation(delta) 
     {
-        const player = this.player;
+        const player  = this.player;
         const enemies = this.enemyHolder;
-        const yBuff = this.gameConsts.SCREEN_HEIGHT / 35;
-        const widthHalf = this.gameConsts.SCREEN_WIDTH / 2;
-        const heightHalf = this.gameConsts.SCREEN_HEIGHT / 2;
-        const playerDemoSpeed = 172;
 
+        const SCREEN_WIDTH  = this.gameConsts.SCREEN_WIDTH;
+        const SCREEN_HEIGHT = this.gameConsts.SCREEN_HEIGHT;
+
+        const Y_OFFSET_DIVISOR    = 35;
+        const PLAYER_DEMO_SPEED  = 172;
+        const FRUIT_SPAWN_INTERVAL = 0.5; // seconds
+        const TIMER_TIME = 999;
+
+        const yBuff      = SCREEN_HEIGHT / Y_OFFSET_DIVISOR;
+        const widthHalf  = SCREEN_WIDTH  / 2;
+        const heightHalf = SCREEN_HEIGHT / 2;
+
+        const spawnDelayTimer = myController.game.gameTimers.getObjectByName(timerTypes.SPAWN_DELAY.name);
+
+        // Stuff we need done only once before starting animation
         if (!this.attractModeStarted) 
         {
             this.attractModeStarted = true;
@@ -309,41 +320,66 @@ class Game
             const fruits = Object.values(goalsSpriteTypes);
             this.demoGoalHolder = this.buildRandomFruitHolder(fruits, fruits.length, widthHalf, heightHalf + yBuff, MAP_TILE_SIZE.w * 2);
 
-            this.player.movePos(-(MAP_TILE_SIZE.h / 2), heightHalf + yBuff);
-            this.player.playerState = playStates.RIGHT;
-            this.player.speed = playerDemoSpeed;
+            player.movePos(-(MAP_TILE_SIZE.h / 2), heightHalf + yBuff);
+            player.playerState = playStates.RIGHT;
+            player.speed = PLAYER_DEMO_SPEED;
 
-            this.enemyHolder.forEach(enemy => 
+            enemies.forEach(enemy =>
             {
                 enemy.movePos(-(MAP_TILE_SIZE.w * 2), heightHalf + yBuff);
                 enemy.behaveState = behaveStates.FOLLOW;
             });
         }
 
-        // Check fruit collisions
-        this.demoGoalHolder.forEach(aFruit => 
+        // Fruit collisions
+        this.demoGoalHolder.forEach(fruit =>
         {
-            if (aFruit && aFruit.alive && Collision.checkSingleCollisions(aFruit, player)) aFruit.kill();
+            if (fruit && fruit.alive && Collision.checkSingleCollisions(fruit, player)) fruit.kill();
         });
 
         player.posX += player.speed * delta;
 
-        if (player.posX >= this.gameConsts.SCREEN_WIDTH + player.width) 
+        // Player wraps screen
+        if (player.posX >= SCREEN_WIDTH + player.width) 
         {
             player.posX = -player.width;
 
-            enemies.forEach(enemy => 
+            enemies.forEach(enemy =>
             {
                 enemy.movePos(-(MAP_TILE_SIZE.w * 2), heightHalf + MAP_TILE_SIZE.h);
                 enemy.behaveState = behaveStates.FOLLOW;
             });
 
-            // Pick new fruits every loop
             const fruits = Object.values(goalsSpriteTypes);
             this.demoGoalHolder = this.buildRandomFruitHolder(fruits, fruits.length, widthHalf, heightHalf + yBuff, MAP_TILE_SIZE.w * 2);
+
+            // Kill + assign spawn delays
+            this.demoGoalHolder.forEach((fruit, idx) =>
+            {
+                fruit.alive = false;
+                fruit.spawnDelay = idx * FRUIT_SPAWN_INTERVAL;
+                fruit.hasSpawned = false;
+            });
+
+            spawnDelayTimer.setAndStart(TIMER_TIME, timerModes.COUNTUP, false);
         }
 
-        enemies.forEach(enemy => 
+        // Staggered fruit spawn
+        if (spawnDelayTimer && spawnDelayTimer.active)
+        {
+            spawnDelayTimer.update(delta);
+
+            this.demoGoalHolder.forEach(fruit =>
+            {
+                if (!fruit.hasSpawned && spawnDelayTimer.elapsedTime >= fruit.spawnDelay)
+                {
+                    fruit.alive = true;
+                    fruit.hasSpawned = true;
+                }
+            });
+        }
+
+        enemies.forEach(enemy =>
         {
             enemy.update(delta, this, player);
             enemy.posX += enemy.deltaX;

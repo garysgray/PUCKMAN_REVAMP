@@ -10,6 +10,7 @@ function handleInitState(device, game, delta)
     try 
     {
         const stateDelayTimer = game.gameTimers.getObjectByName(timerTypes.STATE_DELAY.name);
+        const spawnDelayTimer = myController.game.gameTimers.getObjectByName(timerTypes.SPAWN_DELAY.name);
 
         if (game.isStateEnter(gameStates.INIT)) 
         {
@@ -20,10 +21,21 @@ function handleInitState(device, game, delta)
             // Reset animation state
             game.attractModeStarted = false;
             game.attractModeEnemiesFollowing = false;
+            
+            
         }
 
         // Run the Demo Animation
         game.runLevelCompleteAnimation(delta);
+
+        if (spawnDelayTimer && spawnDelayTimer.active) 
+        {
+            spawnDelayTimer.update(delta);
+        }
+        else
+        {
+            spawnDelayTimer.setAndStart(150);
+        }
 
         stateDelayTimer.update(delta);
         if (stateDelayTimer.active) return;
