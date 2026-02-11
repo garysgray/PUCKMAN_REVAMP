@@ -88,7 +88,7 @@ gameTexts =
                 "ACTION BUTTON TO SUBMIT, START TO SKIP"
         ],
 
-        TOP_SCORE_TITLE: "TOP SCORES",
+        TOP_SCORE_TITLE: "TOP SCORES  ",
     
     }
 };
